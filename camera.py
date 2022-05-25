@@ -35,40 +35,44 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     # use for naming frames 
     frame_index = 0
     for index, video in enumerate(videos_to_be_processed):
-        print('Processing video ' + str(index) + '...\n')
+        print('Processing video ' + str(index+1) + '...\n')
         
         cap = cv2.VideoCapture(constant.videos_location+video)
 
-        while True:
+        if (cap.isOpened()== False):
+            print("Error opening video stream or file")
+
+        while (cap.isOpened()):
             ret, frame = cap.read()
             # width = int(cap.get(3)) # 1920p
             # height = int(cap.get(4)) # 1080p
-            scale_position = frame[242:650,1600:1720]
-            conveyor_position = frame[0:1080, 372:1300]
-            id_position = frame[360:640, 560:860]
-
-            if ret:
-                # resize the image
-                actual_video = cv2.resize(frame, (frame_size[1],frame_size[0]//2)) # same as cv2.resize(frame, (0,0), fy=0.25, fx=0.25)
-                # [top:bottom, left:right] layout
-                scale = cv2.resize(cv2.rotate(scale_position, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE), (0,0), fy=0.25, fx=0.25)
-                conveyor_belt = cv2.resize(conveyor_position, (270,232)) 
-                # ruler adjacent to the conveyorbelt [142:1058, 0:1300] #height of 916p = 29cm, therefore avg = 31.59p per cm
-                fish_id = cv2.resize(cv2.rotate(id_position, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE), (0,0), fy=0.5, fx=0.5)
-
-                # ViewVideo(frame_size, actual_video, conveyor_belt, scale, fish_id, video)
-                # TODO: Check for the highest weight before saving
-                # CheckWeight(scale) Function
-                SaveImages(actual_video, fish_id, conveyor_belt, scale, frame_index, video)
-                
-                frame_index += 1
-                skip_frames += 30  # i.e. at 30 fps, this advances one second
-                cap.set(1, skip_frames)
-            else:
+            
+            # when stream ends
+            if not ret:
                 print(f'Video {index + 1} process complete.')
                 frame_index = 0
                 break
+            
+            scale_position = frame[242:650,1600:1720]
+            conveyor_position = frame[0:1080, 372:1300]
+            id_position = frame[360:640, 560:860]
+            # resize the image
+            actual_video = cv2.resize(frame, (frame_size[1],frame_size[0]//2)) # same as cv2.resize(frame, (0,0), fy=0.25, fx=0.25)
+            # [top:bottom, left:right] layout
+            scale = cv2.resize(cv2.rotate(scale_position, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE), (0,0), fy=0.25, fx=0.25)
+            conveyor_belt = cv2.resize(conveyor_position, (270,232)) 
+            # ruler adjacent to the conveyorbelt [142:1058, 0:1300] #height of 916p = 29cm, therefore avg = 31.59p per cm
+            fish_id = cv2.resize(cv2.rotate(id_position, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE), (0,0), fy=0.5, fx=0.5)
 
+            # ViewVideo(frame_size, actual_video, conveyor_belt, scale, fish_id, video)
+            # TODO: Check for the highest weight before saving
+            # CheckWeight(scale) Function
+            SaveImages(actual_video, fish_id, conveyor_belt, scale, frame_index, video)
+            
+            frame_index += 1
+            skip_frames += 30  # i.e. at 30 fps, this advances one second
+            cap.set(1, skip_frames)
+            
             if cv2.waitKey(1) == ord('q'):
                 frame_index = 0
                 break
