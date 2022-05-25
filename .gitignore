@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# assets
+/assets
+/videos
+/images
+
+# installation configuration
+installation
+
+# DS Store
+.DS_Store

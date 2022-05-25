@@ -4,7 +4,7 @@
 #import if necessary (built-in, third-party, path, own modules)
 
 videos_location = './videos/'
-image_storage = './images'
+image_storage = './images/'
 data_output = './output'
 
 # (height, width, channel)
