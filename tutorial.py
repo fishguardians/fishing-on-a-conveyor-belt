@@ -1,4 +1,3 @@
-from statistics import mode
 import cv2
 import numpy as np
 
@@ -37,7 +36,7 @@ import numpy as np
 #video capturing with camera
 # cap = cv2.VideoCapture(0)
 #load video
-cap = cv2.VideoCapture('fishvideo.MOV')
+cap = cv2.VideoCapture('assets/fishvideo.mov')
 
 while True:
     ret, frame = cap.read()
@@ -55,7 +54,7 @@ while True:
     new_frame[:height//2, :width//2] = smaller_image
     new_frame[height//2:, :width//2] = smaller_image
     new_frame[:height//2, width//2:] = smaller_image
-    new_frame[height//2:, :width//2:] = smaller_image
+    new_frame[height//2:, width//2:] = smaller_image
 
     #add a line
     #cv2.line(image, start_position, end_position, color, )

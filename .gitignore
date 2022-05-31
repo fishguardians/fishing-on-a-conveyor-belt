@@ -130,8 +130,8 @@ dmypy.json
 
 # assets
 /assets
-/videos
-/images
+/videos/*
+/images/*
 
 # installation configuration
 installation
