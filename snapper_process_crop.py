@@ -6,7 +6,8 @@ import cv2
 import numpy as np
 
 # Reading an image
-img = cv2.imread('images/barramundi_bg_removed.png')
+# img = cv2.imread('images/barramundi__bg_removed.png')
+img = cv2.imread('images/snapper_bg_removed.png')
 
 # The kernel to be used for dilation
 # purpose
@@ -17,7 +18,14 @@ hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 # defining the lower and upper values
 # of HSV, this will detect yellow colour
-Lower_hsv = np.array([20, 70, 100])
+
+# OG Yellow Belt input
+# Lower_hsv = np.array([20, 70, 100])
+
+# Testing for Snapper
+Lower_hsv = np.array([23, 170, 100])
+
+# Do not touch
 Upper_hsv = np.array([30, 255, 255])
 
 # creating the mask
@@ -49,12 +57,9 @@ def cropBlack(image):
 # Displaying the image
 final = cropBlack(result)
 """
-
 Lower_hsv = str(Lower_hsv)
-Lower_hsv = Lower_hsv.replace(" ", "-")
-
 cv2.imshow('Result', result)
-cv2.imwrite("images\\export\\barramundi_belt_removed_{}.png".format(Lower_hsv), result)
+cv2.imwrite("images\\export\\snapper_belt_removed_{}.png".format(Lower_hsv), result)
 
 # waits for user to press any key
 cv2.waitKey(0)

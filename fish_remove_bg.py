@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 
 # read image
-img = cv2.imread('images/barramundi_28.png')
+# img = cv2.imread('images/OG_barramundi_28.png')
+# img = cv2.imread('images/OG_barramundi_32.png')
+img = cv2.imread('images/OG_snapper_71.png')
 
 # threshold on yellow
 lower = (0, 120, 120)
@@ -28,13 +30,13 @@ result = img[y:y+height, x:x+width]
 
 
 # show the images
-# cv2.imshow("cropped", result)
-cv2.imwrite('images/fish_bg_removed.png', result)
+cv2.imshow("cropped", result)
+cv2.imwrite('images/snapper_bg_removed.png', result)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # draw filled white contour on input
 # result = img.copy()
 # cv2.rectangle(result,(x,y),(x+width,y+height),(255,255,255),-1)
-# cv2.imwrite('fish_bg_removed.png', result)
+# cv2.imwrite('barramundi_bg_removed.png', result)
 

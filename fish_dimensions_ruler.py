@@ -12,9 +12,9 @@ Uses the ruler as reference for measurement. Ruler not required in image.
 Replace dimensions of width of reference in centimeters. 
 
 Usage:
-python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
-python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
-python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
+python fish_dimensions_ruler.py --image images/barramundi_belt_removed.png --width 2
+python fish_dimensions_ruler.py --image images/barramundi_belt_removed.png --width 2
+python fish_dimensions_ruler.py --image images/barramundi_belt_removed.png --width 2
 """
 
 # Construct the argument parse and parse the arguments

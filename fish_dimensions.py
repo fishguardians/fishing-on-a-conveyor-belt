@@ -12,9 +12,9 @@ Uses the little paper fishID rectangle as reference.
 Replace dimensions of width of reference in centimeters. 
 
 Usage:
-python fish_dimensions.py --image images/fish_belt_removed.png --width 1
-python fish_dimensions.py --image images/fish_belt_removed.png --width 1
-python fish_dimensions.py --image images/fish_belt_removed.png --width 1
+python fish_dimensions.py --image images/barramundi_belt_removed.png --width 1
+python fish_dimensions.py --image images/barramundi_belt_removed.png --width 1
+python fish_dimensions.py --image images/barramundi_belt_removed.png --width 1
 """
 
 # Construct the argument parse and parse the arguments
