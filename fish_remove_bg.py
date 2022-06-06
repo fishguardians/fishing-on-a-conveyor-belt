@@ -26,14 +26,15 @@ x, y, width, height = cv2.boundingRect(big_contour)
 # Crop out only the yellow conveyor belt area
 result = img[y:y+height, x:x+width]
 
+
 # show the images
-cv2.imshow("cropped", result)
-cv2.imwrite('bg_removed.png', result)
+# cv2.imshow("cropped", result)
+cv2.imwrite('images/fish_bg_removed.png', result)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # draw filled white contour on input
 # result = img.copy()
 # cv2.rectangle(result,(x,y),(x+width,y+height),(255,255,255),-1)
-# cv2.imwrite('bg_removed.png', result)
+# cv2.imwrite('fish_bg_removed.png', result)
 

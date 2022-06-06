@@ -7,17 +7,21 @@ import imutils
 import cv2
 
 """
-USAGE
-python object_size.py --image images/barramundi_28.png --width 1.2
-python object_size.py --image images/barramundi_32.png --width 1.2
-python object_size.py --image images/snapper_71.png --width 1.2
+Note:
+Uses the ruler as reference for measurement. Ruler not required in image.
+Replace dimensions of width of reference in centimeters. 
+
+Usage:
+python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
+python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
+python fish_dimensions_ruler.py --image images/fish_belt_removed.png --width 2
 """
 
 # Construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True, help="path to the input image")
 ap.add_argument("-w", "--width", type=float, required=True,
-                help="width of the left-most object in the image (in inches)")
+                help="width of the left-most object in the image (in centimeters)")
 args = vars(ap.parse_args())
 
 # Load the image
@@ -28,16 +32,24 @@ x, y, z = image.shape
 # Load the reference image (Ruler for length)
 imageRef = cv2.imread('images/ruler.png')
 
-# Cropping the image to get only the fish
-sliceImage = image[:, 750:1080, :]
+# Crops image based on percentage
+def crop_img(img, scale=1.0):
+    center_x, center_y = img.shape[1] / 2, img.shape[0] / 2
+    width_scaled, height_scaled = img.shape[1] * scale, img.shape[0] * scale
+    left_x, right_x = center_x - width_scaled / 2, center_x + width_scaled / 2
+    top_y, bottom_y = center_y - height_scaled / 2, center_y + height_scaled / 2
+    img_cropped = img[int(top_y):int(bottom_y), int(left_x):int(right_x)]
+    return img_cropped
 
-# Concats the ref image with the fish image
-h_img = cv2.hconcat([imageRef, sliceImage]) # Horizontal
-cv2.imshow('Horizontal', h_img)
-sliceImage = h_img
+# To shrink reference image pixel height to match with fish image
+imageRef = crop_img(imageRef, 0.9)
 
-# convert it to grayscale, and blur it slightly
-gray = cv2.cvtColor(sliceImage, cv2.COLOR_BGR2GRAY)
+# Concats reference ruler image with source fish image
+im_h = cv2.hconcat([imageRef, image])
+image = im_h.copy()
+
+# convert fish image to grayscale, and blur it slightly
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
 # Displays the title of the image display in the window
@@ -109,7 +121,7 @@ for c in cnts:
     count += 1
 
     # compute the rotated bounding box of the contour
-    orig = sliceImage.copy()
+    result = im_h.copy()
 
     # order the points in the contour such that they appear
     # in top-left, top-right, bottom-right, and bottom-left
@@ -119,12 +131,12 @@ for c in cnts:
     box = np.array(box, dtype="int")
 
     box = perspective.order_points(box)
-    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-    cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+    cv2.drawContours(result, [box.astype("int")], -1, (0, 255, 0), 2)
+    cv2.drawContours(result, [box.astype("int")], -1, (0, 255, 0), 2)
 
     # loop over the original points and draw them
     for (x, y) in box:
-        cv2.circle(orig, (int(x), int(y)), 5, (0, 0, 255), -1)
+        cv2.circle(result, (int(x), int(y)), 5, (0, 0, 255), -1)
 
     # unpack the ordered bounding box, then compute the midpoint
     # between the top-left and top-right coordinates, followed by
@@ -138,14 +150,14 @@ for c in cnts:
     (tlblX, tlblY) = midpoint(tl, bl)
     (trbrX, trbrY) = midpoint(tr, br)
 
-    cv2.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-    cv2.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-    cv2.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-    cv2.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+    cv2.circle(result, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+    cv2.circle(result, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+    cv2.circle(result, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+    cv2.circle(result, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
 
     # draw lines between the midpoints
-    cv2.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)), (255, 0, 255), 2)
-    cv2.line(orig, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)), (255, 0, 255), 2)
+    cv2.line(result, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)), (255, 0, 255), 2)
+    cv2.line(result, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)), (255, 0, 255), 2)
 
     # compute the Euclidean distance between the midpoints
     dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
@@ -153,23 +165,31 @@ for c in cnts:
 
     # if the pixels per metric has not been initialized, then
     # compute it as the ratio of pixels to supplied metric
-    # (in this case, inches)
+    # in this case, inches, hence since input is in centimeters
+    # it will be divided by 2.54 to convert cm to inches
     if pixelPerMetric is None:
-        pixelPerMetric = dB / args["width"]
+        pixelPerMetric = dB / (args["width"]/2.54)
 
     # compute the size of the object
     dimA = dA / pixelPerMetric # Length
     dimB = dB / pixelPerMetric # Depth
 
-    cv2.putText(orig, "{:.1f}in".format(dimA), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2)
-    cv2.putText(orig, "{:.1f}in".format(dimB), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2)
+    # Converts inch to centimeters
+    def inch_to_cm(inch):
+        return inch * 2.54
+
+    dimA_CM = inch_to_cm(dimA)
+    dimB_CM = inch_to_cm(dimB)
+
+    cv2.putText(result, "{:.1f}cm".format(dimA_CM), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2)
+    cv2.putText(result, "{:.1f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2)
 
     # show the output image
-    cv2.imshow("Image", orig)
+    cv2.imshow("Image", result)
     cv2.waitKey(0)
 
 # print("Total contours processed: ", count)
 print("Dimensions of fish",
       "------------",
-      "Length: {}".format(dimA),
-      "Depth: {}".format(dimB), sep='\n')
+      "Length: {} cm".format(round(dimA_CM, 3)),
+      "Depth: {} cm".format(round(dimB_CM, 3)), sep='\n')
