@@ -22,11 +22,19 @@ args = vars(ap.parse_args())
 
 # Load the image
 image = cv2.imread(args["image"])
-print(image.shape)
+# print(image.shape)
 x, y, z = image.shape
+
+# Load the reference image (Ruler for length)
+imageRef = cv2.imread('images/ruler.png')
 
 # Cropping the image to get only the fish
 sliceImage = image[:, 750:1080, :]
+
+# Concats the ref image with the fish image
+h_img = cv2.hconcat([imageRef, sliceImage]) # Horizontal
+cv2.imshow('Horizontal', h_img)
+sliceImage = h_img
 
 # convert it to grayscale, and blur it slightly
 gray = cv2.cvtColor(sliceImage, cv2.COLOR_BGR2GRAY)
@@ -73,7 +81,7 @@ def tuneCanny(image):
 # For getting thresholds for Canny
 # tuneCanny(gray)
 t1, t2 = tuneCanny(gray)
-print(t1, t2)
+print(f"Threshold1: {t1}, Threshold2: {t2}")
 
 # Performs edge detection, then perform a dilation + erosion to
 # Closes gaps in between object edges
@@ -85,7 +93,7 @@ show_image("erode and dilate", edged, True)
 # find contours in the edge map
 cnts = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(cnts)
-print("Total number of contours are: ", len(cnts))
+# print("Total number of contours are: ", len(cnts))
 
 # sort the contours from left-to-right and initialize the
 # 'pixels per metric' calibration variable
@@ -160,7 +168,7 @@ for c in cnts:
     cv2.imshow("Image", orig)
     cv2.waitKey(0)
 
-print("Total contours processed: ", count)
+# print("Total contours processed: ", count)
 print("Dimensions of fish",
       "------------",
       "Length: {}".format(dimA),
