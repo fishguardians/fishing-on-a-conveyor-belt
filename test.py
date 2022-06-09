@@ -22,7 +22,7 @@ imageValidator()
 # print(imageList)
 
 def displaySingleImage():
-    image = cv2.imread(dir_path+'/'+imageList[0]) #read image
+    image = cv2.imread(dir_path+'/'+'fish05.png') #read image
     image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB) #convert from GBR to RGB
     image = cv2.rotate(image,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     image = cv2.medianBlur(image,5) #reduce noise

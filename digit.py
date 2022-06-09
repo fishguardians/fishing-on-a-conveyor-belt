@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 import cv2
 import numpy as np
 
@@ -16,17 +17,16 @@ DIGITSDICT = {
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
 
-roi_color = cv2.imread("processed_images/fish03-roi.png")
+roi_color = cv2.imread("processed_images/fish41-roi.png")
 img_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
 roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
+cv2.imshow("Blurred and Trimmed", roi_color)
+cv2.waitKey(0)
 
 roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
 #y1:y2, x1:x2
 trimmed = roi[80: 160, 150 : 380]  #trim image
-roi_color = roi[80: 160, 150 : 380] #trim image
-
-cv2.imshow("Blurred and Trimmed", trimmed)
-cv2.waitKey(0)
+# roi_color = roi[80: 160, 150 : 380] #trim image
 
 edged = cv2.adaptiveThreshold(  
     trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 5
@@ -38,8 +38,8 @@ cv2.waitKey(0)
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 5))
 dilated = cv2.dilate(edged, kernel, iterations=1)
 
-cv2.imshow("Dilated", dilated)
-cv2.waitKey(0)
+# cv2.imshow("Dilated", dilated)
+# cv2.waitKey(0)
 
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 1))
 dilated = cv2.dilate(dilated, kernel, iterations=1)
@@ -58,8 +58,8 @@ ratio = int(h * 0.01) #3
 eroded[-ratio:,] = 0
 eroded[:, :ratio] = 0
 
-cv2.imshow("Eroded + Black", eroded)
-cv2.waitKey(0)
+# cv2.imshow("Eroded + Black", eroded)
+# cv2.waitKey(0)
 
 cnts, _ = cv2.findContours(eroded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 # print("cnts=",cnts)
@@ -73,14 +73,15 @@ cv2.drawContours(canvas, cnts, -1, (255, 255, 255), 1)
 
 #detect & draw contours in random sequence
 for cnt in cnts:
+    #compute bounding box of the contour
     (x, y, w, h) = cv2.boundingRect(cnt)
     if h > 50: #determine if the item should be read (by height)
-        digits_cnts += [cnt] #determine how many digits are there
+        digits_cnts.append(cnt) #determine how many digits are there
         # print(digits_cnts)
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.drawContours(canvas, cnt, 0, (255, 255, 255), 1)
-        cv2.imshow("Digit Contours", canvas)
-        cv2.waitKey(0)
+        # cv2.imshow("Digit Contours", canvas)
+        # cv2.waitKey(0)
 
 print(f"No. of Digit Contours: {len(digits_cnts)}")
 
@@ -89,22 +90,39 @@ sorted_digits = sorted(digits_cnts, key=lambda cnt: cv2.boundingRect(cnt)[0])
 # print(sorted_digits)
 
 canvas = trimmed.copy()
-
+placeHolder= [0,0]
 #draw contours in sorted sequence
 for i, cnt in enumerate(sorted_digits):
+    
     (x, y, w, h) = cv2.boundingRect(cnt)
+    # if w < placeHolder[1]:
+    #     x = placeHolder[0]+placeHolder[1]+7
+    #     w = placeHolder[1]
+    #     print(w)
+    # else:
+    #     placeHolder[0] = x
+    #     placeHolder[1] = w
     cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
     cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
     cv2.imshow("All Contours sorted", canvas)
     cv2.waitKey(0)
 
 digits = []
-canvas = roi_color.copy()
+canvas = trimmed.copy()
+# canvas = roi_color.copy()
+
 for cnt in sorted_digits:
+    # extract the digit ROI
     (x, y, w, h) = cv2.boundingRect(cnt)
+    if w < placeHolder[1]:
+        x = placeHolder[0]+placeHolder[1] +7
+        w = placeHolder[1]
+        print(w)
+    else:
+        placeHolder[0] = x
+        placeHolder[1] = w
+    # compute the width and height of each of the 7 segments
     roi = eroded[y : y + h, x : x + w]
-    # print(f"W:{w}, H:{h}")
-    # convenience units
     qW, qH = int(w * 0.25), int(h * 0.15)
     fractionH, halfH, fractionW = int(h * 0.05), int(h * 0.5), int(w * 0.25)
 
@@ -136,7 +154,7 @@ for cnt in sorted_digits:
         if np.sum(region == 255) > region.size * 0.2:
             on[i] = 1
         
-        print(f"State of ON: {on}")
+        # print(f"State of ON: {on}")
 
     digit = DIGITSDICT[tuple(on)]
     # print(f"Digit is: {digit}")
@@ -145,7 +163,7 @@ for cnt in sorted_digits:
     cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
     # cv2.imshow("Digit", canvas)
     # cv2.waitKey(0)
-
-
+    
+    
 print(f"Digits on the token are: {digits}")
 
