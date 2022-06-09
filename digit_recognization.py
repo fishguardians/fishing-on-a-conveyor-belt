@@ -120,7 +120,6 @@ def digit_recognization():
         if w < placeHolder[1]:
             x = placeHolder[0]+placeHolder[1] +7
             w = placeHolder[1]
-            print(w)
         else:
             placeHolder[0] = x
             placeHolder[1] = w
@@ -166,7 +165,9 @@ def digit_recognization():
         cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
         # cv2.imshow("Digit", canvas)
         # cv2.waitKey(0)
-        
-    print(f"Digits on the token are: {digits}")
+    digit = ''.join(map(str, digits[1:]))
+    digit = str(digits[0])+"."+digit
+    print(digit)
+
 
 digit_recognization()
