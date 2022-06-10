@@ -1,0 +1,4 @@
+certifi==2022.5.18.1
+easyocr==1.4.2
+numpy==1.22.3
+opencv_python_headless==4.5.4.60
