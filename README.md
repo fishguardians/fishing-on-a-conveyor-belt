@@ -4,7 +4,10 @@ Video recording and image analysis of fishes to automate and increase the effici
 ## Tutorials
 read files by directory - [https://realpython.com/working-with-files-in-python/#:~:text=To%20get%20a%20list%20of,x.]
 
-youtube tutorial - []
+youtube tutorial - ```[]```
 
 pip install -r requirements.txt
+
+
+
 

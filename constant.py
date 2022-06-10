@@ -5,7 +5,7 @@
 
 videos_location = './videos/'
 image_storage = './images/'
-data_output = './output'
+data_output = './output/'
 
 # (height, width, channel)
 frame_dimension = (540,480,3)
