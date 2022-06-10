@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # load color image
-im = cv2.imread('images/snapper_bg_removed.png')
+im = cv2.imread('../images/samples/snapper_bg_removed.png')
 
 # smooth the image with alternative closing and opening
 # with an enlarging kernel

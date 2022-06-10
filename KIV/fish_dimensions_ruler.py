@@ -30,7 +30,7 @@ image = cv2.imread(args["image"])
 x, y, z = image.shape
 
 # Load the reference image (Ruler for length)
-imageRef = cv2.imread('images/ruler.png')
+imageRef = cv2.imread('../images/reference/ruler.png')
 
 # Crops image based on percentage
 def crop_img(img, scale=1.0):

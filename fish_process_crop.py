@@ -1,12 +1,16 @@
+"""
+Step 2
 # Mask inversion on a RGB image.
 # To remove yellow conveyor belt background
+"""
+
 
 # importing cv2 and numpy library
 import cv2
 import numpy as np
 
 # Reading an image
-img = cv2.imread('images/barramundi_bg_removed.png')
+img = cv2.imread('images/samples/barramundi_bg_removed.png')
 
 # The kernel to be used for dilation
 # purpose

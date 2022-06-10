@@ -7,7 +7,7 @@ import numpy as np
 
 # Reading an image
 # img = cv2.imread('images/barramundi__bg_removed.png')
-img = cv2.imread('images/snapper_bg_removed.png')
+img = cv2.imread('../images/samples/snapper_bg_removed.png')
 
 # The kernel to be used for dilation
 # purpose
