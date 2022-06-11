@@ -2,9 +2,9 @@ import cv2
 import argparse
 import re
 
-outline_thickness = 5
-path = "preprocess_images/fish03.png"
-def get_roi():
+# outline_thickness = 5
+# path = "preprocess_images/fish03.png"
+def get_roi(path, outline_thickness):
     img_color = cv2.imread(path)
     img_color = cv2.resize(img_color, None, None, fx=0.5, fy=0.5)
     img_color = cv2.rotate(img_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
@@ -35,5 +35,3 @@ def get_roi():
     img_name = re.search("(?<=\/)(.*)(?=\.png)",path).group()
     cv2.imwrite(f"processed_images/{img_name}-roi.png", roi)
     return roi
-
-get_roi()

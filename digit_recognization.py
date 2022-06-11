@@ -21,11 +21,11 @@ DIGITSDICT = {
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
 
-generate_roi.get_roi()
+# generate_roi.get_roi()
 
-def digit_recognization():
-    path = re.search("(?<=\/)(.*)(?=\.png)",generate_roi.path).group()
-    roi_color = cv2.imread("processed_images/"+path+"-roi.png")
+def digit_recognization(roi_color):
+    # path = re.search("(?<=\/)(.*)(?=\.png)",generate_roi.path).group()
+    # roi_color = cv2.imread("processed_images/"+path+"-roi.png")
     # img_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     # cv2.imshow("Blurred and Trimmed", roi)
@@ -170,4 +170,4 @@ def digit_recognization():
     print(digit)
 
 
-digit_recognization()
+# digit_recognization()
