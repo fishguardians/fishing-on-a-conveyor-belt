@@ -148,9 +148,9 @@ dmypy.json
 .pyre/
 
 # assets
-/assets
-/videos/*
-/images/*
+./assets/*
+./videos/*
+./images/*
 
 # installation configuration
 installation
