@@ -28,8 +28,6 @@ def GetVideoNames():
 
 def CaptureImagesOnVideo(videos_to_be_processed):
     """# 2 - Process the videos [batch processing]"""
-    # declare frame dimensions and positions to take capture images
-    frame_size = constant.frame_dimension
     # use to capture 1 frame per second
     skip_frames = 0
     # use for naming frames 
@@ -56,8 +54,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 skip_frames = 0
                 break
             
-            # resize the image
-            actual_frame = cv2.resize(frame, (frame_size[1],frame_size[0]//2)) # same as cv2.resize(frame, (0,0), fy=0.25, fx=0.25)
             # [top:bottom, left:right] layout
 
             # ViewVideo(frame_size, actual_frame, video)
@@ -67,7 +63,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             #TODO: Check Fish ID
             # CheckFishID()
 
-            SaveImages(actual_frame, frame_index, video)
+            SaveImages(frame, frame_index, video)
             
             frame_index += 1
             skip_frames += 30  # i.e. at 30 fps, this advances one second
