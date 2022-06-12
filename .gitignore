@@ -147,11 +147,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# assets
-./assets/
-./videos/
-./images/
-
 *.mov
 *.mp4
 
