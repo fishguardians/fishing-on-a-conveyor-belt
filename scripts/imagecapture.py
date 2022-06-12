@@ -56,7 +56,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             
             # [top:bottom, left:right] layout
 
-            # ViewVideo(frame_size, actual_frame, video)
+            ViewVideo(video, frame)
             # TODO: Check for the fish centered before saving
             # CheckFishCentered()
 
@@ -77,15 +77,10 @@ def CaptureImagesOnVideo(videos_to_be_processed):
         cap.release()
         cv2.destroyAllWindows()
 
-def ViewVideo(frame_size, actual_frame, video):
+def ViewVideo(video, actual_frame):
     """Additional: to see the video while it is processing"""
-    # create a main frame
-    main_frame = np.zeros(frame_size, np.uint8)
-    # add the items into the main frame
-    # top (actual video)
-    main_frame[:270, :480] = actual_frame
     # display the window
-    cv2.imshow(video, main_frame)
+    cv2.imshow(video, actual_frame)
 
 def SaveImages(actual_frame, frame_index, video):
     """Store images function"""
