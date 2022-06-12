@@ -53,6 +53,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 # MoveVideo()
                 print(f'Video {index + 1} process complete.')
                 frame_index = 0
+                skip_frames = 0
                 break
             
             # resize the image
@@ -74,6 +75,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             
             if cv2.waitKey(1) == ord('q'):
                 frame_index = 0
+                skip_frames = 0
                 break
 
         cap.release()
