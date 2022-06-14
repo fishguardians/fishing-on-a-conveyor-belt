@@ -5,6 +5,7 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 #import if necessary (built-in, third-party, path, own modules)
 import scripts.imagecapture as imagecapture
+import fishROIcheck as fishROIcheck
 
 video_files = []
 
@@ -21,6 +22,8 @@ def main():
 
     print('Unprocessed videos found: '+str(len(video_files))+'\n')
     imagecapture.CaptureImagesOnVideo(video_files)
+
+    fishROIcheck.RemoveUnwantedFrames()
 
 if __name__ == "__main__":
     main()
