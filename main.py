@@ -41,17 +41,20 @@ def main():
     print("Running Fish background removal functions")
     print('Retrieving files from "images" folder...')
 
+    # Step 1
     # Remove background and export the output
     print('Removing background from fish images...')
     image_list = removeBg.get_image_names()
     removeBg_output = removeBg.remove_background(image_list)
     print('Background removal complete!')
 
+    # Step 2
     # Crop out the yellow belt areas
     print('Cropping out yellow belt areas of images...')
     cropBelt_output = processCrop.crop_belt(removeBg_output)
     print('Conveyor belt cropped out!')
 
+    # Step 3
     # Measure the dimensions of the fish
     print('Measuring dimensions of the fish')
     # getDimensions.test_func(cropBelt_output)

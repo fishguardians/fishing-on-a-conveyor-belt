@@ -56,6 +56,8 @@ def midpoint(ptA, ptB):
 
 
 # Creates a window with sliders to adjust canny in the image
+# For specific tuning for new fish types
+# Currently only used for snapper testing
 def tuneCanny(image):
     window = 'canny'
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)

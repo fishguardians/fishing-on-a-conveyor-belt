@@ -80,8 +80,8 @@ def remove_background(imageList):
 
         # Get the current working directory
         # cwd = 'r' + os.getcwd()
-        # filepath = cwd + '/images/output'
-        # filepath2 = 'D:/Projects/fishguardians-ITP/images/output'
+        # filepath = cwd + '/images/output/'
+        # filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
 
         # print(filepath)
         # print(os.path.expanduser('~'))
@@ -94,3 +94,12 @@ def remove_background(imageList):
         """
 
     return imageList
+
+"""
+# For future reference if needed
+
+# draw filled white contour on input
+# result = img.copy()
+# cv2.rectangle(result,(x,y),(x+width,y+height),(255,255,255),-1)
+# cv2.imwrite('barramundi_bg_removed.png', result)
+"""
