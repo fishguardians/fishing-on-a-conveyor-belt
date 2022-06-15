@@ -28,8 +28,8 @@ def digit_recognization():
     roi_color = cv2.imread("processed_images/"+path+"-roi.png")
     # img_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
-    # cv2.imshow("Blurred and Trimmed", roi)
-    # cv2.waitKey(0)
+    cv2.imshow("Blurred and Trimmed", roi)
+    cv2.waitKey(0)
 
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
     #y1:y2, x1:x2
@@ -107,8 +107,8 @@ def digit_recognization():
             placeHolder[1] = w
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
-        cv2.imshow("All Contours sorted", canvas)
-        cv2.waitKey(0)
+        # cv2.imshow("All Contours sorted", canvas)
+        # cv2.waitKey(0)
 
     digits = []
     canvas = trimmed.copy()
@@ -163,8 +163,8 @@ def digit_recognization():
         digits += [digit]
         cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
         cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
-        # cv2.imshow("Digit", canvas)
-        # cv2.waitKey(0)
+        cv2.imshow("Digit", canvas)
+        cv2.waitKey(0)
     digit = ''.join(map(str, digits[1:]))
     digit = str(digits[0])+"."+digit
     print(digit)
