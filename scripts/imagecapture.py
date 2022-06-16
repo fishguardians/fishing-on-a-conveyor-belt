@@ -9,18 +9,14 @@ import shutil
 import cv2 
 import glob
 import random
+import math
 import numpy as np
 import constant
 # from threading import Thread
 
-# Load Yolo
-net = cv2.dnn.readNet("yolov3_training_last.weights", "yolov3.cfg")
-
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
-colors = np.random.uniform(0, 255, size=(3, 3))
-
-classes = ["Barramundi","Id","Scale"]
+from object_detection import ObjectDetection
+# Initialize Object Detection
+od = ObjectDetection()
 
 def GetVideoNames():
     """ # 1 - directory of stored videos """
@@ -45,6 +41,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     _skip_frames = 0
     # use for naming frames 
     _frame_index = 0
+    # check for smallest distance
+    hypothesis = 50
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index+1) + '...\n')
         
@@ -66,16 +64,63 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 _skip_frames = 0
                 break
             
-            # ViewVideo(_video_name, frame)
-            # TODO: Check for the fish centered before saving
-            DetectFish(frame)
+            # Loading image
+            img = cv2.resize(frame, None, fx=0.4, fy=0.4)
+            height, width, channels = img.shape
+            # center point location of img
+            posY = int(height/2)
+            posX = int(width/2)
 
-            #TODO: Check Fish ID
-            # CheckFishID()
+            # Detect objects on frame
+            (class_ids, scores, boxes) = od.detect(img)
 
-            # SaveImages(frame, _frame_index, video)
+            # check if can save img
+            _center_image = False
+
+            # check if all 3 objects are in the image [fish, id, scale]
+            if(len(class_ids)==3):
+                for (index, box) in enumerate(boxes):
+                    x, y, w, h = box
+                    match(class_ids[index]):
+                        case 0: # fish
+                            # center point of the fish
+                            cx = int((x + x + w)/2)
+                            cy = int((y+y+h)/2)
+                            cv2.rectangle(img, (x, y), (x + w, y + h), constant.fish_color, 2)
+                            cv2.circle(img, (cx, cy), 3, (255,0,0), -1)
+                            cv2.putText(img, "Fish", (x+w, y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, constant.fish_color, 2)
+                            distance = math.hypot(cx - posX, cy - posY)
+                            print(distance, hypothesis)
+                            
+                            # distance lesser than previous distance
+                            if (distance < hypothesis):
+                                _frame_index += 1
+                                _center_image = True
+                                # Save the images if fish is close to center point
+                                SaveImages(frame, _frame_index, _video_name)
+                                hypothesis = distance
+                            elif((distance*1.2 < hypothesis) or (distance/1.2 < hypothesis)):
+                                continue
+                            # reset checker
+                            else: 
+                                hypothesis = 50
+                        case 1: # id
+                            cv2.putText(img, "Id", (x+w, y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, constant.id_color, 2)
+                            cv2.rectangle(img, (x, y), (x + w, y + h), constant.id_color, 1)
+                            print(_center_image)
+
+                            #TODO: Read Fish ID before saving as img
+
+                        case 2: # scale
+                            buffer = [20,20,20,20]
+                            cv2.rectangle(img, (x - buffer[0], y - buffer[1]), (x + w + buffer[2], y + h + buffer[3]), constant.scale_color, 2)
+                            
+                        case _:
+                            continue
+                    
+            # View Video
+            ViewVideo(_video_name, img)
             
-            _frame_index += 1
             _skip_frames += 30  # i.e. at 30 fps, this advances one second
             cap.set(1, _skip_frames)
             
@@ -87,70 +132,22 @@ def CaptureImagesOnVideo(videos_to_be_processed):
         cap.release()
         cv2.destroyAllWindows()
 
-def ViewVideo(name, actual_frame):
+
+
+
+
+
+
+
+
+
+def ViewVideo(name, main_frame):
     """Additional: to see the video while it is processing"""
-    main_frame = cv2.resize(actual_frame, None, fx=0.4, fy=0.4)
+    height, width, channels = main_frame.shape
+    # show center position of image
+    cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
     # display the window
     cv2.imshow(name, main_frame)
-
-def DetectFish(img):
-    # Loading image
-    img = cv2.resize(img, None, fx=0.4, fy=0.4)
-    height, width, channels = img.shape
-
-    # Detecting objects
-    blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-
-    net.setInput(blob)
-    outs = net.forward(output_layers)
-
-    # Showing informations on the screen
-    class_ids = []
-    confidences = []
-    boxes = []
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-            if confidence > 0.3:
-                # Object detected
-                print(class_id)
-                center_x = int(detection[0] * width)
-                center_y = int(detection[1] * height)
-                w = int(detection[2] * width)
-                h = int(detection[3] * height)
-
-                # Rectangle coordinates
-                x = int(center_x - w / 2)
-                y = int(center_y - h / 2)
-
-                boxes.append([x, y, w, h])
-                confidences.append(float(confidence))
-                class_ids.append(class_id)
-
-    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-    print(indexes)
-    font = cv2.FONT_HERSHEY_PLAIN
-    for i in range(len(boxes)):
-        if i in indexes:
-            x, y, w, h = boxes[i]
-            label = str(constant.classes[class_ids[i]])
-            color = colors[class_ids[i]]
-            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(img, label, (x, y + 30), font, 3, color, 2)
-            #center point of the frame
-            cx = int((x + x + w)/2)
-            cy = int((y+y+h)/2)
-            cv2.circle(img, (cx, cy), 3, (255,0,0))
-
-    #(width, height)
-    cv2.line(img, (0, int(height/2)), (width, int(height/2)), (0,0,255), 2)
-    cv2.line(img, (int(width/2), 0), (int(width/2), height), (0,0,255), 2)
-    cv2.imshow("Image", img)
-#     key = cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
 
 def MoveVideo (video):
     """Move the processed videos to completed folder so they will not run again"""
