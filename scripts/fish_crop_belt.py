@@ -18,83 +18,47 @@ def crop_img(img, scale=1.0):
     img_cropped = img[int(top_y):int(bottom_y), int(left_x):int(right_x)]
     return img_cropped
 
-def crop_belt(imageList):
+def crop_belt(bgimage, original):
 
     # Reading an image
     # img = cv2.imread('images/samples/barramundi_bg_removed.png')
 
-    for image in imageList:
+    # Save the cropped image to object
+    # Ensure it scales with the final edited reference image
+    original = crop_img(bgimage, 0.9)
 
-        # # Save the cropped image to object
-        # # Ensure it scales with the final edited reference image
-        # image.org = crop_img(image.img, 0.9)
+    # The kernel to be used for dilation purpose
+    kernel = np.ones((5, 5), np.uint8)
 
-        # The kernel to be used for dilation purpose
-        kernel = np.ones((5, 5), np.uint8)
+    # converting the image to HSV format
+    hsv = cv2.cvtColor(bgimage, cv2.COLOR_BGR2HSV)
 
-        # converting the image to HSV format
-        hsv = cv2.cvtColor(image.img, cv2.COLOR_BGR2HSV)
+    # defining the lower and upper values
+    # of HSV, this will detect yellow colour
+    Lower_hsv = np.array([20, 70, 100])
+    Upper_hsv = np.array([30, 255, 255])
 
-        # defining the lower and upper values
-        # of HSV, this will detect yellow colour
-        Lower_hsv = np.array([20, 70, 100])
-        Upper_hsv = np.array([30, 255, 255])
+    # creating the mask
+    Mask = cv2.inRange(hsv, Lower_hsv, Upper_hsv)
 
-        # creating the mask
-        Mask = cv2.inRange(hsv, Lower_hsv, Upper_hsv)
+    # Inverting the mask
+    mask_yellow = cv2.bitwise_not(Mask)
+    bgimage = cv2.bitwise_and(bgimage, bgimage, mask=mask_yellow)
 
-        # Inverting the mask
-        mask_yellow = cv2.bitwise_not(Mask)
-        image.img = cv2.bitwise_and(image.img, image.img, mask=mask_yellow)
+    # To remove leftover of background other than the yellow belt
+    bgimage = crop_img(bgimage, 0.9)
 
-        # To remove leftover of background other than the yellow belt
-        image.img = crop_img(image.img, 0.9)
-        cropped = image.img
+    return [bgimage,original]
 
-        # Original image's height and width
-        og_height = np.size(image.org, 0)
-        og_width = np.size(image.org, 1)
+    """
+    For testing.
+    # cv2.imshow('Result', result)
+    # 
+    # # waits for user to press any key
+    # cv2.waitKey(0)
+    # 
+    # # closing all open windows
+    # cv2.destroyAllWindows()
+    """
 
-        # Cropped image 's height and width
-        crp_height = np.size(cropped, 0)
-        crp_width = np.size(cropped, 1)
-
-        # Adding black borders to sides of image
-        h_border = int((og_height - crp_height))
-        w_border = int((og_width - crp_width))
-        print('h_border: ', h_border, 'w_border', w_border)
-
-        # For full scale measurements of the image
-        # Black borders are added to match the cropped image with the width of the original image
-
-        # params: src, top, bottom, left, right
-        crp_borders = cv2.copyMakeBorder(cropped, h_border, h_border, w_border, w_border, cv2.BORDER_CONSTANT, None, value=0)
-        cb_height = np.size(crp_borders, 0)
-        cb_width = np.size(crp_borders, 1)
-        print('cb_height: ',cb_height, 'cb_width: ', cb_width)
-
-        # Write new cropped image to image.img
-        image.img = crp_borders
-
-        # cv2.imshow('crop with borders', crp_borders)
-        # cv2.waitKey(0)
-
-        # # For testing.
-        # cv2.imshow('Result', image.img)
-        # # waits for user to press any key
-        # cv2.waitKey(0)
-        # # closing all open windows
-        # cv2.destroyAllWindows()
-
-        """
-        # For testing.
-        cv2.imshow('Result', result)
-
-        # waits for user to press any key
-        cv2.waitKey(0)
-
-        # closing all open windows
-        cv2.destroyAllWindows()
-        """
-
-    return imageList
+    

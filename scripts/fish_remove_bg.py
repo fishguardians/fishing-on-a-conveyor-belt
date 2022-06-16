@@ -40,75 +40,56 @@ def get_image_names():
     return imageList
 
 
-def remove_background(imageList):
-    for image in imageList:
-        # Store original image to image object
-        image.org = (image.img).copy()
+def remove_background(image):
 
-        # Threshold on yellow
-        lower = (0, 120, 120)
-        upper = (100, 255, 255)
-        thresh = cv2.inRange(image.img, lower, upper)
+    # Threshold on yellow
+    lower = (0, 120, 120)
+    upper = (100, 255, 255)
+    thresh = cv2.inRange(image, lower, upper)
 
-        # Apply dilate morphology
-        kernel = np.ones((9, 9), np.uint8)
-        mask = cv2.morphologyEx(thresh, cv2.MORPH_DILATE, kernel)
+    # Apply dilate morphology
+    kernel = np.ones((9, 9), np.uint8)
+    mask = cv2.morphologyEx(thresh, cv2.MORPH_DILATE, kernel)
 
-        # Get largest contour
-        contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        contours = contours[0] if len(contours) == 2 else contours[1]
-        big_contour = max(contours, key=cv2.contourArea)
+    # Get largest contour
+    contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = contours[0] if len(contours) == 2 else contours[1]
+    big_contour = max(contours, key=cv2.contourArea)
 
-        # These values can be used to either draw a rectangle or crop out the image part using pixel coordinates.
-        # X coordinate, Y coordinate, Width, Height
-        x, y, width, height = cv2.boundingRect(big_contour)
+    # These values can be used to either draw a rectangle or crop out the image part using pixel coordinates.
+    # X coordinate, Y coordinate, Width, Height
+    x, y, width, height = cv2.boundingRect(big_contour)
 
-        """
-        # Crop image to specified area using slicing
-        # Crop out only the yellow conveyor belt area
-        cropped = image.img = image.img[y:y + height, x:x + width]
+    # Crop image to specified area using slicing
+    # Crop out only the yellow conveyor belt area
+    image = image[y:y + height, x:x + width]
+    return image
+    """
+    For testing.
+    Code below can display output image and write image to filepath
+    
+    # Show the images (for testing)
+    result = image.img
+    # cv2.imshow("Background Removed", result)
 
-        # Cropped image 's height and width
-        # crp_height = np.size(cropped, 0)
-        # crp_width = np.size(cropped, 1)
-        """
+    # Export the images
+    # image_name = str(image.name)
 
-        # Original image's height and width
-        og_height = np.size(image.org, 0)
-        og_width = np.size(image.org, 1)
+    # Get the current working directory
+    # cwd = 'r' + os.getcwd()
+    # filepath = cwd + '/images/output/'
+    # filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
 
-        # Add black border to belt center to cover background leftovers
-        # For any offset if the belt is film tilted or slightly diagonal
-        # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
+    # print(filepath)
+    # print(os.path.expanduser('~'))
 
-        # (x + (x + width * 0.1))
-        # (y + (y + height * 0.1))
+    # if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
+    #     raise Exception("Could not write image")
 
-        (x + width - (x + width * 0.1))
-        (y + height - (y + height * 0.1))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    """
 
-        # Add black border in the right of belt (10% width of the belt area)
-        add_border_r = cv2.rectangle(image.org, (x, y), ((x + (x + width * 0.1)), (y + (y + height * 0.1))), (0, 0, 0), -1)
-        cv2.imshow("add_border_right", add_border_r)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-        # # Add black border in the left of belt (10% width of the belt area)
-        add_border_l = cv2.rectangle(image.org, ((x + width - (x + width * 0.1)), (y + height - (y + height * 0.1))), (x + width, y + height), (0, 0, 0), -1)
-        cv2.imshow("add_border_left", add_border_l)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-        # Fill left side of belt background with colour black
-        colored_left = cv2.rectangle(image.img, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
-
-        # Fill right side of belt background with colour black
-        colored_right= cv2.rectangle(colored_left, ((x + width), 0), (og_width, og_height), (0, 0, 0), -1)
-        cv2.imshow("Background coloured", colored_right)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    return imageList
 
 
 # For future reference if needed.

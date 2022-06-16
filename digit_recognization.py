@@ -170,4 +170,4 @@ def digit_recognization():
     print(digit)
 
 
-digit_recognization()
+# digit_recognization()

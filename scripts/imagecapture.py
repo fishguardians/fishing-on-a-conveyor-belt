@@ -14,6 +14,14 @@ import numpy as np
 import constant
 # from threading import Thread
 
+# Fish Dimension modules
+import scripts.fish_remove_bg as removeBg
+import scripts.fish_crop_belt as processCrop
+import scripts.fish_dimensions as getDimensions
+
+# Read the scale
+from digit_recognization import digit_recognization
+
 from object_detection import ObjectDetection
 # Initialize Object Detection
 od = ObjectDetection()
@@ -26,12 +34,11 @@ def GetVideoNames():
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
-
         match file_extension.lower():
             case '.mov':
-                videos_to_be_processed.append(file.lower())
+                    videos_to_be_processed.append(file.lower())
             case '.mp4':
-                videos_to_be_processed.append(file.lower())
+                    videos_to_be_processed.append(file.lower())
             case _:
                 continue
     return videos_to_be_processed
@@ -43,7 +50,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     # use for naming frames 
     _frame_index = 0
     # check for smallest distance
-    hypothesis = 50
+    hypothesis = 70
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index+1) + '...\n')
         
@@ -67,6 +74,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             
             # Loading image
             img = cv2.resize(frame, None, fx=0.4, fy=0.4)
+            img = frame
             height, width, channels = img.shape
             # center point location of img
             posY = int(height/2)
@@ -82,8 +90,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             if(len(class_ids)==3):
                 for (index, box) in enumerate(boxes):
                     x, y, w, h = box
-                    match(class_ids[index]):
-                        case 0: # fish
+                    match class_ids[index]:
+                        case 0:
                             # center point of the fish
                             cx = int((x + x + w)/2)
                             cy = int((y+y+h)/2)
@@ -97,32 +105,56 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             if (distance < hypothesis):
                                 _frame_index += 1
                                 _center_image = True
+
                                 # Save the images if fish is close to center point
+                                #TODO: shift to end of the while loop
                                 SaveImages(frame, _frame_index, _video_name)
                                 hypothesis = distance
+                                _skip_frames += 210
+                                # # Step 1
+                                # # Remove background and export the output
+                                # removeBg_output = removeBg.remove_background(img)
+                                # print('Background removal complete!')
+
+                                # cv2.imshow("first", removeBg_output)
+
+                                # # Step 2
+                                # # Crop out the yellow belt areas
+                                # print('Cropping out yellow belt areas of images...')
+                                # bgimage, original = processCrop.crop_belt(removeBg_output, img)
+                                # print('Conveyor belt cropped out!')
+
+                                # cv2.imshow("second", bgimage)
+                                # # Step 3
+                                # # Measure the dimensions of the fish
+                                # print('Measuring dimensions of the fish')
+                                # # getDimensions.test_func(cropBelt_output)
+                                # fish_dimensions = getDimensions.get_dimensions(bgimage, original)
+                                # # Output the dimensions into a CSV file
+                                # getDimensions.output_dimensions(fish_dimensions[0], fish_dimensions[1], str(_frame_index)+".jpg")
+
                             elif((distance*1.2 < hypothesis) or (distance/1.2 < hypothesis)):
                                 continue
                             # reset checker
                             else: 
-                                hypothesis = 50
-                        case 1: # id
+                                hypothesis = 70
+                        case 1:
                             cv2.putText(img, "Id", (x+w, y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, constant.id_color, 2)
                             cv2.rectangle(img, (x, y), (x + w, y + h), constant.id_color, 1)
                             print(_center_image)
 
                             #TODO: Read Fish ID before saving as img
-
-                        case 2: # scale
-                            buffer = [20,20,20,20]
-                            cv2.rectangle(img, (x - buffer[0], y - buffer[1]), (x + w + buffer[2], y + h + buffer[3]), constant.scale_color, 2)
-                            
+                        case 2:
+                            cv2.rectangle(img, (x-10, y-10), (x + w+10, y + h+10), constant.scale_color, 2)
+                            if(_center_image == True):
+                                print(img.shape[0], img.shape[1])
+                                # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
                         case _:
                             continue
-                    
             # View Video
-            ViewVideo(_video_name, img)
+            # ViewVideo(_video_name, img)
             
-            _skip_frames += 30  # i.e. at 30 fps, this advances one second
+            _skip_frames += 15  # i.e. at 30 fps, this advances one second
             cap.set(1, _skip_frames)
             
             if cv2.waitKey(1) == ord('q'):
