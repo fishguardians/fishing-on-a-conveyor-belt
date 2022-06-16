@@ -4,3 +4,5 @@ numpy==1.22.3
 opencv_python_headless==4.5.4.60
 pytesseract==0.3.9
 scipy==1.8.1
+opencv-python~=4.6.0.66
+argparse~=1.4.0

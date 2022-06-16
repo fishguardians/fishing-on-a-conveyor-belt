@@ -20,6 +20,7 @@ od = ObjectDetection()
 
 def GetVideoNames():
     """ # 1 - directory of stored videos """
+
     folder = os.listdir(constant.videos_location)
     videos_to_be_processed = []
 
