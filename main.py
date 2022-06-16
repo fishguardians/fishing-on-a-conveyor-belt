@@ -54,14 +54,13 @@ def main():
     cropBelt_output = processCrop.crop_belt(removeBg_output)
     print('Conveyor belt cropped out!')
 
-    # Step 3
-    # Measure the dimensions of the fish
-    print('Measuring dimensions of the fish')
-    # getDimensions.test_func(cropBelt_output)
-    fish_dimensions = getDimensions.get_dimensions(cropBelt_output)
-    # Output the dimensions into a CSV file
-    getDimensions.output_dimensions(fish_dimensions)
-
+    # # Step 3
+    # # Measure the dimensions of the fish
+    # print('Measuring dimensions of the fish')
+    # # getDimensions.test_func(cropBelt_output)
+    # fish_dimensions = getDimensions.get_dimensions(cropBelt_output)
+    # # Output the dimensions into a CSV file
+    # getDimensions.output_dimensions(fish_dimensions)
 
 if __name__ == "__main__":
     main()

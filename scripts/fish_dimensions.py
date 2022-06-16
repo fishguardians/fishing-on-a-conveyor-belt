@@ -49,11 +49,9 @@ def show_image(title, image, destroy_all=True):
 def nothing(x):
     pass
 
-
 # Returns the midpoint of 2 points
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
-
 
 # Creates a window with sliders to adjust canny in the image
 # For specific tuning for new fish types
@@ -95,7 +93,6 @@ def get_dimensions(imageList):
         # t1, t2 = tuneCanny(gray)
         # print(f"Threshold1: {t1}, Threshold2: {t2}")
         t1, t2 = 10 , 10
-
 
         # Performs edge detection, then perform a dilation + erosion to
         # Closes gaps in between object edges
@@ -195,8 +192,8 @@ def get_dimensions(imageList):
             image.depth = "{:.2f}cm".format(dimB_CM)
 
             # show the output image
-            # cv2.imshow("Image", orig)
-            # cv2.waitKey(0)
+            cv2.imshow("Fish Dimensions", orig)
+            cv2.waitKey(0)
 
             # # closing all open windows
             cv2.destroyAllWindows()
