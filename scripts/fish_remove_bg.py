@@ -24,17 +24,16 @@ Leaving only the yellow conveyor belt parts of the image
 that contains the fish itself and its ID.
 """
 
+
 # TODO: get the final output folder of the image capture script and put that below
 
 
 def get_image_names():
-
     # creating list
     imageList = []
 
     # Process folder for image to be processed
     for file in glob.glob(constant.image_storage + "testing" + "/*.jpg"):
-
         # appending instances to list
         imageList.append(FishImage(file))
 
@@ -42,8 +41,9 @@ def get_image_names():
 
 
 def remove_background(imageList):
-
     for image in imageList:
+        # Store original image to image object
+        image.org = (image.img).copy()
 
         # Threshold on yellow
         lower = (0, 120, 120)
@@ -63,43 +63,109 @@ def remove_background(imageList):
         # X coordinate, Y coordinate, Width, Height
         x, y, width, height = cv2.boundingRect(big_contour)
 
+        """
         # Crop image to specified area using slicing
         # Crop out only the yellow conveyor belt area
-        image.img = image.img[y:y + height, x:x + width]
+        cropped = image.img = image.img[y:y + height, x:x + width]
 
+        # Cropped image 's height and width
+        # crp_height = np.size(cropped, 0)
+        # crp_width = np.size(cropped, 1)
         """
-        For testing.
-        Code below can display output image and write image to filepath
-        
-        # Show the images (for testing)
-        result = image.img
-        # cv2.imshow("Background Removed", result)
 
-        # Export the images
-        # image_name = str(image.name)
+        # Original image's height and width
+        og_height = np.size(image.org, 0)
+        og_width = np.size(image.org, 1)
 
-        # Get the current working directory
-        # cwd = 'r' + os.getcwd()
-        # filepath = cwd + '/images/output/'
-        # filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
+        # Add black border to belt center to cover background leftovers
+        # For any offset if the belt is film tilted or slightly diagonal
+        # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
 
-        # print(filepath)
-        # print(os.path.expanduser('~'))
+        # (x + (x + width * 0.1))
+        # (y + (y + height * 0.1))
 
-        # if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
-        #     raise Exception("Could not write image")
+        (x + width - (x + width * 0.1))
+        (y + height - (y + height * 0.1))
 
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-        """
+        # Add black border in the right of belt (10% width of the belt area)
+        add_border_r = cv2.rectangle(image.org, (x, y), ((x + (x + width * 0.1)), (y + (y + height * 0.1))), (0, 0, 0), -1)
+        cv2.imshow("add_border_right", add_border_r)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # # Add black border in the left of belt (10% width of the belt area)
+        add_border_l = cv2.rectangle(image.org, ((x + width - (x + width * 0.1)), (y + height - (y + height * 0.1))), (x + width, y + height), (0, 0, 0), -1)
+        cv2.imshow("add_border_left", add_border_l)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # Fill left side of belt background with colour black
+        colored_left = cv2.rectangle(image.img, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
+
+        # Fill right side of belt background with colour black
+        colored_right= cv2.rectangle(colored_left, ((x + width), 0), (og_width, og_height), (0, 0, 0), -1)
+        cv2.imshow("Background coloured", colored_right)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return imageList
 
-"""
-# For future reference if needed
 
+# For future reference if needed.
+"""
 # draw filled white contour on input
 # result = img.copy()
 # cv2.rectangle(result,(x,y),(x+width,y+height),(255,255,255),-1)
 # cv2.imwrite('barramundi_bg_removed.png', result)
+"""
+
+"""
+# For testing how to write to file path
+# Code below can display output image and write image to filepath
+
+# Show the images (for testing)
+result = image.img
+cv2.imshow("Background Removed", result)
+
+# Export the images
+image_name = str(image.name)
+
+# Get the current working directory
+cwd = 'r' + os.getcwd()
+filepath = cwd + '/images/output/'
+filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
+
+print(filepath)
+print(os.path.expanduser('~'))
+
+if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
+    raise Exception("Could not write image")
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+"""
+
+"""
+# For reference on how to get the sides of the background.
+# Areas that are not belt
+# Code below applies a colour overlay to section of image
+
+# Add blue rectangle on conveyor belt area (MIDDLE. exactly within the belt)
+# cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
+uncropped_middle = cv2.rectangle(image.org, (x, y), (x + width, y + height), (255, 0, 0), -1)
+cv2.imshow("uncropped_middle", uncropped_middle)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Add red rectangle on conveyor belt area (LEFT of belt)
+uncropped_left = cv2.rectangle(image.org, (0, 0), (0 + x, y + height), (0, 0, 255), -1)
+cv2.imshow("uncropped_left", uncropped_left)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Add green rectangle on conveyor belt area (RIGHT of belt)
+uncropped_right = cv2.rectangle(image.org, ((x + width), 0), (og_width, og_height), (0, 255, 0), -1)
+cv2.imshow("uncropped_right", uncropped_right)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 """
