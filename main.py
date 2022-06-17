@@ -6,9 +6,9 @@
 # import if necessary (built-in, third-party, path, own modules)
 
 import scripts.imagecapture as imagecapture
-import scripts.fish_remove_bg as removeBg
-import scripts.fish_crop_belt as processCrop
-import scripts.fish_dimensions as getDimensions
+import scripts.fish_remove_bg as script_remove_bg
+import scripts.fish_crop_belt as script_process_crop
+import scripts.fish_dimensions as script_get_dimensions
 
 from datetime import datetime
 
@@ -38,29 +38,28 @@ def main():
     Fish Dimension Functions
     """
 
-    print("Running Fish background removal functions")
+    print("1. Running Fish background removal functions")
     print('Retrieving files from "images" folder...')
 
     # Step 1
     # Remove background and export the output
-    print('Removing background from fish images...')
-    image_list = removeBg.get_image_names()
-    removeBg_output = removeBg.remove_background(image_list)
+    print('2. Removing background from fish images...')
+    image_list = script_remove_bg.get_image_names()
+    remove_bg_output = script_remove_bg.remove_background(image_list)
     print('Background removal complete!')
 
     # Step 2
     # Crop out the yellow belt areas
-    print('Cropping out yellow belt areas of images...')
-    cropBelt_output = processCrop.crop_belt(removeBg_output)
+    print('3. Cropping out yellow belt areas of images...')
+    crop_belt_output = script_process_crop.crop_belt(remove_bg_output)
     print('Conveyor belt cropped out!')
 
-    # # Step 3
-    # # Measure the dimensions of the fish
-    # print('Measuring dimensions of the fish')
-    # # getDimensions.test_func(cropBelt_output)
-    # fish_dimensions = getDimensions.get_dimensions(cropBelt_output)
-    # # Output the dimensions into a CSV file
-    # getDimensions.output_dimensions(fish_dimensions)
+    # Step 3
+    # Measure the dimensions of the fish
+    print('4. Measuring dimensions of the fish...')
+    fish_dimensions = script_get_dimensions.get_dimensions(crop_belt_output)
+    # Output the dimensions into a CSV file
+    script_get_dimensions.output_dimensions(fish_dimensions)
 
 if __name__ == "__main__":
     main()

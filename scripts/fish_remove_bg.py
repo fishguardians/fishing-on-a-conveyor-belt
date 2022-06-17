@@ -29,18 +29,18 @@ that contains the fish itself and its ID.
 
 def get_image_names():
     # creating list
-    imageList = []
+    image_list = []
 
     # Process folder for image to be processed
     for file in glob.glob(constant.image_storage + "testing" + "/*.jpg"):
         # appending instances to list
-        imageList.append(FishImage(file))
+        image_list.append(FishImage(file))
 
-    return imageList
+    return image_list
 
 
-def remove_background(imageList):
-    for image in imageList:
+def remove_background(image_list):
+    for image in image_list:
         # Store original image to image object
         image.org = (image.img).copy()
 
@@ -99,15 +99,15 @@ def remove_background(imageList):
         image.img = colored_right
 
         # Display the output images
-        cv2.imshow("Background_coloured", image.img)
-        cv2.namedWindow("Resize_test", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Resize_test", 640, 360)
-        cv2.imshow("Window", image.img)
-        cv2.waitKey(0)
+        # cv2.imshow("Background_coloured", image.img)
+        # cv2.namedWindow("Resize_test", cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow("Resize_test", 640, 360)
+        # cv2.imshow("Window", image.img)
+        # cv2.waitKey(0)
+        #
+        # cv2.destroyAllWindows()
 
-        cv2.destroyAllWindows()
-
-    return imageList
+    return image_list
 
 
 # For future reference if needed.
@@ -134,28 +134,6 @@ print(filepath)
 print(os.path.expanduser('~'))
 if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
     raise Exception("Could not write image")
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-"""
-
-"""
-# For reference on how to get the sides of the background.
-# Areas that are not belt
-# Code below applies a colour overlay to section of image
-# Add blue rectangle on conveyor belt area (MIDDLE. exactly within the belt)
-# cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
-uncropped_middle = cv2.rectangle(image.org, (x, y), (x + width, y + height), (255, 0, 0), -1)
-cv2.imshow("uncropped_middle", uncropped_middle)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-# Add red rectangle on conveyor belt area (LEFT of belt)
-uncropped_left = cv2.rectangle(image.org, (0, 0), (0 + x, y + height), (0, 0, 255), -1)
-cv2.imshow("uncropped_left", uncropped_left)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-# Add green rectangle on conveyor belt area (RIGHT of belt)
-uncropped_right = cv2.rectangle(image.org, ((x + width), 0), (og_width, og_height), (0, 255, 0), -1)
-cv2.imshow("uncropped_right", uncropped_right)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 """
