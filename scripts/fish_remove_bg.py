@@ -17,7 +17,6 @@ from constant import FishImage
 
 """
 Step 1 for fish length image processing
-
 Imports and processes the raw fish images 
 and crops out the non-conveyor belt parts of the image. 
 Leaving only the yellow conveyor belt parts of the image
@@ -67,7 +66,6 @@ def remove_background(imageList):
         # Crop image to specified area using slicing
         # Crop out only the yellow conveyor belt area
         cropped = image.img = image.img[y:y + height, x:x + width]
-
         # Cropped image 's height and width
         # crp_height = np.size(cropped, 0)
         # crp_width = np.size(cropped, 1)
@@ -80,32 +78,33 @@ def remove_background(imageList):
         # Add black border to belt center to cover background leftovers
         # For any offset if the belt is film tilted or slightly diagonal
         # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
+        # Add black border in the left of belt (5% width of the belt area)
+        add_border_l = cv2.rectangle(image.img, (x, y), (int(x + width * 0.05), y + height), (0, 0, 0), -1)
+        # cv2.imshow("add_border_left", add_border_l)
 
-        # (x + (x + width * 0.1))
-        # (y + (y + height * 0.1))
+        end_x = int(x + width)
+        start_x = int(end_x - width * 0.05)
+        # print(start_x,end_x)
 
-        (x + width - (x + width * 0.1))
-        (y + height - (y + height * 0.1))
-
-        # Add black border in the right of belt (10% width of the belt area)
-        add_border_r = cv2.rectangle(image.org, (x, y), ((x + (x + width * 0.1)), (y + (y + height * 0.1))), (0, 0, 0), -1)
-        cv2.imshow("add_border_right", add_border_r)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-        # # Add black border in the left of belt (10% width of the belt area)
-        add_border_l = cv2.rectangle(image.org, ((x + width - (x + width * 0.1)), (y + height - (y + height * 0.1))), (x + width, y + height), (0, 0, 0), -1)
-        cv2.imshow("add_border_left", add_border_l)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        add_border_r = cv2.rectangle(image.img, (start_x, y), (end_x, y + height), (0, 0, 0), -1)
+        # cv2.imshow("add_border_right", add_border_r)
 
         # Fill left side of belt background with colour black
         colored_left = cv2.rectangle(image.img, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
 
         # Fill right side of belt background with colour black
-        colored_right= cv2.rectangle(colored_left, ((x + width), 0), (og_width, og_height), (0, 0, 0), -1)
-        cv2.imshow("Background coloured", colored_right)
+        colored_right = cv2.rectangle(colored_left, ((x + width), 0), (og_width, og_height), (0, 0, 0), -1)
+
+        # Write the final output image into image.img
+        image.img = colored_right
+
+        # Display the output images
+        cv2.imshow("Background_coloured", image.img)
+        cv2.namedWindow("Resize_test", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Resize_test", 640, 360)
+        cv2.imshow("Window", image.img)
         cv2.waitKey(0)
+
         cv2.destroyAllWindows()
 
     return imageList
@@ -122,25 +121,19 @@ def remove_background(imageList):
 """
 # For testing how to write to file path
 # Code below can display output image and write image to filepath
-
 # Show the images (for testing)
 result = image.img
 cv2.imshow("Background Removed", result)
-
 # Export the images
 image_name = str(image.name)
-
 # Get the current working directory
 cwd = 'r' + os.getcwd()
 filepath = cwd + '/images/output/'
 filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
-
 print(filepath)
 print(os.path.expanduser('~'))
-
 if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
     raise Exception("Could not write image")
-
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 """
@@ -149,20 +142,17 @@ cv2.destroyAllWindows()
 # For reference on how to get the sides of the background.
 # Areas that are not belt
 # Code below applies a colour overlay to section of image
-
 # Add blue rectangle on conveyor belt area (MIDDLE. exactly within the belt)
 # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
 uncropped_middle = cv2.rectangle(image.org, (x, y), (x + width, y + height), (255, 0, 0), -1)
 cv2.imshow("uncropped_middle", uncropped_middle)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
 # Add red rectangle on conveyor belt area (LEFT of belt)
 uncropped_left = cv2.rectangle(image.org, (0, 0), (0 + x, y + height), (0, 0, 255), -1)
 cv2.imshow("uncropped_left", uncropped_left)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
 # Add green rectangle on conveyor belt area (RIGHT of belt)
 uncropped_right = cv2.rectangle(image.org, ((x + width), 0), (og_width, og_height), (0, 255, 0), -1)
 cv2.imshow("uncropped_right", uncropped_right)

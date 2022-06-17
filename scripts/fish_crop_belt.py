@@ -20,8 +20,6 @@ def crop_img(img, scale=1.0):
 
 def crop_belt(imageList):
 
-    # Reading an image
-    # img = cv2.imread('images/samples/barramundi_bg_removed.png')
 
     for image in imageList:
 
@@ -62,7 +60,7 @@ def crop_belt(imageList):
         # Adding black borders to sides of image
         h_border = int((og_height - crp_height))
         w_border = int((og_width - crp_width))
-        print('h_border: ', h_border, 'w_border', w_border)
+        # print('h_border: ', h_border, 'w_border', w_border)
 
         # For full scale measurements of the image
         # Black borders are added to match the cropped image with the width of the original image
@@ -71,7 +69,7 @@ def crop_belt(imageList):
         crp_borders = cv2.copyMakeBorder(cropped, h_border, h_border, w_border, w_border, cv2.BORDER_CONSTANT, None, value=0)
         cb_height = np.size(crp_borders, 0)
         cb_width = np.size(crp_borders, 1)
-        print('cb_height: ',cb_height, 'cb_width: ', cb_width)
+        # print('cb_height: ',cb_height, 'cb_width: ', cb_width)
 
         # Write new cropped image to image.img
         image.img = crp_borders
