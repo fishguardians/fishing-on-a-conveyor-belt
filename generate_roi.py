@@ -3,7 +3,7 @@ import argparse
 import re
 
 outline_thickness = 5
-path = "preprocess_images/fish03.png"
+path = "preprocess_images/new7.jpg"
 def get_roi():
     img_color = cv2.imread(path)
     img_color = cv2.resize(img_color, None, None, fx=0.5, fy=0.5)
@@ -30,10 +30,10 @@ def get_roi():
     roi = img[y_coor : y_coor + height, x_coor : x_coor + width] #crop image (roi)
     # cv2.imshow("ROI", roi) 
     # cv2.waitKey(0)
-    # roi = cv2.rotate(roi,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+    roi = cv2.rotate(roi,cv2.ROTATE_90_CLOCKWISE) #change orientation
 
-    img_name = re.search("(?<=\/)(.*)(?=\.png)",path).group()
-    cv2.imwrite(f"processed_images/{img_name}-roi.png", roi)
+    img_name = re.search("(?<=\/)(.*)(?=\.jpg)",path).group()
+    cv2.imwrite(f"processed_images/{img_name}-roi.jpg", roi)
     return roi
 
 get_roi()
