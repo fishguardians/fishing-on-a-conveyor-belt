@@ -114,8 +114,8 @@ def digit_recognization():
             placeHolder[1] = w
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
-        cv2.imshow("All Contours sorted", canvas)
-        cv2.waitKey(0)
+        # cv2.imshow("All Contours sorted", canvas)
+        # cv2.waitKey(0)
 
     digits = []
     canvas = trimmed.copy()
@@ -184,10 +184,11 @@ def digit_recognization():
         digits += [digit]
         cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
         cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
-        # cv2.imshow("Digit", canvas)
-        # cv2.waitKey(0)
-
-    print(digits)
+        cv2.imshow("Digit", canvas)
+        cv2.waitKey(0)
+    digit = ''.join(map(str, digits[1:]))
+    digit = str(digits[0])+"."+digit
+    print(digit)
 
 
 digit_recognization()

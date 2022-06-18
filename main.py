@@ -5,6 +5,7 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 #import if necessary (built-in, third-party, path, own modules)
 import scripts.imagecapture as imagecapture
+import digit_recognization
 
 video_files = []
 
@@ -15,12 +16,13 @@ def main():
     """
     print("""\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
 
-    print('Retrieving file names from "videos" folder...')
-    print('Files: ' + str(imagecapture.GetVideoNames()) +'\n')
-    video_files = imagecapture.GetVideoNames()
+    # print('Retrieving file names from "videos" folder...')
+    # print('Files: ' + str(imagecapture.GetVideoNames()) +'\n')
+    # video_files = imagecapture.GetVideoNames()
 
-    print('Unprocessed videos found: '+str(len(video_files))+'\n')
-    imagecapture.CaptureImagesOnVideo(video_files)
+    # print('Unprocessed videos found: '+str(len(video_files))+'\n')
+    # imagecapture.CaptureImagesOnVideo(video_files)
+    digit_recognization.digit_recognization()
 
 if __name__ == "__main__":
     main()
