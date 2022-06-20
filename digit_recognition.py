@@ -33,7 +33,7 @@ def digit_recognition(image):
     # roi_color = cv2.imread("processed_images/"+path+"-roi.jpg")
     roi_color = cv2.imread(dir_path+image)
     roi_color = cv2.resize(roi_color, None,None,fx=1.2,fy=1.2) #resize image
-    roi_color= imutils.rotate(roi_color, angle=9)
+    roi_color= imutils.rotate(roi_color, angle=9.5)
     # roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     # cv2.imshow("Blurred and Trimmed", roi)
