@@ -21,7 +21,9 @@ DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 1): 8,
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
-dir_path = 'processed_images/' 
+# dir_path = 'processed_images2/' 
+# dir_path = 'scale/' 
+dir_path = '20June(2)_post/' 
 imageList = [] #list to store image
 outputList = [] #list to store the output
 
@@ -30,9 +32,9 @@ def digit_recognition(image):
     # path = re.search("(?<=\/)(.*)(?=\.jpg)",generate_roi.path).group()
     # roi_color = cv2.imread("processed_images/"+path+"-roi.jpg")
     roi_color = cv2.imread(dir_path+image)
-    roi_color = cv2.resize(roi_color, None,None,fx=2,fy=2) #resize image
-    roi_color= imutils.rotate(roi_color, angle=2)
-    # img_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+    roi_color = cv2.resize(roi_color, None,None,fx=1.2,fy=1.2) #resize image
+    roi_color= imutils.rotate(roi_color, angle=9.5)
+    # roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     # cv2.imshow("Blurred and Trimmed", roi)
     # cv2.waitKey(0)
@@ -41,7 +43,7 @@ def digit_recognition(image):
     #roi.shape[0] = height, roi.shape[1] = width
     RATIO = roi.shape[0] * 0.01
     #trim image, in sequence of y1:y2, x1:x2
-    trimmed = roi[int(RATIO)+2 :, int(RATIO)+20 : roi.shape[1] - int(RATIO)-10]
+    trimmed = roi[int(RATIO)+2 :, int(RATIO) : roi.shape[1] - int(RATIO)-10]
 
     edged = cv2.adaptiveThreshold(  
         trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 5
@@ -188,8 +190,9 @@ def imageValidator():
     return imageList
 
 imageList = imageValidator()
+# print(imageList)
 for image in imageList:
     outputList.append(digit_recognition(image))
 
-
+# print(digit_recognition("Frame13.jpg-roi.jpg"))
 print(outputList)
