@@ -22,9 +22,9 @@ DIGITSDICT = {
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
 # dir_path = 'preprocess_images2'
-# dir_path = 'scale'
-# dir_path = '20June(2)'
-dir_path = '20June(1)'
+# dir_path = 'scale/'
+dir_path = '20June(2)'
+# dir_path = '20June(1)'
 imageList = [] #list to store image
 outputList = [] #list to store the output
 
@@ -32,16 +32,16 @@ outputList = [] #list to store the output
 def digit_recognition(roi_color):
     # roi_color = cv2.imread(dir_path+image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
+    roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
     roi= imutils.rotate(roi, angle=9.5)
     # cv2.imshow("smaller", roi)
     # cv2.waitKey(0)
     
-    # roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+    
     
 
     
-
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
     #roi.shape[0] = height, roi.shape[1] = width
     RATIO = roi.shape[0] * 0.01
@@ -194,11 +194,13 @@ def imageValidator():
 
 imageList = imageValidator()
 
-
+#no ml
 for image in imageList:
     image = generate_roi.get_roi(dir_path,image)
     outputList.append(digit_recognition(image))
 print(outputList)
 
-# roi_image = generate_roi.get_roi("Frame9.jpg")
-# digit_recognition(roi_image)
+#ml
+# for image in imageList:
+#     outputList.append(digit_recognition(image))
+# print(outputList)
