@@ -18,7 +18,7 @@ class ObjectDetection:
 
         self.classes = []
         self.load_class_names()
-        self.colors = np.random.uniform(0, 255, size=(3, 3))
+        self.colors = np.random.uniform(0, 255, size=(4, 3))
 
         self.model.setInputParams(size=(self.image_size, self.image_size), scale=1/255)
 
@@ -29,7 +29,7 @@ class ObjectDetection:
                 class_name = class_name.strip()
                 self.classes.append(class_name)
 
-        self.colors = np.random.uniform(0, 255, size=(3, 3))
+        self.colors = np.random.uniform(0, 255, size=(4, 3))
         return self.classes
 
     def detect(self, frame):

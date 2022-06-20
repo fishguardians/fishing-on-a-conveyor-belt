@@ -6,11 +6,14 @@
 #import if necessary (built-in, third-party, path, own modules)
 import os
 import shutil
+import csv
 import cv2 
+import pytesseract
 import glob
 import random
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 import constant
 # from threading import Thread
 
@@ -20,7 +23,7 @@ import scripts.fish_crop_belt as processCrop
 import scripts.fish_dimensions as getDimensions
 
 # Read the scale
-from digit_recognization import digit_recognization
+# from digit_recognization import digit_recognization
 
 from object_detection import ObjectDetection
 # Initialize Object Detection
@@ -34,6 +37,16 @@ def GetVideoNames():
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
+        # Add required txt files
+        if(file != '.gitignore'):
+            with open('output/'+ file + '-images.txt', 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                # write the header
+                writer.writerow(['#', 'Fish#', 'Frame', 'Hypothenuse'])
+            with open('output/'+ file + '-id.txt', 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                # write the header
+                writer.writerow(['#', 'Fish#', 'Frame', 'Value', 'x', 'y', 'w', 'h'])
         match file_extension.lower():
             case '.mov':
                     videos_to_be_processed.append(file.lower())
@@ -45,14 +58,26 @@ def GetVideoNames():
 
 def CaptureImagesOnVideo(videos_to_be_processed):
     """# 2 - Process the videos [batch processing]"""
-    # use to capture 1 frame per second
-    _skip_frames = 0
-    # use for naming frames 
-    _frame_index = 0
     # check for smallest distance
-    hypothesis = 70
+    hypo_threshold = 70
+    # center points curr
+    prev_center_pts = []
+    # check if last 3 frames has a fish
+    check_empty = 0
+    # allocate the id for the fish
+    wells_id = 0
+    id_name = ""
+
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index+1) + '...\n')
+        # use to capture 1 frame per second
+        _skip_frames = 0
+        # use for naming frames in case id cannot be detected
+        _frame_index = 0
+        #ids for tracking in txt files
+        _fish_id = 0
+        _id_id = 0
+        _scale_id = 0
         
         cap = cv2.VideoCapture(constant.videos_location+_video_name)
 
@@ -61,105 +86,246 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
         while (cap.isOpened()):
             ret, frame = cap.read()
-            # width = int(cap.get(3)) # 1920p
-            # height = int(cap.get(4)) # 1080p
+
+            # exact frame counts
+            _frame_index += 1
             
             # when stream ends
             if not ret:
                 MoveVideo(_video_name)
                 print(f'Video {index + 1} process complete.')
-                _frame_index = 0
-                _skip_frames = 0
                 break
             
             # Loading image
-            img = cv2.resize(frame, None, fx=0.4, fy=0.4)
-            img = frame
+            img = frame.copy()
+            img = cv2.resize(img, None, fx=0.4, fy=0.4)
+
+            # Width & Height of img
             height, width, channels = img.shape
             # center point location of img
             posY = int(height/2)
             posX = int(width/2)
 
+            # display location of objects
+            fish_coords = []
+            fish_center_coords = []
+            id_coords = []
+            scale_coords = [] 
+
             # Detect objects on frame
             (class_ids, scores, boxes) = od.detect(img)
 
             # check if can save img
-            _center_image = False
+            _has_image = False
+            _has_id = False
 
-            # check if all 3 objects are in the image [fish, id, scale]
-            if(len(class_ids)==3):
-                for (index, box) in enumerate(boxes):
-                    x, y, w, h = box
-                    match class_ids[index]:
-                        case 0:
-                            # center point of the fish
-                            cx = int((x + x + w)/2)
-                            cy = int((y+y+h)/2)
-                            cv2.rectangle(img, (x, y), (x + w, y + h), constant.fish_color, 2)
-                            cv2.circle(img, (cx, cy), 3, (255,0,0), -1)
-                            cv2.putText(img, "Fish", (x+w, y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, constant.fish_color, 2)
-                            distance = math.hypot(cx - posX, cy - posY)
-                            print(distance, hypothesis)
-                            
-                            # distance lesser than previous distance
-                            if (distance < hypothesis):
-                                _frame_index += 1
-                                _center_image = True
-
-                                # Save the images if fish is close to center point
-                                #TODO: shift to end of the while loop
-                                SaveImages(frame, _frame_index, _video_name)
-                                hypothesis = distance
-                                _skip_frames += 210
-                                # # Step 1
-                                # # Remove background and export the output
-                                # removeBg_output = removeBg.remove_background(img)
-                                # print('Background removal complete!')
-
-                                # cv2.imshow("first", removeBg_output)
-
-                                # # Step 2
-                                # # Crop out the yellow belt areas
-                                # print('Cropping out yellow belt areas of images...')
-                                # bgimage, original = processCrop.crop_belt(removeBg_output, img)
-                                # print('Conveyor belt cropped out!')
-
-                                # cv2.imshow("second", bgimage)
-                                # # Step 3
-                                # # Measure the dimensions of the fish
-                                # print('Measuring dimensions of the fish')
-                                # # getDimensions.test_func(cropBelt_output)
-                                # fish_dimensions = getDimensions.get_dimensions(bgimage, original)
-                                # # Output the dimensions into a CSV file
-                                # getDimensions.output_dimensions(fish_dimensions[0], fish_dimensions[1], str(_frame_index)+".jpg")
-
-                            elif((distance*1.2 < hypothesis) or (distance/1.2 < hypothesis)):
-                                continue
-                            # reset checker
-                            else: 
-                                hypothesis = 70
-                        case 1:
-                            cv2.putText(img, "Id", (x+w, y + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, constant.id_color, 2)
-                            cv2.rectangle(img, (x, y), (x + w, y + h), constant.id_color, 1)
-                            print(_center_image)
-
-                            #TODO: Read Fish ID before saving as img
-                        case 2:
-                            cv2.rectangle(img, (x-10, y-10), (x + w+10, y + h+10), constant.scale_color, 2)
-                            if(_center_image == True):
-                                print(img.shape[0], img.shape[1])
-                                # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
-                        case _:
-                            continue
-            # View Video
-            # ViewVideo(_video_name, img)
+            print(class_ids)
             
-            _skip_frames += 15  # i.e. at 30 fps, this advances one second
+            for (index, box) in enumerate(boxes):
+                x, y, w, h = box
+
+                # check if all 3 objects are in the image [fish, id, scale]
+                match class_ids[index]:
+                    case 0:
+                        fish_coords = box
+                        # center point of the fish
+                        cx = int((x + x + w)/2)
+                        cy = int((y + y + h)/2)
+                        fish_center_coords.append((cx,cy))
+
+                        hypothenuse = round(math.hypot(cx - posX, cy - posY))
+                        # print(hypothenuse, hypo_threshold)
+                        
+                        # distance lesser than previous distance
+                        if (hypothenuse < hypo_threshold):
+                            _fish_id += 1
+                            hypo_threshold = hypothenuse 
+                            _has_image = True   
+                                
+                            SaveImages(img, _frame_index, _video_name, 'fish')
+                            # open the file to write
+                            with open('output/'+_video_name+'-images.txt', 'a', encoding='UTF8') as f:
+                                # create the csv writer
+                                writer = csv.writer(f)
+                                # ['#', 'Fish#', 'Frame', 'Hypothenuse']
+                                writer.writerow([_fish_id, wells_id, _frame_index, hypothenuse])
+                                
+                        # reset checker
+                        else: 
+                            hypo_threshold = 70
+                    case 1: # id
+                        id_coords = box
+                        _id_id += 1
+                        #TODO: Read Fish ID before saving as img
+                        _has_id = True
+
+                        id_image = img.copy()
+                        id_image = id_image[y-20:y+h+20,x-20:x+w+20]
+                        id_image = cv2.resize(id_image, None, fx=4, fy=4)
+                        id_image = cv2.cvtColor(id_image,cv2.COLOR_BGR2GRAY) #convert from GBR to RGB
+                        id_image = cv2.rotate(id_image,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+                        id_image = cv2.bilateralFilter(id_image, 5, 30, 60)
+                        # edged = cv2.Canny(id_image, 30, 200)
+                        # thresholding = cv2.threshold(id_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+                        kernel = np.ones((5,5),np.uint8)
+                        opening = cv2.morphologyEx(id_image, cv2.MORPH_OPEN, kernel)
+                        # cv2.imshow("test", opening)
+                        text = pytesseract.image_to_string(opening, \
+                        config='-l eng --psm 9 --oem 3 -c tessedit_char_whitelist="'+constant.tess_whitelist+'" tessedit_char_blacklist="'+constant.tess_blacklist+'"')
+                        edited = ''.join(char for char in text if char.isalnum())
+                        print(edited)
+                        SaveImages(id_image, _frame_index, _video_name, 'id')  
+
+                        # open the file to write
+                        with open('output/'+_video_name+'-id.txt', 'a', encoding='UTF8') as f:
+                            # create the csv writer
+                            writer = csv.writer(f)
+                            # ['#', 'Fish#', 'Frame', 'Value', 'x', 'y', 'w', 'h']
+                            writer.writerow([_id_id, wells_id, _frame_index, edited, x, y, w, h])                          
+
+                    case 2: # scale
+                        _scale_id += 1
+                        scale_coords = box
+                        
+                        ###
+                        # Test Contours
+                        ###
+                        scale_image = img.copy()
+                        scale_image = scale_image[y-10:y+h+10,x-10:x+w+10]
+                        scale_image = cv2.resize(scale_image, None, fx=2, fy=2)
+                        saveCopy = scale_image.copy()
+                        
+                        scale_image = cv2.cvtColor(scale_image, cv2.COLOR_BGR2HSV)
+                        GRAY_MIN = np.array([90, 8, 37],np.uint8)
+                        GRAY_MAX = np.array([105, 255, 255],np.uint8)
+
+                        frame_threshed = cv2.inRange(scale_image, GRAY_MIN, GRAY_MAX)
+                        output = cv2.bitwise_and(scale_image, scale_image, mask=frame_threshed)
+                        ret,thresh = cv2.threshold(frame_threshed, 40, 255, 0)
+                        if (int(cv2.__version__[0]) > 3):
+                            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                        else:
+                            im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+                        if len(contours) != 0:
+                            # draw in blue the contours that were founded
+                            cv2.drawContours(output, contours, -1, 255, 3)
+
+                            # find the biggest countour (c) by the area
+                            c = max(contours, key = cv2.contourArea)
+                            x,y,w,h = cv2.boundingRect(c)
+
+                            # draw the biggest contour (c) in green
+                            cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
+                            
+                            saveCopy = saveCopy[y:y+h,x:x+w]
+                            if(_has_image == True):
+                                SaveImages(saveCopy, _frame_index, _video_name, 'scale')
+                        
+                        # show the images
+                        # cv2.imshow("Result", np.hstack([scale_image, output]))
+
+                        # cv2.waitKey(0)
+
+                            img1 = cv2.imread('template/1segment.png',1)          # queryImage
+
+                            # Initiate SIFT detector
+                            orb = cv2.ORB()
+
+                            # find the keypoints and descriptors with SIFT
+                            kp1, des1 = orb.detectAndCompute(img1,None)
+                            kp2, des2 = orb.detectAndCompute(saveCopy,None)
+                                
+                            # create BFMatcher object
+                            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+                            # Match descriptors.
+                            matches = bf.match(des1,des2)
+
+                            # Sort them in the order of their distance.
+                            matches = sorted(matches, key = lambda x:x.distance)
+
+                            # Draw first 10 matches.
+                            img3 = cv2.drawMatches(img1,kp1,saveCopy,kp2,matches[:10], flags=2)
+
+                            plt.imshow(img3),plt.show()
+                        
+
+                        ###
+                        # BGR
+                        ###
+
+                        # scale_image = img.copy()
+                        # scale_image = scale_image[y-10:y+h+10,x-10:x+w+10]
+                        # scale_image = cv2.resize(scale_image, None, fx=2, fy=2)
+
+                        # # grey boundary
+                        # lower = [80,70,60]
+                        # upper = [100,90,80]
+
+                        # # arrays 
+                        # lower = np.array(lower, dtype="uint8")
+                        # upper = np.array(upper, dtype="uint8")
+
+                        # # find the colors within the specified boundaries and apply
+                        # # the mask
+                        # mask = cv2.inRange(scale_image, lower, upper)
+                        # output = cv2.bitwise_and(scale_image, scale_image, mask=mask)
+                        
+                        # ret,thresh = cv2.threshold(mask, 40, 255, 0)
+                        # if (int(cv2.__version__[0]) > 3):
+                        #     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                        # else:
+                        #     im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+                        # if len(contours) != 0:
+                        #     # draw in blue the contours that were founded
+                        #     cv2.drawContours(output, contours, -1, 255, 3)
+
+                        #     # find the biggest countour (c) by the area
+                        #     c = max(contours, key = cv2.contourArea)
+                        #     x,y,w,h = cv2.boundingRect(c)
+
+                        #     # draw the biggest contour (c) in green
+                        #     cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
+                            
+                        #     saveCopy = scale_image[y:y+h,x:x+w]
+                        #     if(_has_image == True):
+                        #         SaveImages(saveCopy, _frame_index, _video_name, 'scale')
+
+                        # show the images
+                        # cv2.imshow("Result", np.hstack([scale_image, output]))
+
+                        # cv2.waitKey(0)
+
+                        
+                        # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
+                    case _:
+                        continue
+
+            # View Video
+            # ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
+            
+            if (prev_center_pts == [] and len(fish_center_coords) > 0): 
+                # check if the previous 3 frames are empty if not it is the same fish
+                if(check_empty>2):
+                    check_empty = 0
+                    wells_id += 1
+
+            # if there's no fish add the tracker empty by 1
+            if(fish_center_coords == []):
+                check_empty += 1
+            
+            # check the location of fish center points
+            prev_center_pts = fish_center_coords.copy()
+
+            _skip_frames += 30  # i.e. at 30 fps, this advances one second
+            _frame_index += 30
             cap.set(1, _skip_frames)
             
             if cv2.waitKey(1) == ord('q'):
-                _frame_index = 0
-                _skip_frames = 0
+                # reset the fish wells_id
+                wells_id = 0
                 break
 
         cap.release()
@@ -174,11 +340,25 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
 
 
-def ViewVideo(name, main_frame):
+def ViewVideo(fish, fish_center, id, scale, name, img):
     """Additional: to see the video while it is processing"""
+    # duplicate image so it doesn't corrupt the original
+    main_frame = img.copy()
     height, width, channels = main_frame.shape
+    #show objects
+    if(len(fish) > 0):
+        cv2.rectangle(main_frame, (fish[0], fish[1]), (fish[0] + fish[2], fish[1] + fish[3]), constant.fish_color, 2)
+        cv2.circle(main_frame, fish_center[0], 3, constant.fish_color, -1)
+        cv2.putText(main_frame, str(fish), (fish[0] + fish[2], fish[1] + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0, constant.fish_color, 2)
+    if(len(id) > 0):
+        cv2.rectangle(main_frame, (id[0], id[1]), (id[0] + id[2], id[1] + id[3]), constant.id_color, 1)
+    if(len(scale) > 0):
+        cv2.rectangle(main_frame, (scale[0], scale[1]), (scale[0] + scale[2], scale[1] + scale[3]), constant.scale_color, 2)
     # show center position of image
-    cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
+    # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
+    cv2.line(main_frame, (0,int(height/2)), (width, int(height/2)), (0,0,255), 1)
+    cv2.line(main_frame, ((int(width/2),0)), (int(width/2),height), (0,0,255), 1)
+
     # display the window
     cv2.imshow(name, main_frame)
 
@@ -189,11 +369,11 @@ def MoveVideo (video):
         os.makedirs('completed_videos/' + video)
     shutil.move("./videos/"+video, 'completed_videos/' + video, copy_function = shutil.copy2)
 
-def SaveImages(actual_frame, _frame_index, _video_name):
+def SaveImages(actual_frame, _frame_index, _video_name, _type):
     """Store images function"""
     # check if the directory exists
-    if not os.path.exists('images/' + _video_name):  
-        os.makedirs('images/' + _video_name + '/actual')
+    if not os.path.exists('images/' + _video_name + '/' + _type):  
+        os.makedirs('images/' + _video_name + '/' + _type)
     # write to seperate folders for easier book-keeping
-    cv2.imwrite('./images/' + _video_name + '/actual/' + str(_frame_index) + '.jpg',
+    cv2.imwrite('./images/' + _video_name + '/'+ _type +'/' + str(_frame_index) + '.jpg',
                 actual_frame) 

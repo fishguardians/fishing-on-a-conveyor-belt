@@ -6,7 +6,7 @@ import os
 import re
 
 # pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/Cellar/tesseract/5.1.0/bin/tesseract'
-dir_path = 'preprocess_images' #directory of the image folder
+dir_path = 'images/b2858.mov/id' #directory of the image folder
 imageList = [] 
 
 #function to count number of files in the image folder
@@ -18,14 +18,15 @@ def imageValidator():
     imageList.sort()
     return imageList
             
-imageValidator()
+# imageValidator()
 # print(imageList)
 
 def displaySingleImage():
-    image = cv2.imread(dir_path+'/'+'fish05.png') #read image
-    image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB) #convert from GBR to RGB
+    image = cv2.imread(dir_path+'/'+'94.jpg') #read image
+    image = cv2.resize(image,None, fx=2, fy=2)
+    image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY) #convert from GBR to RGB
     image = cv2.rotate(image,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
-    image = cv2.medianBlur(image,5) #reduce noise
+    # image = cv2.medianBlur(image,5) #reduce noise
     return image
 
 def increaseContrastImage():
@@ -109,7 +110,7 @@ def textRecognition():
     print(list1)
     return list1
 
-print(textRecognition()[0][1])
+textRecognition()
 #function to generate csv
 '''
 def generateCsv():

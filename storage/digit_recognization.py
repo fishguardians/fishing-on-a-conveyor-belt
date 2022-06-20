@@ -169,5 +169,5 @@ def digit_recognization():
     digit = str(digits[0])+"."+digit
     print(digit)
 
-
-# digit_recognization()
+if __name__ == "__main__":
+    digit_recognization()

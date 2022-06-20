@@ -10,8 +10,12 @@ image_storage = './images/'
 data_output = './output/'
 
 fish_color = (238, 238, 175)
-id_color = (0,0,0)
+id_color = (0,255,0)
 scale_color = (255, 255, 255)
+belt_color = (0, 255, 0)
+
+tess_blacklist = 'abcdegjklmnopqrtuvwxyzABCDEGJKLMNOPQRSTUVWXYZ'
+tess_whitelist = '0123456789Fish'
 
 class FishImage:
     name = ''
