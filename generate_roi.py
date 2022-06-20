@@ -4,7 +4,8 @@ import re
 import os
 
 outline_thickness = 5
-path = "preprocess_images2/"
+# path = "preprocess_images2/"
+path = "20June(2)_pre/"
 def get_roi(image):
     img_color = cv2.imread(path+image)
     img_color = cv2.resize(img_color, None, None, fx=0.5, fy=0.5)
@@ -34,7 +35,7 @@ def get_roi(image):
     # roi = cv2.rotate(roi,cv2.ROTATE_90_CLOCKWISE) #change orientation
 
     # img_name = re.search("(?<=\/)(.*)(?=\.jpg)",path).group()
-    cv2.imwrite(f"processed_images2/{image}-roi.jpg", roi)
+    cv2.imwrite(f"20June(2)_post/{image}-roi.jpg", roi)
     return roi
 
 #function to validate if the item is an image

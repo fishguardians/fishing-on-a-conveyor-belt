@@ -21,7 +21,9 @@ DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 1): 8,
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
-dir_path = 'processed_images2/' 
+# dir_path = 'processed_images2/' 
+# dir_path = 'scale/' 
+dir_path = '20June(2)_post/' 
 imageList = [] #list to store image
 outputList = [] #list to store the output
 
@@ -31,7 +33,7 @@ def digit_recognition(image):
     # roi_color = cv2.imread("processed_images/"+path+"-roi.jpg")
     roi_color = cv2.imread(dir_path+image)
     roi_color = cv2.resize(roi_color, None,None,fx=1.2,fy=1.2) #resize image
-    roi_color= imutils.rotate(roi_color, angle=6)
+    roi_color= imutils.rotate(roi_color, angle=9)
     # roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     # cv2.imshow("Blurred and Trimmed", roi)
@@ -163,7 +165,7 @@ def digit_recognition(image):
                 # print(f"State of ON: {on}")
 
             digit = DIGITSDICT[tuple(on)]
-            print(f"Digit is: {digit}")
+            # print(f"Digit is: {digit}")
             digits += [digit]
             cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
             cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
@@ -188,6 +190,7 @@ def imageValidator():
     return imageList
 
 imageList = imageValidator()
+# print(imageList)
 for image in imageList:
     outputList.append(digit_recognition(image))
 
