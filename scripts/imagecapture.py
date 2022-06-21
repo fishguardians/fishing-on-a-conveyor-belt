@@ -97,7 +97,7 @@ def ViewVideo(frame_size, actual_video, video):
     # # bottom-right {fish_id}
     # main_frame[350: 500, 270: 410] = fish_id
     # display the window
-    cv2.imshow(video, main_frame)
+    cv2.imshow(video, main_frame) #Demonstration
 
 # def SaveImages(actual_video, fish_id, conveyor_belt, scale, frame_index, video):
 def SaveImages(actual_video, frame_index, video):

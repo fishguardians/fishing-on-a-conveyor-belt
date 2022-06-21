@@ -23,6 +23,10 @@ Leaving only the yellow conveyor belt parts of the image
 that contains the fish itself and its ID.
 """
 
+"""
+For demonstration of code, search for 'Demonstration' and uncomment those lines
+"""
+
 
 # TODO: get the final output folder of the image capture script and put that below
 
@@ -80,60 +84,43 @@ def remove_background(image_list):
         # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
         # Add black border in the left of belt (5% width of the belt area)
         add_border_l = cv2.rectangle(image.img, (x, y), (int(x + width * 0.05), y + height), (0, 0, 0), -1)
-        # cv2.imshow("add_border_left", add_border_l)
+        # cv2.imshow("add_border_left", add_border_l) # For Debug
+        # cv2.waitKey(0) # For Debug
+        # cv2.destroyAllWindows() # For Debug
 
         end_x = int(x + width)
-        start_x = int(end_x - width * 0.05)
-        # print(start_x,end_x)
+        start_x = int(end_x - width * 0.08) # Change based on percentage 5% or more
 
-        add_border_r = cv2.rectangle(image.img, (start_x, y), (end_x, y + height), (0, 0, 0), -1)
-        # cv2.imshow("add_border_right", add_border_r)
+        add_border_r = cv2.rectangle(add_border_l, (start_x, y), (end_x, y + height), (0, 0, 0), -1)
+        # cv2.imshow("add_border_right", add_border_r) # For Debug
+        # cv2.waitKey(0) # For Debug
+        # cv2.destroyAllWindows() # For Debug
 
         # Fill left side of belt background with colour black
-        colored_left = cv2.rectangle(image.img, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
+        colored_left = cv2.rectangle(add_border_r, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
+        # cv2.imshow("colored_left", colored_left) # For Debug
+        # cv2.waitKey(0) # For Debug
+        # cv2.destroyAllWindows() # For Debug
 
         # Fill right side of belt background with colour black
         colored_right = cv2.rectangle(colored_left, ((x + width), 0), (og_width, og_height), (0, 0, 0), -1)
+        # cv2.imshow("colored_right", colored_right) # For Debug
+        # cv2.waitKey(0) # For Debug
+        # cv2.destroyAllWindows() # For Debug
 
         # Write the final output image into image.img
         image.img = colored_right
 
         # Display the output images
-        # cv2.imshow("Background_coloured", image.img)
+        # cv2.imshow("Remove Background Result", image.img) #Demonstration
+        # cv2.waitKey(0) # For Debug
+        # cv2.destroyAllWindows() # For Debug
+
+        # Display in smaller window
         # cv2.namedWindow("Resize_test", cv2.WINDOW_NORMAL)
         # cv2.resizeWindow("Resize_test", 640, 360)
         # cv2.imshow("Window", image.img)
         # cv2.waitKey(0)
-        #
         # cv2.destroyAllWindows()
 
     return image_list
-
-
-# For future reference if needed.
-"""
-# draw filled white contour on input
-# result = img.copy()
-# cv2.rectangle(result,(x,y),(x+width,y+height),(255,255,255),-1)
-# cv2.imwrite('barramundi_bg_removed.png', result)
-"""
-
-"""
-# For testing how to write to file path
-# Code below can display output image and write image to filepath
-# Show the images (for testing)
-result = image.img
-cv2.imshow("Background Removed", result)
-# Export the images
-image_name = str(image.name)
-# Get the current working directory
-cwd = 'r' + os.getcwd()
-filepath = cwd + '/images/output/'
-filepath2 = 'D:/Projects/fishguardians-ITP/images/output/'
-print(filepath)
-print(os.path.expanduser('~'))
-if not cv2.imwrite(os.path.join(filepath2, '{}_bgr.png'.format(image_name)), result):
-    raise Exception("Could not write image")
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-"""

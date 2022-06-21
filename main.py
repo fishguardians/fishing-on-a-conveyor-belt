@@ -6,9 +6,9 @@
 # import if necessary (built-in, third-party, path, own modules)
 
 import scripts.imagecapture as imagecapture
-import scripts.fish_remove_bg as script_remove_bg
-import scripts.fish_crop_belt as script_process_crop
-import scripts.fish_dimensions as script_get_dimensions
+import scripts._1_fish_crop_belt_image as script_crop_belt_image
+import scripts._2_fish_remove_background as script_remove_background
+import scripts._3_fish_measure_dimensions as script_get_dimensions
 
 from datetime import datetime
 
@@ -44,14 +44,14 @@ def main():
     # Step 1
     # Remove background and export the output
     print('2. Removing background from fish images...')
-    image_list = script_remove_bg.get_image_names()
-    remove_bg_output = script_remove_bg.remove_background(image_list)
+    image_list = script_crop_belt_image.get_image_names()
+    remove_bg_output = script_crop_belt_image.remove_background(image_list)
     print('Background removal complete!')
 
     # Step 2
     # Crop out the yellow belt areas
     print('3. Cropping out yellow belt areas of images...')
-    crop_belt_output = script_process_crop.crop_belt(remove_bg_output)
+    crop_belt_output = script_remove_background.crop_belt(remove_bg_output)
     print('Conveyor belt cropped out!')
 
     # Step 3

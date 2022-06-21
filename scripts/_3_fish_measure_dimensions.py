@@ -70,31 +70,28 @@ def get_dimensions(image_list):
         edited_height = np.size(image.img, 0)
         edited_width = np.size(image.img, 1)
 
-        # Alert user if dimensions do not match
-        if (og_height != edited_height | og_width != edited_width):
-
-            print('ERROR IMAGE DIMENSIONS DO NOT MATCH')
-            print('og_height', og_height, 'og_width', og_width)
-            print('edited_height', edited_height, 'edited_width', edited_width)
-
         # x, y, z = image.img.shape
         # print(x, y, z)
 
-        # convert it to grayscale, and blur it slightly
-        gray = cv2.cvtColor(image.img, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (7, 7), 0)
+        # its is already in greyscale for the process before
+        # blur it slightly
+        gray = cv2.GaussianBlur(image.img, (7, 7), 0)
 
         # For getting thresholds for Canny using the adjustable slides
-        # t1, t2 = tuneCanny(gray)
+        t1, t2 = tuneCanny(gray) # Demonstration
         # print(f"Threshold1: {t1}, Threshold2: {t2}")
-        t1, t2 = 10, 10
+        # t1, t2 = 10, 10 # For most purposes, 10, 10 is good for most cases
 
         # Performs edge detection, then perform a dilation + erosion to
         # Closes gaps in between object edges
         edged = cv2.Canny(gray, t1, t2)
-        edged = cv2.dilate(edged, None, iterations=1)
+
+        # Dilation increases the boundaries of regions of foreground pixels.
+        # Areas of foreground pixels expand in size while holes within those regions become smaller.
+        kernel = np.ones((5, 5), 'uint8')
+        edged = cv2.dilate(edged, kernel, iterations=1)
         edged = cv2.erode(edged, None, iterations=1)
-        # show_image("erode and dilate", edged, True)
+        show_image("erode and dilate", edged, True) #Demonstration
 
         # find contours in the edge map
         cnts = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -188,23 +185,23 @@ def get_dimensions(image_list):
 
             cv2.namedWindow("Output_Resized", cv2.WINDOW_NORMAL)
             cv2.resizeWindow("Output_Resized", 960, 540)
-            cv2.imshow("Output_Resized", orig)
+            cv2.imshow("Output_Resized", orig) #Demonstration
             cv2.waitKey(0)
 
             cv2.destroyAllWindows()
-
-            # # show the output image
-            # cv2.imshow("Fish Dimensions", orig)
-            # cv2.waitKey(0)
-            #
-            # # # closing all open windows
-            # cv2.destroyAllWindows()
 
             print("Total contours processed: ", count)
             print("Dimensions of fish",
                   "------------",
                   "Length: {} cm".format(round(dimA_CM, 3)),
                   "Depth: {} cm".format(round(dimB_CM, 3)), sep='\n')
+
+            # # show the output image
+            # cv2.imshow("Fish Dimensions", orig) #Demonstration
+            # cv2.waitKey(0)
+
+            # # closing all open windows
+            # cv2.destroyAllWindows()
 
     return image_list
 
