@@ -6,7 +6,7 @@
 # import if necessary (built-in, third-party, path, own modules)
 
 import scripts.imagecapture as imagecapture
-import digit_recognization
+import digit_recognition
 
 from datetime import datetime
 
