@@ -153,7 +153,6 @@ def digit_recognition(image):
     else:
         return "N.A"
 
-print(digit_recognition("Frame9.jpg"))
 
 
 
