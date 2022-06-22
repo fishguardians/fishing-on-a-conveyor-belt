@@ -1,13 +1,8 @@
-from logging import PlaceHolder
 import cv2
 import numpy as np
 import generate_roi
-import os
 import imutils
 
-
-
-FONT = cv2.FONT_HERSHEY_SIMPLEX
 DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 0): 0,
     (0, 1, 1, 0, 0, 0, 0): 1,
@@ -20,13 +15,6 @@ DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 1): 8,
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
-# dir_path = 'preprocess_images2'
-# dir_path = 'scale/'
-# dir_path = '20June(2)'
-# dir_path = '20June(1)'
-imageList = [] #list to store image
-outputList = [] #list to store the output
-image = 
 
 def digit_recognition(image):
     #function call that gets the image with the right roi
@@ -100,7 +88,7 @@ def digit_recognition(image):
         else:
             pass
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
-        cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
+        cv2.putText(canvas, str(i), (x, y - 3), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
         # cv2.imshow("All Contours sorted", canvas)
         # cv2.waitKey(0)
 
@@ -153,7 +141,7 @@ def digit_recognition(image):
             # print(f"Digit is: {digit}")
             digits += [digit]
             cv2.rectangle(canvas, (x, y), (x + w, y + h), (255, 255, 0), 1)
-            cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
+            cv2.putText(canvas, str(digit), (x - 5, y + 6), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
             # cv2.imshow("Digit", canvas)
             # cv2.waitKey(0)
         except:
@@ -165,21 +153,7 @@ def digit_recognition(image):
     else:
         return "N.A"
 
+print(digit_recognition("Frame9.jpg"))
 
-
-# #function to validate if the item is an image
-# def imageValidator():
-#     extension = ('png', 'jpg', 'jpeg')
-#     for item in os.listdir(dir_path):
-#         if item.endswith(extension): 
-#             imageList.append(item)
-#     imageList.sort()
-#     return imageList
-
-# imageList = imageValidator()
-# for image in imageList:
-#     image = generate_roi.get_roi(dir_path,image)
-#     outputList.append(digit_recognition(image))
-# print(outputList)
 
 
