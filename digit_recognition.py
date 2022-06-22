@@ -8,7 +8,6 @@ import imutils
 
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
-CYAN = (255, 255, 0)
 DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 0): 0,
     (0, 1, 1, 0, 0, 0, 0): 1,
@@ -23,24 +22,21 @@ DIGITSDICT = {
 }
 # dir_path = 'preprocess_images2'
 # dir_path = 'scale/'
-dir_path = '20June(2)'
+# dir_path = '20June(2)'
 # dir_path = '20June(1)'
 imageList = [] #list to store image
 outputList = [] #list to store the output
+image = 
 
-
-def digit_recognition(roi_color):
-    # roi_color = cv2.imread(dir_path+image)
+def digit_recognition(image):
+    #function call that gets the image with the right roi
+    roi_color = generate_roi.get_roi(image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
     roi= imutils.rotate(roi, angle=9.5)
-    # cv2.imshow("smaller", roi)
+    # cv2.imshow("roi", roi)
     # cv2.waitKey(0)
-    
-    
-    
-
     
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
     #roi.shape[0] = height, roi.shape[1] = width
@@ -51,25 +47,17 @@ def digit_recognition(roi_color):
     edged = cv2.adaptiveThreshold(  
         trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 5
     )
-    # cv2.imshow("trimmed_image", trimmed) #display thresholded image
-    # cv2.waitKey(0)
 
-    #enhance image
+    #-----------------enhance image------------------------------------
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 5))
     dilated = cv2.dilate(edged, kernel, iterations=1)
-
-    # cv2.imshow("Dilated", dilated)
-    # cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 1))
     dilated = cv2.dilate(dilated, kernel, iterations=1)
 
-    # cv2.imshow("Dilated x2", dilated)
-    # cv2.waitKey(0)
-
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 1),)
     eroded = cv2.erode(dilated, kernel, iterations=1)
-
+    #------------------------------------------------------------------
     h = roi.shape[0] 
     ratio = int(h * 0.01) 
     eroded[-ratio:,] = 0 
@@ -80,8 +68,6 @@ def digit_recognition(roi_color):
 
     canvas = trimmed.copy()
     cv2.drawContours(canvas, cnts, -1, (255, 255, 255), 1)
-    # cv2.imshow("All Contours", canvas)
-    # cv2.waitKey(0)
 
     #detect & draw contours in random sequence
     for cnt in cnts:
@@ -157,10 +143,6 @@ def digit_recognition(roi_color):
         try:
             for (i, ((p1x, p1y), (p2x, p2y))) in enumerate(sevensegs):
                 region = roi[p1y:p2y, p1x:p2x]
-                # print(p1y,p2y, p1x,p2x)
-                # print(
-                #     f"{i}: Sum of 1: {np.sum(region == 255)}, Sum of 0: {np.sum(region == 0)}, Shape: {region.shape}, Size: {region.size}"
-                # )
                 #detect seven segments and store inside the array
                 if np.sum(region == 255) > region.size * 0.5:
                     on[i] = 1
@@ -170,7 +152,7 @@ def digit_recognition(roi_color):
             digit = DIGITSDICT[tuple(on)]
             # print(f"Digit is: {digit}")
             digits += [digit]
-            cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
+            cv2.rectangle(canvas, (x, y), (x + w, y + h), (255, 255, 0), 1)
             cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
             # cv2.imshow("Digit", canvas)
             # cv2.waitKey(0)
@@ -183,24 +165,21 @@ def digit_recognition(roi_color):
     else:
         return "N.A"
 
-#function to validate if the item is an image
-def imageValidator():
-    extension = ('png', 'jpg', 'jpeg')
-    for item in os.listdir(dir_path):
-        if item.endswith(extension): 
-            imageList.append(item)
-    imageList.sort()
-    return imageList
 
-imageList = imageValidator()
 
-#no ml
-for image in imageList:
-    image = generate_roi.get_roi(dir_path,image)
-    outputList.append(digit_recognition(image))
-print(outputList)
+# #function to validate if the item is an image
+# def imageValidator():
+#     extension = ('png', 'jpg', 'jpeg')
+#     for item in os.listdir(dir_path):
+#         if item.endswith(extension): 
+#             imageList.append(item)
+#     imageList.sort()
+#     return imageList
 
-#ml
+# imageList = imageValidator()
 # for image in imageList:
+#     image = generate_roi.get_roi(dir_path,image)
 #     outputList.append(digit_recognition(image))
 # print(outputList)
+
+
