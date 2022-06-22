@@ -21,24 +21,27 @@ DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 1): 8,
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
-# dir_path = 'processed_images2/' 
-# dir_path = 'scale/' 
-dir_path = '20June(2)_post/' 
+# dir_path = 'preprocess_images2'
+# dir_path = 'scale/'
+dir_path = '20June(2)'
+# dir_path = '20June(1)'
 imageList = [] #list to store image
 outputList = [] #list to store the output
 
 
-def digit_recognition(image):
-    # path = re.search("(?<=\/)(.*)(?=\.jpg)",generate_roi.path).group()
-    # roi_color = cv2.imread("processed_images/"+path+"-roi.jpg")
-    roi_color = cv2.imread(dir_path+image)
-    roi_color = cv2.resize(roi_color, None,None,fx=1.2,fy=1.2) #resize image
-    roi_color= imutils.rotate(roi_color, angle=9.5)
-    # roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
-    roi = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
-    # cv2.imshow("Blurred and Trimmed", roi)
+def digit_recognition(roi_color):
+    # roi_color = cv2.imread(dir_path+image)
+    roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
+    roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+    roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
+    roi= imutils.rotate(roi, angle=9.5)
+    # cv2.imshow("smaller", roi)
     # cv2.waitKey(0)
+    
+    
+    
 
+    
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
     #roi.shape[0] = height, roi.shape[1] = width
     RATIO = roi.shape[0] * 0.01
@@ -190,9 +193,14 @@ def imageValidator():
     return imageList
 
 imageList = imageValidator()
-# print(imageList)
-for image in imageList:
-    outputList.append(digit_recognition(image))
 
-# print(digit_recognition("Frame13.jpg-roi.jpg"))
+#no ml
+for image in imageList:
+    image = generate_roi.get_roi(dir_path,image)
+    outputList.append(digit_recognition(image))
 print(outputList)
+
+#ml
+# for image in imageList:
+#     outputList.append(digit_recognition(image))
+# print(outputList)
