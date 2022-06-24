@@ -16,13 +16,13 @@ DIGITSDICT = {
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
 
-def digit_recognition(image):
+def digit_recognition(image,angle=11.0):
     #function call that gets the image with the right roi
     roi_color = generate_roi.get_roi(image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
-    roi= imutils.rotate(roi, angle=9.5)
+    roi= imutils.rotate(roi, angle)
     # cv2.imshow("roi", roi)
     # cv2.waitKey(0)
     
@@ -151,8 +151,11 @@ def digit_recognition(image):
         digit = str(digits[0])+"."+digit
         return digit
     else:
+        angle+=0.5
+        if(angle<=12):
+            digit_recognition(image,angle)
         return "N.A"
 
-
+print(digit_recognition("Frame9.jpg"))
 
 
