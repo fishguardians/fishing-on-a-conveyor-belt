@@ -26,4 +26,4 @@ class FishImage:
         self.depth = ''
 
 # Width of paperID reference in centimeters
-ref_width = 1.2
+ref_width = 1.9

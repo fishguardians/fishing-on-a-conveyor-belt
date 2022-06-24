@@ -66,15 +66,6 @@ def remove_background(image_list):
         # X coordinate, Y coordinate, Width, Height
         x, y, width, height = cv2.boundingRect(big_contour)
 
-        """
-        # Crop image to specified area using slicing
-        # Crop out only the yellow conveyor belt area
-        cropped = image.img = image.img[y:y + height, x:x + width]
-        # Cropped image 's height and width
-        # crp_height = np.size(cropped, 0)
-        # crp_width = np.size(cropped, 1)
-        """
-
         # Original image's height and width
         og_height = np.size(image.org, 0)
         og_width = np.size(image.org, 1)
@@ -111,7 +102,7 @@ def remove_background(image_list):
         # Write the final output image into image.img
         image.img = colored_right
 
-        # Display the output images
+        # # Display the output images
         # cv2.imshow("Remove Background Result", image.img) #Demonstration
         # cv2.waitKey(0) # For Debug
         # cv2.destroyAllWindows() # For Debug

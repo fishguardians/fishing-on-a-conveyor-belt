@@ -62,25 +62,14 @@ def tuneCanny(image):
 def get_dimensions(image_list):
     for image in image_list:
 
-        # Original image's height and width
-        og_height = np.size(image.org, 0)
-        og_width = np.size(image.org, 1)
-
-        # Edited image's height and width
-        edited_height = np.size(image.img, 0)
-        edited_width = np.size(image.img, 1)
-
-        # x, y, z = image.img.shape
-        # print(x, y, z)
-
         # its is already in greyscale for the process before
         # blur it slightly
         gray = cv2.GaussianBlur(image.img, (7, 7), 0)
 
         # For getting thresholds for Canny using the adjustable slides
-        t1, t2 = tuneCanny(gray) # Demonstration
+        # t1, t2 = tuneCanny(gray) # Demonstration
         # print(f"Threshold1: {t1}, Threshold2: {t2}")
-        # t1, t2 = 10, 10 # For most purposes, 10, 10 is good for most cases
+        t1, t2 = 10, 10 # For default threshold
 
         # Performs edge detection, then perform a dilation + erosion to
         # Closes gaps in between object edges
