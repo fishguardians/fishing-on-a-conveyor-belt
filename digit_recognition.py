@@ -16,7 +16,7 @@ DIGITSDICT = {
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
 
-def digit_recognition(image,angle=11.0):
+def digit_recognition(image,angle=6.0):
     #function call that gets the image with the right roi
     roi_color = generate_roi.get_roi(image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
