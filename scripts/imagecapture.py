@@ -8,7 +8,7 @@ import os
 import shutil
 import csv
 import cv2 
-import pytesseract
+from pytesseract import pytesseract
 import glob
 import random
 import math
@@ -22,8 +22,11 @@ import scripts.fish_remove_bg as removeBg
 import scripts.fish_crop_belt as processCrop
 import scripts.fish_dimensions as getDimensions
 
+pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
+
 # Read the scale
 # from digit_recognization import digit_recognization
+from digit_recognition import digit_recognition
 
 from object_detection import ObjectDetection
 # Initialize Object Detection
@@ -43,10 +46,14 @@ def GetVideoNames():
                 writer = csv.writer(f)
                 # write the header
                 writer.writerow(['#', 'Fish#', 'Frame', 'Hypothenuse'])
+            with open('output/' + file + '-dimensions.txt', 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                # write the header
+                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
             with open('output/'+ file + '-id.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 # write the header
-                writer.writerow(['#', 'Fish#', 'Frame', 'Value', 'x', 'y', 'w', 'h'])
+                writer.writerow(['#', 'Fish#', 'Frame', 'Value'])
         match file_extension.lower():
             case '.mov':
                     videos_to_be_processed.append(file.lower())
@@ -97,7 +104,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 break
             
             # Loading image
-            img = frame.copy()
+            img = frame.copy() #1080 1920 original image
             img = cv2.resize(img, None, fx=0.4, fy=0.4)
 
             # Width & Height of img
@@ -126,7 +133,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if all 3 objects are in the image [fish, id, scale]
                 match class_ids[index]:
-                    case 0:
+                    case 1:
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w)/2)
@@ -140,9 +147,21 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         if (hypothenuse < hypo_threshold):
                             _fish_id += 1
                             hypo_threshold = hypothenuse 
-                            _has_image = True   
+                            _has_image = True
+
+                            # TODO: Run fish dimension function
+                            # function name(img) or use frame
+                            print("nicholas")
+
+                            # length,depth = function(frame) # Replace with script functions
+
+                            # open the file to write
+                            with open('output/' + _video_name + '-dimensions.txt', 'w', encoding='UTF8') as f:
+                                writer = csv.writer(f)
+                                # write the header
+                                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
                                 
-                            SaveImages(img, _frame_index, _video_name, 'fish')
+                            SaveImages(frame, _frame_index, _video_name, 'fish')
                             # open the file to write
                             with open('output/'+_video_name+'-images.txt', 'a', encoding='UTF8') as f:
                                 # create the csv writer
@@ -152,8 +171,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 
                         # reset checker
                         else: 
-                            hypo_threshold = 70
-                    case 1: # id
+                            hypo_threshold = 70 # Try to another fish that is closer
+                    case 0: # id
                         id_coords = box
                         _id_id += 1
                         #TODO: Read Fish ID before saving as img
@@ -181,12 +200,12 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # create the csv writer
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value', 'x', 'y', 'w', 'h']
-                            writer.writerow([_id_id, wells_id, _frame_index, edited, x, y, w, h])                          
+                            writer.writerow([_id_id, wells_id, _frame_index, edited])
 
                     case 2: # scale
                         _scale_id += 1
                         scale_coords = box
-                        
+
                         ###
                         # Test Contours
                         ###
@@ -194,14 +213,14 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         scale_image = scale_image[y-10:y+h+10,x-10:x+w+10]
                         scale_image = cv2.resize(scale_image, None, fx=2, fy=2)
                         saveCopy = scale_image.copy()
-                        
+
                         scale_image = cv2.cvtColor(scale_image, cv2.COLOR_BGR2HSV)
                         GRAY_MIN = np.array([90, 8, 37],np.uint8)
                         GRAY_MAX = np.array([105, 255, 255],np.uint8)
 
                         frame_threshed = cv2.inRange(scale_image, GRAY_MIN, GRAY_MAX)
                         output = cv2.bitwise_and(scale_image, scale_image, mask=frame_threshed)
-                        ret,thresh = cv2.threshold(frame_threshed, 40, 255, 0)
+                        ret,thresh = cv2.threshold(frame_threshed, 40, 255, 0) # For shadows
                         if (int(cv2.__version__[0]) > 3):
                             contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                         else:
@@ -217,11 +236,11 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                             # draw the biggest contour (c) in green
                             cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
-                            
+
                             saveCopy = saveCopy[y:y+h,x:x+w]
                             if(_has_image == True):
                                 SaveImages(saveCopy, _frame_index, _video_name, 'scale')
-                        
+
                         # show the images
                         # cv2.imshow("Result", np.hstack([scale_image, output]))
 
@@ -235,7 +254,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # # find the keypoints and descriptors with SIFT
                             # kp1, des1 = orb.detectAndCompute(img1,None)
                             # kp2, des2 = orb.detectAndCompute(saveCopy,None)
-                                
+
                             # # create BFMatcher object
                             # bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
@@ -249,7 +268,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # img3 = cv2.drawMatches(img1,kp1,saveCopy,kp2,matches[:10], flags=2)
 
                             # plt.imshow(img3),plt.show()
-                        
+
 
                         ###
                         # BGR
@@ -263,7 +282,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # lower = [80,70,60]
                         # upper = [100,90,80]
 
-                        # # arrays 
+                        # # arrays
                         # lower = np.array(lower, dtype="uint8")
                         # upper = np.array(upper, dtype="uint8")
 
@@ -271,7 +290,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # # the mask
                         # mask = cv2.inRange(scale_image, lower, upper)
                         # output = cv2.bitwise_and(scale_image, scale_image, mask=mask)
-                        
+
                         # ret,thresh = cv2.threshold(mask, 40, 255, 0)
                         # if (int(cv2.__version__[0]) > 3):
                         #     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -288,7 +307,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         #     # draw the biggest contour (c) in green
                         #     cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
-                            
+
                         #     saveCopy = scale_image[y:y+h,x:x+w]
                         #     if(_has_image == True):
                         #         SaveImages(saveCopy, _frame_index, _video_name, 'scale')
@@ -298,13 +317,25 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # cv2.waitKey(0)
 
-                        
+
                         # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
                     case _:
                         continue
 
-            # View Video
-            # ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
+            if(_has_image==True):
+                _scale_id+=1
+                print("images/"+_video_name+"/fish/"+str(_frame_index)+".jpg")
+                scale_reading = digit_recognition("images/"+_video_name+"/fish/"+str(_frame_index)+".jpg")
+
+                # open the file to write
+                with open('output/' + _video_name + '-id.txt', 'a', encoding='UTF8') as f:
+                    # create the csv writer
+                    writer = csv.writer(f)
+                    # ['#', 'Fish#', 'Frame', 'Value']
+                    writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
+
+                            # View Video
+            ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
             
             if (prev_center_pts == [] and len(fish_center_coords) > 0): 
                 # check if the previous 3 frames are empty if not it is the same fish
