@@ -13,60 +13,33 @@ Step 2 for fish length image processing
 
 def crop_belt(image_list):
     for image in image_list:
-
-        # TODO:
-
         # Removing the water reflections on the belt
-        # Through CLAHE(Contrast Limited Adaptive Histogram Equalization) And Image Inpainting
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-
-        # convert to gray
-        gray = cv2.cvtColor(image.img, cv2.COLOR_BGR2GRAY)
-        # cv2.imwrite('gray.jpg', gray)
-        clahe_gray = clahe.apply(gray)
-        # cv2.imshow('clahe_gray', clahe_gray)
-        # cv2.imwrite('clahe_gray.jpg',clahe_gray )
-
-        # GLARE_MIN = np.array([0, 0, 50], np.uint8)
-        # GLARE_MAX = np.array([0, 0, 225], np.uint8)
-        GLARE_MIN = np.array([0, 0, 150], np.uint8)
-        GLARE_MAX = np.array([10, 10, 255], np.uint8)
-
-        hsv_img = cv2.cvtColor(image.img, cv2.COLOR_BGR2HSV)
-
-        # HSV
-        frame_threshed = cv2.inRange(hsv_img, GLARE_MIN, GLARE_MAX)
-
-        # INPAINT + HSV
-        inpaint_plus_hsv = cv2.inpaint(image.img, frame_threshed, 0.1, cv2.INPAINT_TELEA)
-
-        # HSV+ INPAINT + CLAHE
-        lab = cv2.cvtColor(inpaint_plus_hsv, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
-        clahe_l = clahe.apply(l)
-        lab = cv2.merge((clahe_l, a, b))
-        hsv_plus_inpaint_clahe = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-
-        # display it
-        cv2.imshow("IMAGE", image.img)
-        # cv2.imshow("GRAY", gray)
-        cv2.imshow("HSV Mask", frame_threshed)
-        cv2.imshow("HSV + INPAINT + CLAHE   ", hsv_plus_inpaint_clahe)
-
+        # of HSV, this will detect the water reflections of the belt
+        GLARE_MIN = np.array([10, 30, 160], np.uint8)
+        GLARE_MAX = np.array([40, 65, 250], np.uint8)
         # converting the image to HSV format
-        hsv = cv2.cvtColor(image.img, cv2.COLOR_BGR2HSV)
+        hsv_img = cv2.cvtColor(image.img, cv2.COLOR_BGR2HSV)
+        # creating the mask
+        mask_reflections = cv2.inRange(hsv_img, GLARE_MIN, GLARE_MAX)
+        cv2.imshow("Reflections mask", mask_reflections)
 
-        # defining the lower and upper values
+        # Defining the lower and upper values
         # of HSV, this will detect yellow colour
         Lower_hsv = np.array([20, 70, 100])
         Upper_hsv = np.array([30, 255, 255])
-
         # creating the mask
-        Mask = cv2.inRange(hsv, Lower_hsv, Upper_hsv)
-
+        mask_yellow_belt = cv2.inRange(hsv_img, Lower_hsv, Upper_hsv)
+        cv2.imshow("Yellow mask", mask_yellow_belt)
+        cv2.waitKey(0)
+        #Join the water reflection mask and yellow belt masks together
+        combined_mask = mask_reflections | mask_yellow_belt
+        cv2.imshow("Combined mask", combined_mask)
+        cv2.waitKey(0)
         # Inverting the mask (Changes the yellow belt and changes it to black pixels)
-        mask_yellow = cv2.bitwise_not(Mask)
-        image.img = cv2.bitwise_and(image.img, image.img, mask=mask_yellow)
+        mask = cv2.bitwise_not(combined_mask)
+        image.img = cv2.bitwise_and(image.img, image.img, mask=mask)
+
+        # Display Output
         cv2.imshow("FINAL OUTPUT", image.img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
