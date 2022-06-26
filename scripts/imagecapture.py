@@ -110,8 +110,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
-            og_img = frame.copy()
             img = cv2.resize(img, None, fx=0.4, fy=0.4)
+
+            og_img = frame.copy()
 
             # Width & Height of img
             height, width, channels = img.shape
@@ -160,20 +161,19 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             print('Running fish image processing functions')
 
                             """
-                            img - for scaled down frame
                             frame - for original frame in the video
                             removeBg
                             getDimensions
                             """
 
                             # 1. Run cropBelt function to black out all but the belt in the image
-                            cropBelt_output_img = cropBelt.crop_belt(img)
+                            cropBelt_output_img = cropBelt.crop_belt(frame)
 
                             # 2. Run removeBackground function to remove yellow belt colour and water reflections
                             removeBg_output_img = removeBg.remove_background(cropBelt_output_img)
 
                             # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
-                            (fish_length, fish_depth) = getDimensions.get_dimensions(removeBg_output_img, og_img)
+                            fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img, og_img)
 
                             # open the file to write
                             with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:
@@ -187,7 +187,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 'Length' - length of the fish (From head to tail)
                                 'Depth' - the length of the depth of the fish (Widest point of the fish)
                                 """
-
                                 # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth])
 

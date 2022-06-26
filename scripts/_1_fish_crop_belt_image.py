@@ -13,7 +13,6 @@ import constant
 import glob
 import sys
 from pathlib import Path
-from constant import FishImage
 
 """
 Step 1 for fish length image processing

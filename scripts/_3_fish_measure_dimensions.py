@@ -10,19 +10,12 @@ from constant import ref_width
 
 """
 Step 3 for fish length image processing
+
 Measures the fish in the image against the reference point.
-Uses the little paper fishID rectangle as reference.
+Uses the black dot stickers at a reference point
+Black dot stickers are 19mm or 1.9cm
+Reference length can be modified in constant.py
 """
-
-
-# Function is needed for the createTrackbar step downstream
-def nothing(x):
-    pass
-
-
-# Returns the midpoint of 2 points
-def midpoint(ptA, ptB):
-    return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
 def get_dimensions(removeBg_output_img, og_img):
@@ -138,14 +131,15 @@ def get_dimensions(removeBg_output_img, og_img):
         depth = "{:.2f}cm".format(dimB_CM)
 
         # # show the output image
-        cv2.imshow("Erode and dilate", erode_dilate)
+        # cv2.imshow("gray", gray)
+        # cv2.imshow("Erode and dilate", erode_dilate)
         cv2.imshow("Fish Dimensions", orig)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
         # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
-        # For multiple reference dots (+- 5% for checking each ref)
-        # For tiny water blob reflections (If smaller than a certain threshold ignore)
+        # TODO: For multiple reference dots (+- 5% for checking each ref)
+        # TODO: For tiny water blob reflections (If smaller than a certain threshold ignore)
 
         if count == 1:
             print("Dimensions of Reference",
@@ -155,6 +149,7 @@ def get_dimensions(removeBg_output_img, og_img):
             print("Total contours processed: ", count)
 
         elif count == 2:
+            print("")
             print("Dimensions of Fish ID tag",
                   "------------",
                   "Length: {} cm".format(length),
@@ -164,6 +159,7 @@ def get_dimensions(removeBg_output_img, og_img):
         elif count == 3:
             fish_length = length
             fish_depth = depth
+            print("")
             print("Dimensions of Fish",
                   "------------",
                   "Length: {} cm".format(length),
@@ -172,22 +168,32 @@ def get_dimensions(removeBg_output_img, og_img):
 
             return fish_length, fish_depth
 
-def output_dimensions(image_list):
-    if image_list is not None:
-        filename = 'Fish_Dimensions.csv'
 
-        try:
-            with open(filename, 'w', newline='') as f:
-                writer = csv.writer(f, delimiter='\t')
-                writer.writerow(['Fish ID', 'Length', 'Depth'])
+# Function is needed for the createTrackbar step downstream
+def nothing(x):
+    pass
 
-                for image in image_list:
-                    head, tail = os.path.split(image.name)
-                    writer.writerow([tail, image.length, image.depth])
-        except BaseException as e:
-            print('BaseException:', filename)
-        else:
-            print('Data has been loaded successfully !')
+
+# Returns the midpoint of 2 points
+def midpoint(ptA, ptB):
+    return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
+
+# def output_dimensions(image_list):
+#     if image_list is not None:
+#         filename = 'Fish_Dimensions.csv'
+#
+#         try:
+#             with open(filename, 'w', newline='') as f:
+#                 writer = csv.writer(f, delimiter='\t')
+#                 writer.writerow(['Fish ID', 'Length', 'Depth'])
+#
+#                 for image in image_list:
+#                     head, tail = os.path.split(image.name)
+#                     writer.writerow([tail, image.length, image.depth])
+#         except BaseException as e:
+#             print('BaseException:', filename)
+#         else:
+#             print('Data has been loaded successfully !')
 
 # Displays the title of the image display in the window
 # def show_image(title, image, destroy_all=True):
