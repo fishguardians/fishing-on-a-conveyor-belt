@@ -1,108 +1,54 @@
-import csv
-
 from scipy.spatial import distance as dist
 from imutils import perspective
 from imutils import contours
-import argparse
 import numpy as np
 import imutils
 import cv2
+import csv
 import os
-from constant import FishImage
 from constant import ref_width
 
 """
 Step 3 for fish length image processing
-
 Measures the fish in the image against the reference point.
 Uses the little paper fishID rectangle as reference.
 """
-
-
-# # Construct the argument parse and parse the arguments
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-i", "--image", required=True, help="path to the input image")
-# ap.add_argument("-w", "--width", type=float, required=True,
-#                 help="width of the left-most object in the image (in centimeters)")
-# args = vars(ap.parse_args())
-
-# Load the image
-# image = cv2.imread(args["image"])
-
-# def test_func(imageList):
-#     for image in imageList:
-#
-#         cv2.imshow('Current', image.img)
-#         cv2.imshow('Org', image.org)
-#         cv2.waitKey(0)
-#         cv2.destroyAllWindows()
-
-# Displays the title of the image display in the window
-def show_image(title, image, destroy_all=True):
-    cv2.imshow(title, image)
-    cv2.waitKey(0)
-    if destroy_all:
-        cv2.destroyAllWindows()
 
 
 # Function is needed for the createTrackbar step downstream
 def nothing(x):
     pass
 
+
 # Returns the midpoint of 2 points
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
-# Creates a window with sliders to adjust canny in the image
-# For specific tuning for new fish types
-# Currently only used for snapper testing
-def tuneCanny(image):
-    window = 'canny'
-    cv2.namedWindow(window, cv2.WINDOW_NORMAL)
-    cv2.createTrackbar('threshold1', window, 10, 500, nothing)
-    cv2.createTrackbar('threshold2', window, 10, 500, nothing)
 
-    while True:
-        image_copy = np.copy(image)
-        threshold1 = cv2.getTrackbarPos('threshold1', window)
-        threshold2 = cv2.getTrackbarPos('threshold2', window)
+def get_dimensions(removeBg_output_img, og_img):
+    image = removeBg_output_img  # Image for processing
 
-        # Displays the image based on the new and adjusted threshold values
-        edged = cv2.Canny(image_copy, threshold1, threshold2)
-        cv2.imshow('edged', edged)
-
-        k = cv2.waitKey(1) & 0xFF
-        if k == 27:
-            break
-
-    cv2.destroyAllWindows()
-    return threshold1, threshold2
-
-
-def get_dimensions(image, orig):
-
-    # x, y, z = image.img.shape
-    # print(x, y, z)
-
-    # convert it to grayscale, and blur it slightly
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (7, 7), 0)
+    # its is already in greyscale for the process before
+    # blur it slightly
+    gray = cv2.GaussianBlur(image, (7, 7), 0)
 
     # For getting thresholds for Canny using the adjustable slides
-    # t1, t2 = tuneCanny(gray)
+    # t1, t2 = tuneCanny(gray) # Demonstration
     # print(f"Threshold1: {t1}, Threshold2: {t2}")
-    t1, t2 = 10 , 10
-
+    t1, t2 = 10, 10  # For default threshold
 
     # Performs edge detection, then perform a dilation + erosion to
     # Closes gaps in between object edges
     edged = cv2.Canny(gray, t1, t2)
-    edged = cv2.dilate(edged, None, iterations=1)
-    edged = cv2.erode(edged, None, iterations=1)
-    # show_image("erode and dilate", edged, True)
+
+    # Dilation increases the boundaries of regions of foreground pixels.
+    # Areas of foreground pixels expand in size while holes within those regions become smaller.
+    kernel = np.ones((3, 3), 'uint8')
+    dilate = cv2.dilate(edged, kernel, iterations=1)
+    erode_dilate = cv2.erode(dilate, None, iterations=1)
 
     # find contours in the edge map
-    cnts = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cv2.findContours(erode_dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     # print("Total number of contours are: ", len(cnts))
 
@@ -126,8 +72,9 @@ def get_dimensions(image, orig):
         box = cv2.minAreaRect(c)
         box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
         box = np.array(box, dtype="int")
-
         box = perspective.order_points(box)
+
+        orig = og_img  # Source video frame to layover the dimensions
 
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
@@ -180,6 +127,7 @@ def get_dimensions(image, orig):
         dimA_CM = inch_to_cm(dimA)
         dimB_CM = inch_to_cm(dimB)
 
+        # Adds the length and depth of the objects onto the source video image frame
         cv2.putText(orig, "{:.1f}cm".format(dimA_CM), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
                     0.65, (255, 255, 255), 2)
         cv2.putText(orig, "{:.1f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
@@ -189,49 +137,86 @@ def get_dimensions(image, orig):
         length = "{:.2f}cm".format(dimA_CM)
         depth = "{:.2f}cm".format(dimB_CM)
 
-        # show the output image
-        cv2.imshow("Image", orig)
-        # cv2.waitKey(0)
-
-        # # closing all open windows
+        # # show the output image
+        cv2.imshow("Erode and dilate", erode_dilate)
+        cv2.imshow("Fish Dimensions", orig)
+        cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-        return [length,depth]
+        # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
+        # For multiple reference dots (+- 5% for checking each ref)
+        # For tiny water blob reflections (If smaller than a certain threshold ignore)
 
-        # print("Total contours processed: ", count)
-        # print("Dimensions of fish",
-        #       "------------",
-        #       "Length: {} cm".format(round(dimA_CM, 3)),
-        #       "Depth: {} cm".format(round(dimB_CM, 3)), sep='\n')
+        if count == 1:
+            print("Dimensions of Reference",
+                  "------------",
+                  "Length: {} cm".format(length),
+                  "Depth: {} cm".format(depth), sep='\n')
+            print("Total contours processed: ", count)
 
+        elif count == 2:
+            print("Dimensions of Fish ID tag",
+                  "------------",
+                  "Length: {} cm".format(length),
+                  "Depth: {} cm".format(depth), sep='\n')
+            print("Total contours processed: ", count)
 
-def output_dimensions(length, depth, name):
+        elif count == 3:
+            fish_length = length
+            fish_depth = depth
+            print("Dimensions of Fish",
+                  "------------",
+                  "Length: {} cm".format(length),
+                  "Depth: {} cm".format(depth), sep='\n')
+            print("Total contours processed: ", count)
 
-    filename = 'output.csv'
+            return fish_length, fish_depth
 
-    try:
-        with open(filename, 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(['Fish ID', 'Length', 'Depth'])
+def output_dimensions(image_list):
+    if image_list is not None:
+        filename = 'Fish_Dimensions.csv'
 
-            # >>> head, tail = os.path.split('product/bin/client')
-            # >>> head
-            # 'product/bin'
-            # >>> tail
-            # 'client'
+        try:
+            with open(filename, 'w', newline='') as f:
+                writer = csv.writer(f, delimiter='\t')
+                writer.writerow(['Fish ID', 'Length', 'Depth'])
 
-            head, tail = os.path.split(name)
-            writer.writerow([tail, length, depth])
-    except BaseException as e:
-        print('BaseException:', filename)
-    else:
-        print('Data has been loaded successfully !')
+                for image in image_list:
+                    head, tail = os.path.split(image.name)
+                    writer.writerow([tail, image.length, image.depth])
+        except BaseException as e:
+            print('BaseException:', filename)
+        else:
+            print('Data has been loaded successfully !')
 
+# Displays the title of the image display in the window
+# def show_image(title, image, destroy_all=True):
+#     cv2.imshow(title, image)
+#     cv2.waitKey(0)
+#     if destroy_all:
+#         cv2.destroyAllWindows()
 
-# with open('file.csv',newline='') as f:
-#     r = csv.reader(f)
-#     data = [line for line in r]
-# with open('file.csv','w',newline='') as f:
-#     w = csv.writer(f)
-#     w.writerow(['ColA','ColB'])
-#     w.writerows(data)
+# Creates a window with sliders to adjust canny in the image
+# For specific tuning for new fish types
+# Currently only used for snapper testing
+# def tuneCanny(image):
+#     window = 'canny'
+#     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
+#     cv2.createTrackbar('threshold1', window, 10, 500, nothing)
+#     cv2.createTrackbar('threshold2', window, 10, 500, nothing)
+#
+#     while True:
+#         image_copy = np.copy(image)
+#         threshold1 = cv2.getTrackbarPos('threshold1', window)
+#         threshold2 = cv2.getTrackbarPos('threshold2', window)
+#
+#         # Displays the image based on the new and adjusted threshold values
+#         edged = cv2.Canny(image_copy, threshold1, threshold2)
+#         cv2.imshow('edged', edged)
+#
+#         k = cv2.waitKey(1) & 0xFF
+#         if k == 27:
+#             break
+#
+#     cv2.destroyAllWindows()
+#     return threshold1, threshold2
