@@ -32,33 +32,5 @@ def main():
     
     print("End of video image capture process: ", current_time)
 
-    """
-    Fish Dimension Functions
-    """
-
-    # print("Running Fish background removal functions")
-    # print('Retrieving files from "images" folder...')
-
-    # # Step 1
-    # # Remove background and export the output
-    # print('Removing background from fish images...')
-    # image_list = removeBg.get_image_names()
-    # removeBg_output = removeBg.remove_background(image_list)
-    # print('Background removal complete!')
-
-    # # Step 2
-    # # Crop out the yellow belt areas
-    # print('Cropping out yellow belt areas of images...')
-    # cropBelt_output = processCrop.crop_belt(removeBg_output)
-    # print('Conveyor belt cropped out!')
-
-    # # Step 3
-    # # Measure the dimensions of the fish
-    # print('Measuring dimensions of the fish')
-    # # getDimensions.test_func(cropBelt_output)
-    # fish_dimensions = getDimensions.get_dimensions(cropBelt_output)
-    # # Output the dimensions into a CSV file
-    # getDimensions.output_dimensions(fish_dimensions)
-
 if __name__ == "__main__":
     main()
