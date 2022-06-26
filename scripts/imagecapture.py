@@ -158,6 +158,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                             # TODO: Run fish dimension function (Nicholas)
 
+
                             print('Running fish image processing functions')
 
                             """

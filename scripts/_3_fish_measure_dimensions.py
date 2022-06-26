@@ -52,8 +52,10 @@ def get_dimensions(removeBg_output_img, og_img):
 
     # loop over the contours individually
     count = 0
+
     for c in cnts:
         # if the contour is not sufficiently large, ignore it
+        # print("cnts.index(c)): ", cnts.index(c))
         if cv2.contourArea(c) < 1000:
             continue
         count += 1
@@ -133,23 +135,26 @@ def get_dimensions(removeBg_output_img, og_img):
         # # show the output image
         # cv2.imshow("gray", gray)
         # cv2.imshow("Erode and dilate", erode_dilate)
-        cv2.imshow("Fish Dimensions", orig)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
         # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
         # TODO: For multiple reference dots (+- 5% for checking each ref)
         # TODO: For tiny water blob reflections (If smaller than a certain threshold ignore)
 
         if count == 1:
+            print("")
+            print("Value of count:", count)
             print("Dimensions of Reference",
                   "------------",
                   "Length: {} cm".format(length),
                   "Depth: {} cm".format(depth), sep='\n')
             print("Total contours processed: ", count)
 
+        # elif (count == 2 and ((length == length+0.05) or (depth == depth+0.05)):
+        #     print()
+
         elif count == 2:
             print("")
+            print("Value of count:", count)
             print("Dimensions of Fish ID tag",
                   "------------",
                   "Length: {} cm".format(length),
@@ -157,16 +162,15 @@ def get_dimensions(removeBg_output_img, og_img):
             print("Total contours processed: ", count)
 
         elif count == 3:
-            fish_length = length
-            fish_depth = depth
             print("")
+            print("Value of count:", count)
             print("Dimensions of Fish",
                   "------------",
                   "Length: {} cm".format(length),
                   "Depth: {} cm".format(depth), sep='\n')
             print("Total contours processed: ", count)
 
-            return fish_length, fish_depth
+        return dimA_CM, dimB_CM
 
 
 # Function is needed for the createTrackbar step downstream
