@@ -51,11 +51,10 @@ def get_dimensions(removeBg_output_img, og_img):
     pixelPerMetric = None
 
     # loop over the contours individually
-    count = 0
+    count = 0.0
 
     for c in cnts:
         # if the contour is not sufficiently large, ignore it
-        # print("cnts.index(c)): ", cnts.index(c))
         if cv2.contourArea(c) < 1000:
             continue
         count += 1
@@ -132,46 +131,50 @@ def get_dimensions(removeBg_output_img, og_img):
         length = "{:.2f}cm".format(dimA_CM)
         depth = "{:.2f}cm".format(dimB_CM)
 
+        d_length = dimA_CM
+        d_depth = dimB_CM
+
+        ref_length_buffer = ref_width + ref_width*0.05
+        ref_depth_buffer = ref_width + ref_width*0.05
+
         # # show the output image
         # cv2.imshow("gray", gray)
         # cv2.imshow("Erode and dilate", erode_dilate)
 
         # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
-        # TODO: For multiple reference dots (+- 5% for checking each ref)
         # TODO: For tiny water blob reflections (If smaller than a certain threshold ignore)
 
         if count == 1:
             print("")
-            print("Value of count:", count)
             print("Dimensions of Reference",
                   "------------",
-                  "Length: {} cm".format(length),
-                  "Depth: {} cm".format(depth), sep='\n')
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
             print("Total contours processed: ", count)
 
-        # elif (count == 2 and ((length == length+0.05) or (depth == depth+0.05)):
-        #     print()
+        elif count != 1 and d_length <= ref_length_buffer and d_depth <= ref_depth_buffer:
+            print("")
+            print("Additional Reference detected skipping")
+            print("Value of count:", count)
+            continue
 
         elif count == 2:
             print("")
-            print("Value of count:", count)
             print("Dimensions of Fish ID tag",
                   "------------",
-                  "Length: {} cm".format(length),
-                  "Depth: {} cm".format(depth), sep='\n')
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
             print("Total contours processed: ", count)
 
         elif count == 3:
             print("")
-            print("Value of count:", count)
             print("Dimensions of Fish",
                   "------------",
-                  "Length: {} cm".format(length),
-                  "Depth: {} cm".format(depth), sep='\n')
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
             print("Total contours processed: ", count)
 
-        return dimA_CM, dimB_CM
-
+            return length, depth
 
 # Function is needed for the createTrackbar step downstream
 def nothing(x):
