@@ -36,6 +36,7 @@ def get_dimensions(removeBg_output_img, og_img):
 
     # Dilation increases the boundaries of regions of foreground pixels.
     # Areas of foreground pixels expand in size while holes within those regions become smaller.
+
     kernel = np.ones((4,4), 'uint8')
     dilate = cv2.dilate(edged, kernel, iterations=1)
     erode_dilate = cv2.erode(dilate, None, iterations=1)
@@ -51,6 +52,7 @@ def get_dimensions(removeBg_output_img, og_img):
     pixelPerMetric = None
 
     # loop over the contours individually
+
     count = 0
 
     for c in cnts:
@@ -58,6 +60,7 @@ def get_dimensions(removeBg_output_img, og_img):
         if cv2.contourArea(c) < 1000:
             continue
         count += 1
+        
         skipped = False
 
         # compute the rotated bounding box of the contour

@@ -157,6 +157,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             _has_image = True
 
                             # TODO: Run fish dimension function (Nicholas)
+
                             print('Running fish image processing functions')
 
                             # 1. Run cropBelt function to black out all but the belt in the image
@@ -168,7 +169,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
                             fish_length, fish_depth, flag = getDimensions.get_dimensions(removeBg_output_img,
                                                                                               og_img)
-
                             # open the file to write
                             with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
