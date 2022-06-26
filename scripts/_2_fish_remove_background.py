@@ -44,7 +44,7 @@ def remove_background(cropBelt_output_img):
     inverted_mask = cv2.bitwise_not(combined_mask)
     combined_mask_output = cv2.bitwise_and(image, image, mask=inverted_mask)
 
-    # TODO: !!!!!!
+    # TODO:
     # # Change the reference dots into white to increase contours
     # ref_lower_hsv = np.array([, , ], np.uint8)
     # ref_upper_hsv = np.array([, , ], np.uint8)

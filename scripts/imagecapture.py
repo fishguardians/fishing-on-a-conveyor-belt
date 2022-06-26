@@ -157,15 +157,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             _has_image = True
 
                             # TODO: Run fish dimension function (Nicholas)
-
-
                             print('Running fish image processing functions')
-
-                            """
-                            frame - for original frame in the video
-                            removeBg
-                            getDimensions
-                            """
 
                             # 1. Run cropBelt function to black out all but the belt in the image
                             cropBelt_output_img = cropBelt.crop_belt(frame)
@@ -174,7 +166,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             removeBg_output_img = removeBg.remove_background(cropBelt_output_img)
 
                             # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
-                            fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img, og_img)
+                            fish_length, fish_depth, flag = getDimensions.get_dimensions(removeBg_output_img,
+                                                                                              og_img)
 
                             # open the file to write
                             with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:
@@ -189,7 +182,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 'Depth' - the length of the depth of the fish (Widest point of the fish)
                                 """
                                 # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
-                                writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth])
+                                writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(frame, _frame_index, _video_name, 'fish')
                             # open the file to write
