@@ -1,11 +1,10 @@
-import cv2
-
 from scipy.spatial import distance as dist
 from imutils import perspective
 from imutils import contours
 import numpy as np
 import imutils
 import cv2
+import csv
 import os
 from constant import ref_width
 
@@ -77,7 +76,7 @@ def get_dimensions(image_list):
 
         # Dilation increases the boundaries of regions of foreground pixels.
         # Areas of foreground pixels expand in size while holes within those regions become smaller.
-        kernel = np.ones((5, 5), 'uint8')
+        kernel = np.ones((3, 3), 'uint8')
         edged = cv2.dilate(edged, kernel, iterations=1)
         edged = cv2.erode(edged, None, iterations=1)
         show_image("erode and dilate", edged, True) #Demonstration
@@ -197,11 +196,11 @@ def get_dimensions(image_list):
 
 def output_dimensions(image_list):
     if image_list is not None:
-        filename = 'output.csv'
+        filename = 'Fish_Dimensions.csv'
 
         try:
             with open(filename, 'w', newline='') as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, delimiter='\t')
                 writer.writerow(['Fish ID', 'Length', 'Depth'])
 
                 for image in image_list:

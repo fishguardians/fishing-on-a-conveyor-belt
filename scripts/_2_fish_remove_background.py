@@ -10,7 +10,6 @@ Step 2 for fish length image processing
 # To remove water reflections on the belt, that affect the contour processing
 """
 
-
 def crop_belt(image_list):
     for image in image_list:
         # Removing the water reflections on the belt
