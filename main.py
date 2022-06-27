@@ -5,8 +5,8 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
 
-import scripts.imagecapture as imagecapture
-import digit_recognition
+import scripts.video_processing as video_processing
+import constant
 
 from datetime import datetime
 
@@ -24,11 +24,12 @@ def main():
     print("""\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
     
     print('Retrieving file names from "videos" folder...')
-    print('Files: ' + str(imagecapture.GetVideoNames()) +'\n')
-    video_files = imagecapture.GetVideoNames()
+    video_files = video_processing.GetVideoNames(constant.videos_location)
+    print('Files: ' + str(video_files) +'\n')
+
     
     print('Unprocessed videos found: '+str(len(video_files))+'\n')
-    imagecapture.CaptureImagesOnVideo(video_files)
+    video_processing.CaptureImagesOnVideo(video_files)
     
     print("End of video image capture process: ", current_time)
 

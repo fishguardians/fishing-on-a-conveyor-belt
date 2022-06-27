@@ -8,7 +8,6 @@ import os
 import shutil
 import csv
 import cv2
-from pytesseract import pytesseract
 import glob
 import random
 import math
@@ -17,54 +16,57 @@ import matplotlib.pyplot as plt
 import constant
 # from threading import Thread
 
-# Fish Dimension modules
-import scripts._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
-import \
-    scripts._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
-import scripts._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
-
-pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
+if(os.name == 'nt'):
+    pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
 
 # Read the scale
-# from digit_recognization import digit_recognization
-from digit_recognition import digit_recognition
-
-from object_detection import ObjectDetection
+from scripts.digit_recognition import digit_recognition
+from scripts.fish_measurement import fish_measurement
+from scripts.text_recognition import text_recognition
+from scripts.object_detection import ObjectDetection
 
 # Initialize Object Detection
 od = ObjectDetection()
 
-
-def GetVideoNames():
+def GetVideoNames(path):
     """ # 1 - directory of stored videos """
 
-    folder = os.listdir(constant.videos_location)
-    videos_to_be_processed = []
+    folder = os.listdir(path)
+    videos_array = []
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
         # Add required txt files
         if (file != '.gitignore'):
-            with open('output/' + file + '-images.txt', 'w', encoding='UTF8') as f:
+            # check if the directory exists
+            if not os.path.exists('output/' + file):
+                os.makedirs('output/' + file)
+            with open('output/' + file + '/images.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
-                # write the header
+                # write the header for hypothenuse
                 writer.writerow(['#', 'Fish#', 'Frame', 'Hypothenuse'])
-            with open('output/' + file + '-dimensions.txt', 'w', encoding='UTF8') as f:
+            with open('output/' + file + '/dimensions.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
-                # write the header
+                # write the header for dimension
                 writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
-            with open('output/' + file + '-id.txt', 'w', encoding='UTF8') as f:
+            with open('output/' + file + '/ids.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
-                # write the header
+                # write the header for id
                 writer.writerow(['#', 'Fish#', 'Frame', 'Value'])
+            with open('output/' + file + '/weights.txt', 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                # write the header for weight
+                writer.writerow(['#', 'Fish#', 'Frame', 'Weight'])
+
+        # Add to list of videos to be processed
         match file_extension.lower():
             case '.mov':
-                videos_to_be_processed.append(file.lower())
+                videos_array.append(file.lower())
             case '.mp4':
-                videos_to_be_processed.append(file.lower())
+                videos_array.append(file.lower())
             case _:
                 continue
-    return videos_to_be_processed
+    return videos_array
 
 
 def CaptureImagesOnVideo(videos_to_be_processed):
@@ -77,18 +79,17 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     check_empty = 0
     # allocate the id for the fish
     wells_id = 0
-    id_name = ""
 
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index + 1) + '...\n')
+        # detect first fish before incrementing id
+        _record_fish_id = False
         # use to capture 1 frame per second
         _skip_frames = 0
         # use for naming frames in case id cannot be detected
         _frame_index = 0
         # ids for tracking in txt files
-        _fish_id = 0
-        _id_id = 0
-        _scale_id = 0
+        _fish_id , _id_id, _scale_id = 0, 0, 0
 
         cap = cv2.VideoCapture(constant.videos_location + _video_name)
 
@@ -104,7 +105,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # when stream ends
             if not ret:
                 cap.release()
-                MoveVideo(_video_name)
+                # TODO: uncomment this line to move the video to completed folder
+                # MoveVideo(_video_name)
                 print(f'Video {index + 1} process complete.')
                 break
 
@@ -131,16 +133,39 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
             # check if can save img
             _has_image = False
-            _has_id = False
 
             print(class_ids)
 
             for (index, box) in enumerate(boxes):
                 x, y, w, h = box
 
-                # check if all 3 objects are in the image [fish, id, scale]
+                # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-                    case 1:  # Fish
+                    case 0:  # Detected that id tag is found
+                        id_coords = box
+                        _id_id += 1
+
+                        # Work with a copy of the smaller version of image
+                        id_image = img.copy()
+                        # Give some padding to ensure values are read properly
+                        if y - 10 < 0 or y + h + 10 > height or x - 10 < 0 or x + w + 10 > width:
+                            id_image = id_image[y:y + h, x:x + w]
+                        else:
+                            id_image = id_image[y-10:y + h + 10, x-10:x + w+10]
+                        
+                        # Save for reference checking
+                        SaveImages(id_image, _frame_index, _video_name, 'id')
+
+                        # Call the id tag scripts
+                        words = text_recognition(id_image)
+                        
+                        # open the file to write
+                        with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
+                            # create the csv writer
+                            writer = csv.writer(f)
+                            # ['#', 'Fish#', 'Frame', 'Value']
+                            writer.writerow([_id_id, wells_id, _frame_index, words])
+                    case 1:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -155,29 +180,25 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             _fish_id += 1
                             hypo_threshold = hypothenuse
                             _has_image = True
-
-                            # TODO: Run fish dimension function (Nicholas)
-
-
-                            print('Running fish image processing functions')
-
-                            """
-                            frame - for original frame in the video
-                            removeBg
-                            getDimensions
-                            """
-
-                            # 1. Run cropBelt function to black out all but the belt in the image
-                            cropBelt_output_img = cropBelt.crop_belt(frame)
-
-                            # 2. Run removeBackground function to remove yellow belt colour and water reflections
-                            removeBg_output_img = removeBg.remove_background(cropBelt_output_img)
-
-                            # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
-                            fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img, og_img)
-
+                            # Save for reference checking
+                            SaveImages(frame, _frame_index, _video_name, 'actual')
+                            
                             # open the file to write
-                            with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:
+                            with open('output/' + _video_name + '/images.txt', 'a', encoding='UTF8') as f:
+                                # create the csv writer
+                                writer = csv.writer(f)
+                                # ['#', 'Fish#', 'Frame', 'Hypothenuse']
+                                writer.writerow([_fish_id, wells_id, _frame_index, hypothenuse])
+
+                        # reset checker
+                        else:
+                            hypo_threshold = 70  # Try to another fish that is closer
+
+                        if(_has_image):
+                            # get fish dimensions using image
+                            fish_length, fish_depth, cropped_img = fish_measurement(frame.copy(), frame.copy())
+                            # open the file to write
+                            with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
                                 # write the header
 
@@ -191,57 +212,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth])
 
-                            SaveImages(frame, _frame_index, _video_name, 'fish')
-                            # open the file to write
-                            with open('output/' + _video_name + '-images.txt', 'a', encoding='UTF8') as f:
-                                # create the csv writer
-                                writer = csv.writer(f)
-
-                                """
-                                '_fish_id' - fish_id is the # unique key for the data
-                                'wells_id' - current num of fish that's passing through the conveyor belt
-                                '_frame_index' - the num value of the frame of the video image taken
-                                'hypotenuse' - the point where the fish is detected?
-                                """
-                                writer.writerow([_fish_id, wells_id, _frame_index, hypothenuse])
-
-                        # reset checker
-                        else:
-                            hypo_threshold = 70  # Try to another fish that is closer
-
-                    case 0:  # Id
-                        id_coords = box
-                        _id_id += 1
-                        # TODO: Read Fish ID before saving as img
-                        _has_id = True
-
-                        id_image = img.copy()
-                        id_image = id_image[y:y + h, x:x + w]
-                        # id_image = cv2.resize(id_image, None, fx=4, fy=4)
-                        id_image = cv2.cvtColor(id_image, cv2.COLOR_BGR2GRAY)  # convert from GBR to RGB
-                        id_image = cv2.rotate(id_image, cv2.ROTATE_90_COUNTERCLOCKWISE)  # change orientation
-                        cv2.imshow("test_id", id_image)
-                        id_image = cv2.bilateralFilter(id_image, 5, 30, 60)
-                        # edged = cv2.Canny(id_image, 30, 200)
-                        # thresholding = cv2.threshold(id_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-                        kernel = np.ones((5, 5), np.uint8)
-                        opening = cv2.morphologyEx(id_image, cv2.MORPH_OPEN, kernel)
-                        # cv2.imshow("test", opening)
-                        words = pytesseract.image_to_string(opening)
-                        print(words)
-                        text = pytesseract.image_to_string(opening, \
-                                                           config='-l eng --psm 9 --oem 3 -c tessedit_char_whitelist="' + constant.tess_whitelist + '" tessedit_char_blacklist="' + constant.tess_blacklist + '"')
-                        edited = ''.join(char for char in text if char.isalnum())
-                        # print(edited)
-                        SaveImages(id_image, _frame_index, _video_name, 'id')
-
-                        # open the file to write
-                        with open('output/' + _video_name + '-id.txt', 'a', encoding='UTF8') as f:
-                            # create the csv writer
-                            writer = csv.writer(f)
-                            # ['#', 'Fish#', 'Frame', 'Value', 'x', 'y', 'w', 'h']
-                            writer.writerow([_id_id, wells_id, _frame_index, edited])
-
+                            SaveImages(cropped_img, _frame_index, _video_name, 'fish')
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -279,37 +250,23 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                             saveCopy = saveCopy[y:y + h, x:x + w]
-                            if (_has_image == True):
-                                SaveImages(saveCopy, _frame_index, _video_name, 'scale')
+                            scale_reading = digit_recognition(saveCopy)
+
+                            # open the file to write
+                            with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
+                                # create the csv writer
+                                writer = csv.writer(f)
+                                # ['#', 'Fish#', 'Frame', 'Weight']
+                                writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
 
                         # show the images
                         # cv2.imshow("Result", np.hstack([scale_image, output]))
 
                         # cv2.waitKey(0)
 
-                        # img1 = cv2.imread('template/1segment.png',1)          # queryImage
+                        # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
 
-                        # # Initiate SIFT detector
-                        # orb = cv2.ORB()
-
-                        # # find the keypoints and descriptors with SIFT
-                        # kp1, des1 = orb.detectAndCompute(img1,None)
-                        # kp2, des2 = orb.detectAndCompute(saveCopy,None)
-
-                        # # create BFMatcher object
-                        # bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-
-                        # # Match descriptors.
-                        # matches = bf.match(des1,des2)
-
-                        # # Sort them in the order of their distance.
-                        # matches = sorted(matches, key = lambda x:x.distance)
-
-                        # # Draw first 10 matches.
-                        # img3 = cv2.drawMatches(img1,kp1,saveCopy,kp2,matches[:10], flags=2)
-
-                        # plt.imshow(img3),plt.show()
-
+                    
                         ###
                         # BGR
                         ###
@@ -356,31 +313,33 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # cv2.imshow("Result", np.hstack([scale_image, output]))
 
                         # cv2.waitKey(0)
-
-                        # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
                     case _:
                         continue
 
-            # if(_has_image==True):
-            # _scale_id+=1
-            # print("images/"+_video_name+"/fish/"+str(_frame_index)+".jpg")
-            # scale_reading = digit_recognition("images/"+_video_name+"/fish/"+str(_frame_index)+".jpg")
+            if(_has_image==True):
+                _scale_id += 1
 
-            # open the file to write
-            # with open('output/' + _video_name + '-id.txt', 'a', encoding='UTF8') as f:
-            # create the csv writer
-            # writer = csv.writer(f)
-            # ['#', 'Fish#', 'Frame', 'Value']
-            # writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
+                scale_reading = digit_recognition(frame)
+
+                # open the file to write
+                with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
+                    # create the csv writer
+                    writer = csv.writer(f)
+                    # ['#', 'Fish#', 'Frame', 'Weight']
+                    writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
 
             # View Video
             ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
 
             if (prev_center_pts == [] and len(fish_center_coords) > 0):
                 # check if the previous 3 frames are empty if not it is the same fish
-                if (check_empty > 2):
+                if (check_empty > 3 and _record_fish_id):
                     check_empty = 0
                     wells_id += 1
+
+                if(not _record_fish_id):
+                    _record_fish_id=True
+                
 
             # if there's no fish add the tracker empty by 1
             if (fish_center_coords == []):

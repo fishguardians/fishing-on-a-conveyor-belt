@@ -4,8 +4,7 @@ from imutils import contours
 import numpy as np
 import imutils
 import cv2
-import csv
-import os
+
 from constant import ref_width
 
 """
