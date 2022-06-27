@@ -60,6 +60,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         if cv2.contourArea(c) < 1000:
             continue
         count += 1
+        
+        skipped = False
 
         skipped = False
 
