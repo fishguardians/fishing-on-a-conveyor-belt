@@ -18,7 +18,7 @@ Reference length can be modified in constant.py
 """
 
 
-def get_dimensions(removeBg_output_img, og_img):
+def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     image = removeBg_output_img  # Image for processing
 
     # its is already in greyscale for the process before
@@ -37,7 +37,7 @@ def get_dimensions(removeBg_output_img, og_img):
     # Dilation increases the boundaries of regions of foreground pixels.
     # Areas of foreground pixels expand in size while holes within those regions become smaller.
 
-    kernel = np.ones((4,4), 'uint8')
+    kernel = np.ones((4, 4), 'uint8') # 4 is the minimum before it there will be broken contours
     dilate = cv2.dilate(edged, kernel, iterations=1)
     erode_dilate = cv2.erode(dilate, None, iterations=1)
 
@@ -60,7 +60,7 @@ def get_dimensions(removeBg_output_img, og_img):
         if cv2.contourArea(c) < 1000:
             continue
         count += 1
-        
+
         skipped = False
 
         # compute the rotated bounding box of the contour
@@ -148,7 +148,7 @@ def get_dimensions(removeBg_output_img, og_img):
         # cv2.imshow("gray", gray)
         # cv2.imshow("Erode and dilate", erode_dilate)
         cv2.namedWindow("Fish Dimensions", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Fish Dimensions", 960, 540)
+        cv2.resizeWindow("Fish Dimensions", 768, 432)
         cv2.imshow("Fish Dimensions", orig)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
@@ -160,63 +160,54 @@ def get_dimensions(removeBg_output_img, og_img):
         # In this order, reference object, fish id tag and fish
         # Hence checks for reference object first
 
-        try:
-            flag = None
+        if count == 1:
+            print("")
+            print("Dimensions of Reference",
+                  "------------",
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
+            print("Total contours processed: ", count)
 
-            if count == 1:
-                print("")
-                print("Dimensions of Reference",
-                      "------------",
-                      "Length: {} cm".format(d_length),
-                      "Depth: {} cm".format(d_depth), sep='\n')
-                print("Total contours processed: ", count)
+        # If there are multiple reference objects detected or contours smaller than the ref
+        # skip them, it will not be counted for
+        elif count != 1 and d_length <= ref_length_buffer and d_depth <= ref_depth_buffer:
+            print("")
+            print("Additional object detected, Skipping...")
+            print("Value of count:", count)
+            continue
 
-            # If there are multiple reference objects detected or contours smaller than the ref
-            # skip them, it will not be counted for
-            elif count != 1 and d_length <= ref_length_buffer and d_depth <= ref_depth_buffer:
-                print("")
-                print("Additional object detected, Skipping...")
-                print("Value of count:", count)
-                continue
+        # Measure the fish ID tag
+        elif count == 2:
+            print("")
+            print("Dimensions of Fish ID tag",
+                  "------------",
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
+            print("Total contours processed: ", count)
 
-            # Measure the fish ID tag
-            elif count == 2:
-                print("")
-                print("Dimensions of Fish ID tag",
-                      "------------",
-                      "Length: {} cm".format(d_length),
-                      "Depth: {} cm".format(d_depth), sep='\n')
-                print("Total contours processed: ", count)
+        # Measure the fish
+        elif not skipped and count == 3:
+            print("")
+            print("Dimensions of Fish",
+                  "------------",
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
+            print("Total contours processed: ", count)
+            return length, depth
 
-            # Measure the fish
-            elif not skipped and count == 3:
-                print("")
-                print("Dimensions of Fish",
-                      "------------",
-                      "Length: {} cm".format(d_length),
-                      "Depth: {} cm".format(d_depth), sep='\n')
-                print("Total contours processed: ", count)
-                return length, depth, flag
+        # If there has been a skip, measure the fish
+        elif skipped and count >= 3:
+            print("")
+            print("Dimensions of Fish",
+                  "------------",
+                  "Length: {} cm".format(d_length),
+                  "Depth: {} cm".format(d_depth), sep='\n')
+            print("Total contours processed: ", count)
+            return length, depth
 
-            # If there has been a skip, measure the fish
-            elif skipped and count >= 3:
-                print("")
-                print("Dimensions of Fish",
-                      "------------",
-                      "Length: {} cm".format(d_length),
-                      "Depth: {} cm".format(d_depth), sep='\n')
-                print("Total contours processed: ", count)
-                return length, depth, flag
+        else:
+            continue
 
-            else:
-                continue
-
-        # TypeError: cannot unpack non-iterable NoneType object
-        except TypeError as e:
-            print(e)
-            print("The reference was not detected.")
-            flag = "ERROR: Reference was not detected."
-            return length, depth, flag
 
 # Function is needed for the createTrackbar step downstream
 def nothing(x):
