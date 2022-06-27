@@ -78,7 +78,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     # allocate the id for the fish
     wells_id = 0
     id_name = ""
-    flag = None # For flagging out errors during the processing
+    fish_length = None
+    fish_depth = None
 
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index + 1) + '...\n')
@@ -170,13 +171,14 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
 
                             try:
+                                flag = ""  # For flagging out errors during the processing
                                 fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img,
-                                                                                             og_img)
+                                                                                       og_img)
                             except TypeError as e:
-                                print(e) # TypeError: cannot unpack non-iterable NoneType object
+                                print(e)  # TypeError: cannot unpack non-iterable NoneType object
                                 print("The reference was not detected.")
-                                flag = "ERROR - Ref not detected!"
-                
+                                flag = "ERROR"
+
                             # open the file to write
                             with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
