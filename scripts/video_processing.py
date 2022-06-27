@@ -210,7 +210,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 'Depth' - the length of the depth of the fish (Widest point of the fish)
                                 """
                                 # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
-                                writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth])
+                                writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
                     case 2:  # scale
