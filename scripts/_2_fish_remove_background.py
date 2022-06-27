@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''camera.py: Video capture module that takes the images of the fish
+'''_2_fish_remove_background.py: Removes conveyor belt colour and water reflections on belt
     @Author: "Nicholas Bingei"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 
 # import if necessary (built-in, third-party, path, own modules)
+
 import cv2
 import numpy as np
 

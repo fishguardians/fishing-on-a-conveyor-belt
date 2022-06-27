@@ -158,26 +158,21 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             hypo_threshold = hypothenuse
                             _has_image = True
 
-                            # TODO: Run fish dimension function (Nicholas)
-
                             print('Running fish image processing functions')
 
                             # 1. Run cropBelt function to black out all but the belt in the image
                             cropBelt_output_img = cropBelt.crop_belt(frame)
-
                             # 2. Run removeBackground function to remove yellow belt colour and water reflections
                             removeBg_output_img = removeBg.remove_background(cropBelt_output_img)
-
                             # 3. Run getDimensions function to get measurements of fish (E.g. Barramundi and Snapper)
 
                             try:
                                 flag = ""  # For flagging out errors during the processing
                                 fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img,
                                                                                        og_img)
-                            except TypeError as e:
+                            except Exception as e:
                                 print(e)  # TypeError: cannot unpack non-iterable NoneType object
-                                print("The reference was not detected.")
-                                flag = "ERROR"
+                                flag = "ERROR! Please verify measurements for this fish"
 
                             # open the file to write
                             with open('output/' + _video_name + '-dimensions.txt', 'a', encoding='UTF8') as f:

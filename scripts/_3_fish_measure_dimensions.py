@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''_3_fish_measure_dimensions.py: Measures the fish in image based on a reference object
+    @Author: "Nicholas Bingei"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+
+# import if necessary (built-in, third-party, path, own modules)
+
 from scipy.spatial import distance as dist
 from imutils import perspective
 from imutils import contours

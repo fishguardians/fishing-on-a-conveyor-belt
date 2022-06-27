@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''camera.py: Video capture module that takes the images of the fish
+'''_1_fish_crop_belt_image.py: Processes video frames and crops out the non-conveyor belt parts of the image.
     @Author: "Nicholas Bingei"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 
