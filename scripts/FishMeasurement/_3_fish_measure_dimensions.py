@@ -12,8 +12,7 @@ from imutils import contours
 import numpy as np
 import imutils
 import cv2
-import csv
-import os
+
 from constant import ref_width
 
 """
@@ -153,9 +152,9 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # cv2.imshow("gray", gray)
         # cv2.imshow("Erode and dilate", erode_dilate)
-        cv2.namedWindow("Fish Dimensions", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Fish Dimensions", 768, 432)
-        cv2.imshow("Fish Dimensions", orig)
+        # cv2.namedWindow("Fish Dimensions", cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow("Fish Dimensions", 768, 432)
+        # cv2.imshow("Fish Dimensions", orig)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
