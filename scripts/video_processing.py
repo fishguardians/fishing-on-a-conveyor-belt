@@ -14,10 +14,11 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import constant
+import pytesseract
 # from threading import Thread
 
 if(os.name == 'nt'):
-    pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe" # Path of where pytesseract.exe is located
 
 # Read the scale
 from scripts.digit_recognition import digit_recognition
