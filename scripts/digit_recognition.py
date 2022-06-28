@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import storage.generate_roi as generate_roi
 import imutils
 
 DIGITSDICT = {
@@ -18,12 +17,12 @@ DIGITSDICT = {
 
 def digit_recognition(image,angle=6.0):
     #function call that gets the image with the right roi
-    roi_color = generate_roi.get_roi(image)
+    roi_color = get_roi(image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
     roi= imutils.rotate(roi, angle)
-    # cv2.imshow("roi", roi)
+    # cv2.imshow("first roi", roi)
     # cv2.waitKey(0)
     
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
@@ -31,11 +30,11 @@ def digit_recognition(image,angle=6.0):
     RATIO = roi.shape[0] * 0.01
     #trim image, in sequence of y1:y2, x1:x2
     trimmed = roi[int(RATIO)+2 :, int(RATIO) : roi.shape[1] - int(RATIO)-10]
-
+    
     edged = cv2.adaptiveThreshold(  
         trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 5
     )
-
+    
     #-----------------enhance image------------------------------------
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 5))
     dilated = cv2.dilate(edged, kernel, iterations=1)
@@ -155,5 +154,27 @@ def digit_recognition(image,angle=6.0):
         if(angle<=12):
             digit_recognition(image,angle)
         return "N.A"
+
+def get_roi(image):
+    # image = cv2.imread(image)
+    img_color = cv2.rotate(image,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
+    img = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY) #grey scale image
+    blurred = cv2.GaussianBlur(img, (7, 7), 0) #reduce noise
+    blurred = cv2.bilateralFilter(blurred, 6, sigmaColor=50, sigmaSpace=50) #reduce noise 
+    edged = cv2.Canny(blurred, 30, 50, 255) #get the edge 
+
+    #array that contain all the contours in the image
+    contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # sort contours by area, and get the largest
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)[:1]
+
+    cv2.drawContours(edged, contours, 0, (255,0,0), 5) 
+
+    x_coor, y_coor, width, height = cv2.boundingRect(contours[0])  #return 4 points 
+    roi = img[y_coor : y_coor + height, x_coor : x_coor + width] #crop image (roi)
+    # cv2.imshow("ROI", roi) 
+    # cv2.waitKey(0)
+    roi = cv2.cvtColor(roi, cv2.COLOR_GRAY2RGB) #greyscale image 
+    return roi
 
 

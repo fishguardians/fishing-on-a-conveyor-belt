@@ -12,8 +12,8 @@ id_color = (0, 255, 0)
 scale_color = (255, 255, 255)
 belt_color = (0, 255, 0)
 
-tess_blacklist = 'abcdegjklmnopqrtuvwxyzABCDEGJKLMNOPQRSTUVWXYZ'
-tess_whitelist = '0123456789Fish'
+tess_blacklist = ''
+tess_whitelist = '0123456789ABCDEFGHIJKLMSOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz'
 
 # Fish Dimension Module Constants
 ref_width = 1.9  # Width of paperID reference in centimeters
