@@ -15,6 +15,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import constant
+import pytesseract
 # from threading import Thread
 
 # Fish Dimension modules
@@ -23,7 +24,8 @@ import \
     scripts._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
 import scripts._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
 
-pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
+if(os.name == 'nt'):
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
 # Read the scale
 # from digit_recognization import digit_recognization
@@ -142,7 +144,33 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if all 3 objects are in the image [fish, id, scale]
                 match class_ids[index]:
-                    case 1:  # Fish
+
+                    case 0:  # Detected that id tag is found
+                        id_coords = box
+                        _id_id += 1
+
+                        # Work with a copy of the smaller version of image
+                        id_image = img.copy()
+                        # Give some padding to ensure values are read properly
+                        if y - 10 < 0 or y + h + 10 > height or x - 10 < 0 or x + w + 10 > width:
+                            id_image = id_image[y:y + h, x:x + w]
+                        else:
+                            id_image = id_image[y-10:y + h + 10, x-10:x + w+10]
+
+                        # Save for reference checking
+                        SaveImages(id_image, _frame_index, _video_name, 'id')
+
+                        # Call the id tag scripts
+                        words = text_recognition(id_image)
+
+                        # open the file to write
+                        with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
+                            # create the csv writer
+                            writer = csv.writer(f)
+                            # ['#', 'Fish#', 'Frame', 'Value']
+                            writer.writerow([_id_id, wells_id, _frame_index, words])
+                    case 1:  # Detected the barramundi fish
+
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -308,6 +336,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # plt.imshow(img3),plt.show()
 
+
                         ###
                         # BGR
                         ###
@@ -379,6 +408,10 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 if (check_empty > 2):
                     check_empty = 0
                     wells_id += 1
+
+                if(not _record_fish_id):
+                    _record_fish_id=True
+
 
             # if there's no fish add the tracker empty by 1
             if (fish_center_coords == []):
