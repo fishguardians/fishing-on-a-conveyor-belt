@@ -12,6 +12,7 @@ import glob
 import random
 import math
 import numpy as np
+from pytesseract import pytesseract
 import matplotlib.pyplot as plt
 import constant
 # from threading import Thread
