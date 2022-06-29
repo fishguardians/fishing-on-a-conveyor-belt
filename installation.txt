@@ -1,0 +1,3 @@
+pip install opencv-python or python -m pip install opencv-python
+pip install easyocr * requires install of certificate for python to retrieve models from HTTPS
+pip install pipreqs;
