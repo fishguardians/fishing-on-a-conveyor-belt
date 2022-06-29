@@ -12,7 +12,7 @@ def text_recognition(image):
     image = cv2.bilateralFilter(image, 5, 30, 60)
     # edged = cv2.Canny(id_image, 30, 200)
     # thresholding = cv2.threshold(id_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    kernel = np.ones((5, 10), np.uint8)
+    kernel = np.ones((5, 5), np.uint8)
     opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     # cv2.imshow("test", opening)
     
