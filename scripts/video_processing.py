@@ -77,16 +77,15 @@ def CaptureImagesOnVideo(videos_to_be_processed):
     # center points curr
     prev_center_pts = []
     # check if last 3 frames has a fish
-    check_empty = 0
+    check_empty = 3
     # allocate the id for the fish
     wells_id = 0
     fish_length = None
     fish_depth = None
 
+
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index + 1) + '...\n')
-        # detect first fish before incrementing id
-        _record_fish_id = False
         # use to capture 1 frame per second
         _skip_frames = 0
         # use for naming frames in case id cannot be detected
@@ -117,8 +116,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             img = frame.copy()  # 1080 1920 original image
             img = cv2.resize(img, None, fx=0.4, fy=0.4)
 
-            og_img = frame.copy()
-
             # Width & Height of img
             height, width, channels = img.shape
             # center point location of img
@@ -137,7 +134,11 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # check if can save img
             _has_image = False
 
-            print(class_ids)
+            # print(class_ids, prev_center_pts, check_empty)
+
+            # if there's no fish add the tracker empty by 1
+            if (prev_center_pts == []):
+                check_empty += 1
 
             for (index, box) in enumerate(boxes):
                 x, y, w, h = box
@@ -178,11 +179,16 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         hypothenuse = round(math.hypot(cx - posX, cy - posY))
                         # print(hypothenuse, hypo_threshold)
 
+                        if (prev_center_pts == [] and check_empty >= 2):
+                            # check if the previous 3 frames are empty if not it is the same fish
+                            wells_id += 1
+
                         # distance lesser than previous distance
                         if (hypothenuse < hypo_threshold):
                             _fish_id += 1
                             hypo_threshold = hypothenuse
                             _has_image = True
+
                             # Save for reference checking
                             SaveImages(frame, _frame_index, _video_name, 'actual')
 
@@ -196,6 +202,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # reset checker
                         else:
                             hypo_threshold = 70  # Try to another fish that is closer
+                        
+                        check_empty = 0
 
                         if(_has_image):
                             # get fish dimensions using image
@@ -332,27 +340,13 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
 
             # View Video
-            ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
-
-            if (prev_center_pts == [] and len(fish_center_coords) > 0):
-                # check if the previous 3 frames are empty if not it is the same fish
-                if (check_empty > 3 and _record_fish_id):
-                    check_empty = 0
-                    wells_id += 1
-
-                if(not _record_fish_id):
-                    _record_fish_id=True
-                
-
-            # if there's no fish add the tracker empty by 1
-            if (fish_center_coords == []):
-                check_empty += 1
+            # ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)               
 
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()
 
             _skip_frames += 30  # i.e. at 30 fps, this advances one second
-            _frame_index += 30
+            _frame_index += 29
             cap.set(1, _skip_frames)
 
             if cv2.waitKey(1) == ord('q'):
