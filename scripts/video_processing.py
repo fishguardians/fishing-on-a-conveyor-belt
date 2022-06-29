@@ -4,6 +4,7 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
+import importlib
 import os
 import shutil
 import csv
@@ -15,10 +16,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import constant
 import pytesseract
+import streamlit as st
+
 # from threading import Thread
 
-if(os.name == 'nt'):
-    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe" # Path of where pytesseract.exe is located
+if (os.name == 'nt'):
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
 # Read the scale
 from scripts.digit_recognition import digit_recognition
@@ -28,6 +31,7 @@ from scripts.object_detection import ObjectDetection
 
 # Initialize Object Detection
 od = ObjectDetection()
+
 
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
@@ -92,7 +96,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
         # use for naming frames in case id cannot be detected
         _frame_index = 0
         # ids for tracking in txt files
-        _fish_id , _id_id, _scale_id = 0, 0, 0
+        _fish_id, _id_id, _scale_id = 0, 0, 0
+        video_processing_window = st.empty()
 
         cap = cv2.VideoCapture(constant.videos_location + _video_name)
 
@@ -154,14 +159,14 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         if y - 10 < 0 or y + h + 10 > height or x - 10 < 0 or x + w + 10 > width:
                             id_image = id_image[y:y + h, x:x + w]
                         else:
-                            id_image = id_image[y-10:y + h + 10, x-10:x + w+10]
-                        
+                            id_image = id_image[y - 10:y + h + 10, x - 10:x + w + 10]
+
                         # Save for reference checking
                         SaveImages(id_image, _frame_index, _video_name, 'id')
 
                         # Call the id tag scripts
                         words = text_recognition(id_image)
-                        
+
                         # open the file to write
                         with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
                             # create the csv writer
@@ -197,7 +202,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         else:
                             hypo_threshold = 70  # Try to another fish that is closer
 
-                        if(_has_image):
+                        if (_has_image):
                             # get fish dimensions using image
                             fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
                             # open the file to write
@@ -269,7 +274,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
 
-                    
                         ###
                         # BGR
                         ###
@@ -319,7 +323,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     case _:
                         continue
 
-            if(_has_image==True):
+            if (_has_image == True):
                 _scale_id += 1
 
                 scale_reading = digit_recognition(frame)
@@ -332,7 +336,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
 
             # View Video
-            ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
+            viewVideo_output = ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)
+            # For streamlit to display video
+            video_processing_window.image(viewVideo_output, channels='BGR', use_column_width=True)
 
             if (prev_center_pts == [] and len(fish_center_coords) > 0):
                 # check if the previous 3 frames are empty if not it is the same fish
@@ -340,9 +346,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     check_empty = 0
                     wells_id += 1
 
-                if(not _record_fish_id):
-                    _record_fish_id=True
-                
+                if (not _record_fish_id):
+                    _record_fish_id = True
 
             # if there's no fish add the tracker empty by 1
             if (fish_center_coords == []):
@@ -362,6 +367,13 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
         cap.release()
         cv2.destroyAllWindows()
+
+
+# # For passing frame to streamlit pages
+# def output_frame(frame):
+#     # cv2.imshow('output_frame func: ',frame)
+#     # print("contents of frame: ", frame)
+#     return frame
 
 
 def ViewVideo(fish, fish_center, id, scale, name, img):
@@ -387,6 +399,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
 
     # display the window
     cv2.imshow(name, main_frame)
+
+    return main_frame
 
 
 def MoveVideo(video):
