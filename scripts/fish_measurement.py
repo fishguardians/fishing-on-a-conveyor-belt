@@ -6,6 +6,7 @@ import scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Ge
 
 
 def fish_measurement(image):
+    fish_length, fish_depth = 0.0, 0.0
     """
     frame - for original frame in the video
     removeBg

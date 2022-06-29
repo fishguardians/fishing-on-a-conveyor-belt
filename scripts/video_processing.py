@@ -73,7 +73,7 @@ def GetVideoNames(path):
 def CaptureImagesOnVideo(videos_to_be_processed):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
-    hypo_threshold = 70
+    hypo_threshold = 90
     # center points curr
     prev_center_pts = []
     # check if last 3 frames has a fish
@@ -145,7 +145,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-                    case 0:  # Detected that id tag is found
+                    case 1:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
 
@@ -169,7 +169,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-                    case 1:  # Detected the barramundi fish
+                    case 0:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -201,7 +201,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # reset checker
                         else:
-                            hypo_threshold = 70  # Try to another fish that is closer
+                            hypo_threshold = 90  # Try to another fish that is closer
                         
                         check_empty = 0
 
