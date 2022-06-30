@@ -16,7 +16,7 @@ tess_blacklist = ''
 tess_whitelist = '0123456789ABCDEFGHIJKLMSOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz'
 
 # Fish Dimension Module Constants
-ref_width = 1.9  # Width of paperID reference in centimeters
+ref_width = 1.9  # Width of black circle reference dot
 
 # class FishImage:
 #     name = ''

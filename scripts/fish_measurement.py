@@ -10,13 +10,7 @@ def fish_measurement(image):
     og_img = image.copy()
     print('Running fish image processing functions')
 
-    """
-    frame - for original frame in the video
-    removeBg
-    getDimensions
-    """
-
-    print('Running fish image processing functions')
+    # print('Running fish image processing functions')
 
     # 1. Run cropBelt function to black out all but the belt in the image
     cropBelt_output_img = cropBelt.crop_belt(image)
@@ -33,4 +27,3 @@ def fish_measurement(image):
         flag = "ERROR! Please verify measurements for this fish"
 
     return fish_length, fish_depth, cropBelt_output_img, flag
-    
