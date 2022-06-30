@@ -49,8 +49,9 @@ video_title = st.empty()
 video_player = st.empty()
 start_button = st.empty()
 video_processing_warning = st.empty()
-video_length = None
-percent_complete = None
+video_processing_window = st.empty()
+
+FINISHED = False
 
 # TODO: For multiple videos have state management to track status of each video
 #   - TODO: Add queue system in sidebar to show current video process queue
@@ -82,7 +83,6 @@ else:
         st.write('###')
         video_title = st.markdown(video_name, unsafe_allow_html=True)
         v = './videos/' + v
-        video_length = st_scripts.get_video_length(v)
         video_file = open(v, 'rb')
         video = video_file.read()
         video_player = st.video(video)
@@ -91,24 +91,15 @@ else:
 # Video processing begins
 if st.session_state.bool_start_processing:
     video_player.empty()
-    video_title.empty()
-    progress_bar = st.progress(0)
-
     video_processing.CaptureImagesOnVideo(cached_videos)
 
-    # thread1 = threading.Thread(target=st_scripts.show_progress_bar(video_length, progress_bar))
-    # thread2 = threading.Thread(target=video_processing.CaptureImagesOnVideo(cached_videos))
-    #
-    # thread1.start()
-    # thread2.start()
+# If video processing is done
+# TODO: MAKE IT WORKK!!!!!!!
 
-    for percent_complete in range(100):
-        speed = video_length / 100
-        time.sleep(speed)
-        progress_bar.progress(percent_complete + 1)
+print('video_processing.CaptureImagesOnVideo', video_processing.CaptureImagesOnVideo)
+print('video_processing.PROCESS_COMPLETE', video_processing.PROCESS_COMPLETED)
 
-# Video processing is completed
-if percent_complete == 99:  # or bool to state processing is done then trigger this
+if :
     video_processing_warning.empty()
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")

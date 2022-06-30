@@ -167,49 +167,49 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         if count == 1:
             print("")
-            print("Dimensions of Reference",
-                  "------------",
-                  "Length: {} cm".format(d_length),
-                  "Depth: {} cm".format(d_depth), sep='\n')
-            print("Total contours processed: ", count)
+            # print("Dimensions of Reference",
+            #       "------------",
+            #       "Length: {:.2f} cm".format(d_length),
+            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
+            # print("Total contours processed: ", count)
 
         # If there are multiple reference objects detected or contours smaller than the reference
         # skip them, it will not be counted for
         elif count > 1 and (d_length <= ref_length_buffer or d_depth <= ref_depth_buffer):
             flagged = True
-            print("")
-            print("Additional object detected, Skipping...")
-            print("Value of count:", count)
+            # print("")
+            # print("Additional object detected, Skipping...")
+            # print("Value of count:", count)
 
         # Count the Fish ID tag after there is additional ref
         elif 2 <= count < 4 and flagged:
             print("")
-            print("Dimensions of Fish ID tag",
-                  "------------",
-                  "Length: {:.2f} cm".format(d_length),
-                  "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            print("Total contours processed: ", count)
+            # print("Dimensions of Fish ID tag",
+            #       "------------",
+            #       "Length: {:.2f} cm".format(d_length),
+            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
+            # print("Total contours processed: ", count)
 
         # Measure the fish ID tag
         elif count == 2:
             print("")
-            print("Dimensions of Fish ID tag",
-                  "------------",
-                  "Length: {:.2f} cm".format(d_length),
-                  "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            print("Total contours processed: ", count)
+            # print("Dimensions of Fish ID tag",
+            #       "------------",
+            #       "Length: {:.2f} cm".format(d_length),
+            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
+            # print("Total contours processed: ", count)
 
         # Measure the fish
         elif count > 2:
-            print("")
-            print("Dimensions of Fish",
-                  "------------",
-                  "Length: {:.2f} cm".format(d_length),
-                  "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            print("Total contours processed: ", count)
+            # print("")
+            # print("Dimensions of Fish",
+            #       "------------",
+            #       "Length: {:.2f} cm".format(d_length),
+            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
+            # print("Total contours processed: ", count)
             return length, depth
 
-        print("Additional objects detected: ", flagged)
+        # print("Additional objects detected: ", flagged)
 
 
 # Function is needed for the createTrackbar step downstream
