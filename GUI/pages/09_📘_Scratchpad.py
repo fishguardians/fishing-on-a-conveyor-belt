@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import csv
+import cv2
 
 st.write("""
 # Scratchpad to show possible functions
