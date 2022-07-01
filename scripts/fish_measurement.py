@@ -6,13 +6,15 @@ import scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Ge
 
 
 def fish_measurement(image):
-    fish_length, fish_depth = 0.0, 0.0
+
+    og_img = image.copy()
+    print('Running fish image processing functions')
+
     """
     frame - for original frame in the video
     removeBg
     getDimensions
     """
-    og_img = image.copy()
 
     print('Running fish image processing functions')
 

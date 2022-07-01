@@ -15,10 +15,11 @@ import numpy as np
 from pytesseract import pytesseract
 import matplotlib.pyplot as plt
 import constant
+import pytesseract
 # from threading import Thread
 
 if(os.name == 'nt'):
-    pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
+    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe" # Path of where pytesseract.exe is located
 
 # Read the scale
 from scripts.digit_recognition import digit_recognition
@@ -86,6 +87,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
     for index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(index + 1) + '...\n')
+        # detect first fish before incrementing id
+        _record_fish_id = False
         # use to capture 1 frame per second
         _skip_frames = 0
         # use for naming frames in case id cannot be detected
@@ -145,7 +148,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-                    case 1:  # Detected that id tag is found
+                    case 0:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
 
@@ -169,7 +172,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-                    case 0:  # Detected the barramundi fish
+                    case 1:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -188,7 +191,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             _fish_id += 1
                             hypo_threshold = hypothenuse
                             _has_image = True
-
                             # Save for reference checking
                             SaveImages(frame, _frame_index, _video_name, 'actual')
 
@@ -201,9 +203,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # reset checker
                         else:
-                            hypo_threshold = 90  # Try to another fish that is closer
-                        
-                        check_empty = 0
+                            hypo_threshold = 70  # Try to another fish that is closer
 
                         if(_has_image):
                             # get fish dimensions using image
@@ -341,6 +341,20 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
             # View Video
             # ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name, img)               
+
+            if (prev_center_pts == [] and len(fish_center_coords) > 0):
+                # check if the previous 3 frames are empty if not it is the same fish
+                if (check_empty > 3 and _record_fish_id):
+                    check_empty = 0
+                    wells_id += 1
+
+                if(not _record_fish_id):
+                    _record_fish_id=True
+                
+
+            # if there's no fish add the tracker empty by 1
+            if (fish_center_coords == []):
+                check_empty += 1
 
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()

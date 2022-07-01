@@ -7,7 +7,7 @@ st.set_page_config(
     page_icon="📊",
 )
 
-st.write('# Data Visualization')
+st.write('# 📊 Data Visualization 📊')
 
 st.sidebar.success("Select a demo above.")
 

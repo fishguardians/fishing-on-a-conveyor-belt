@@ -5,6 +5,11 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
 
+# """
+# Run this line:
+# streamlit run .\GUI\01_🏠_Home.py
+# """
+
 import streamlit as st
 
 st.set_page_config(
