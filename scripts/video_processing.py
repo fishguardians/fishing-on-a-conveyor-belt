@@ -15,7 +15,6 @@ import numpy as np
 from pytesseract import pytesseract
 import matplotlib.pyplot as plt
 import constant
-# from threading import Thread
 
 if(os.name == 'nt'):
     pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"  # Path of where pytesseract.exe is located
@@ -29,6 +28,10 @@ from scripts.object_detection import ObjectDetection
 # Initialize Object Detection
 od = ObjectDetection()
 
+# open the file in the write mode
+errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
+errwriter = csv.writer(errorfile)
+
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
 
@@ -38,7 +41,7 @@ def GetVideoNames(path):
     for file in folder:
         _, file_extension = os.path.splitext(file)
         # Add required txt files
-        if (file != '.gitignore'):
+        if (file != '.gitignore' and file != '.DS_Store'):
             # check if the directory exists
             if not os.path.exists('output/' + file):
                 os.makedirs('output/' + file)
@@ -66,6 +69,7 @@ def GetVideoNames(path):
             case '.mp4':
                 videos_array.append(file.lower())
             case _:
+                errwriter.writerow(['Warning', 'Unsupported Video Format' , 'Video Not MP4 or MOV', 'Please check ' + str(file) + ' for supported formats'])
                 continue
     return videos_array
 
@@ -97,6 +101,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
+            errwriter.writerow(['Serious', 'Video Corrupted Error' , 'Video Cannot Process', 'Skipping Video, please check if video is correct'])
 
         while (cap.isOpened()):
             ret, frame = cap.read()
@@ -108,7 +113,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             if not ret:
                 cap.release()
                 # TODO: uncomment this line to move the video to completed folder
-                # MoveVideo(_video_name)
+                MoveVideo(_video_name)
                 print(f'Video {index + 1} process complete.')
                 break
 
@@ -162,6 +167,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                         # Call the id tag scripts
                         words = text_recognition(id_image)
+
+                        if len(words) < 7:
+                            errwriter.writerow(['Warning', 'ID Tag Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
                         
                         # open the file to write
                         with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -208,6 +216,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         if(_has_image):
                             # get fish dimensions using image
                             fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
+                            # error checking for fish dimensions
+                            if len(flag) > 0:
+                                errwriter.writerow(['Warning', 'Fish Dimension Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
                             # open the file to write
                             with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
@@ -332,6 +343,10 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 scale_reading = digit_recognition(frame)
 
+                # error checking for scale reading
+                if(scale_reading == 'N.A'):
+                    errwriter.writerow(['Warning', 'Scale Reading Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
+                    
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
                     # create the csv writer
@@ -360,42 +375,50 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
 def ViewVideo(fish, fish_center, id, scale, name, img):
     """Additional: to see the video while it is processing"""
-    # duplicate image so it doesn't corrupt the original
-    main_frame = img.copy()
-    height, width, channels = main_frame.shape
-    # show objects
-    if (len(fish) > 0):
-        cv2.rectangle(main_frame, (fish[0], fish[1]), (fish[0] + fish[2], fish[1] + fish[3]), constant.fish_color, 2)
-        cv2.circle(main_frame, fish_center[0], 3, constant.fish_color, -1)
-        cv2.putText(main_frame, str(fish), (fish[0] + fish[2], fish[1] + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0,
-                    constant.fish_color, 2)
-    if (len(id) > 0):
-        cv2.rectangle(main_frame, (id[0], id[1]), (id[0] + id[2], id[1] + id[3]), constant.id_color, 1)
-    if (len(scale) > 0):
-        cv2.rectangle(main_frame, (scale[0], scale[1]), (scale[0] + scale[2], scale[1] + scale[3]),
-                      constant.scale_color, 2)
-    # show center position of image
-    # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
-    cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
-    cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
+    try:
+        # duplicate image so it doesn't corrupt the original
+        main_frame = img.copy()
+        height, width, channels = main_frame.shape
+        # show objects
+        if (len(fish) > 0):
+            cv2.rectangle(main_frame, (fish[0], fish[1]), (fish[0] + fish[2], fish[1] + fish[3]), constant.fish_color, 2)
+            cv2.circle(main_frame, fish_center[0], 3, constant.fish_color, -1)
+            cv2.putText(main_frame, str(fish), (fish[0] + fish[2], fish[1] + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0,
+                        constant.fish_color, 2)
+        if (len(id) > 0):
+            cv2.rectangle(main_frame, (id[0], id[1]), (id[0] + id[2], id[1] + id[3]), constant.id_color, 1)
+        if (len(scale) > 0):
+            cv2.rectangle(main_frame, (scale[0], scale[1]), (scale[0] + scale[2], scale[1] + scale[3]),
+                        constant.scale_color, 2)
+        # show center position of image
+        # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
+        cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
+        cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
-    # display the window
-    cv2.imshow(name, main_frame)
+        # display the window
+        cv2.imshow(name, main_frame)
+    except:
+        errwriter.writerow(['Serious', 'ViewVideo Function Error' , 'Fail to View Videos', 'Request technical support'])
 
 
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
-    # check if the directory exists
-    if not os.path.exists('completed_videos/' + video):
-        os.makedirs('completed_videos/' + video)
-    shutil.move("./videos/" + video, 'completed_videos/' + video, copy_function=shutil.copy2)
+    try:
+        # check if the directory exists
+        if not os.path.exists('completed_videos/' + video):
+            os.makedirs('completed_videos/' + video)
+            shutil.move("./videos/" + video, 'completed_videos/' + video, copy_function=shutil.copy2)
+    except:
+        errwriter.writerow(['Warning', 'Video Reprocessed' , 'Deliberate User Action', 'Processing same videos will use up unnecessary computer resources'])
 
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
     """Store images function"""
-    # check if the directory exists
-    if not os.path.exists('images/' + _video_name + '/' + _type):
-        os.makedirs('images/' + _video_name + '/' + _type)
-    # write to seperate folders for easier book-keeping
-    cv2.imwrite('./images/' + _video_name + '/' + _type + '/' + str(_frame_index) + '.jpg',
-                actual_frame)
+    try:
+        # check if the directory exists
+        if not os.path.exists('images/' + _video_name + '/' + _type):
+            os.makedirs('images/' + _video_name + '/' + _type)
+        # write to seperate folders for easier book-keeping
+        cv2.imwrite('./images/' + _video_name + '/' + _type + '/' + str(_frame_index) + '.jpg', actual_frame)
+    except:
+        errwriter.writerow(['Serious', 'SaveImages Function Error' , 'Fail to Save Images', 'Request technical support'])
