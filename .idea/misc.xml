@@ -4,4 +4,5 @@
   <component name="PyPackaging">
     <option name="earlyReleasesAsUpgrades" value="true" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (fishguardians-ITP)" project-jdk-type="Python SDK" />
 </project>
