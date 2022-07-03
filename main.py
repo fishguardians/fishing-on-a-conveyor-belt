@@ -6,6 +6,7 @@
 # import if necessary (built-in, third-party, path, own modules)
 from scripts.reset_folders import reset_folders
 import scripts.video_processing as video_processing
+import scripts.generate_csv as generate_csv
 import constant
 
 from datetime import datetime
@@ -30,6 +31,7 @@ def main():
     
     print('Unprocessed videos found: '+str(len(video_files))+'\n')
     video_processing.CaptureImagesOnVideo(video_files)
+    generate_csv.WriteDataOutput(video_files)
     
     print("End of video image capture process: ", current_time)
 
