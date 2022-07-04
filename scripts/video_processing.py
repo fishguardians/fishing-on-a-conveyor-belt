@@ -409,7 +409,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
     cv2.imshow(name, main_frame)
     # cv2.imshow(name, main_frame)
 
-    # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
+    # TODO: DUMP DIMENSIONS BOXES here to see in the final out
 
     return main_frame
 
