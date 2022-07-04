@@ -170,3 +170,4 @@ cython_debug/
 /dnn_model
 *.weights
 *.weights
+.DS_Store
