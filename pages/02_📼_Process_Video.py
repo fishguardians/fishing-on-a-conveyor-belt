@@ -3,9 +3,7 @@ import scripts.streamlit_scripts as st_scripts  # Custom streamlit scripts
 import constant  # Constant Variables
 
 from datetime import datetime
-import threading
 import streamlit as st
-import numpy as np
 import time
 
 # Page Configs
@@ -96,10 +94,7 @@ if st.session_state.bool_start_processing:
 # If video processing is done
 # TODO: MAKE IT WORKK!!!!!!!
 
-print('video_processing.CaptureImagesOnVideo', video_processing.CaptureImagesOnVideo)
-print('video_processing.PROCESS_COMPLETE', video_processing.PROCESS_COMPLETED)
-
-if :
+if True:
     video_processing_warning.empty()
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
@@ -113,7 +108,7 @@ if :
     st.write('###')  # Line break
     st.markdown("""
     ### :three: After processing:
-    1. You can download the output CSV with the fishID, fish's weight fish's dimensions (length and depth) 
+    1. You can download the output CSV with the fishID, fish's weight fish's dimensions (length and depth)
     2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data
     """)
 
