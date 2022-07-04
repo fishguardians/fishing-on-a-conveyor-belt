@@ -169,7 +169,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                     # check if 2 objects are in the image [id tag, fish]
                     match class_ids[index]:
-                        case 1:  # Detected that id tag is found
+
+                        case 0:  # Detected that id tag is found
                             id_coords = box
                             _id_id += 1
 
@@ -196,7 +197,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 writer = csv.writer(f)
                                 # ['#', 'Fish#', 'Frame', 'Value']
                                 writer.writerow([_id_id, wells_id, _frame_index, words])
-                        case 0:  # Detected the barramundi fish
+
+                        case 1:  # Detected the barramundi fish
                             fish_coords = box
                             # center point of the fish
                             cx = int((x + x + w) / 2)
@@ -254,6 +256,11 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                     writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                                 SaveImages(cropped_img, _frame_index, _video_name, 'fish')
+                                # TODO: REMOVED ONCE ISSUE FIXED
+                                print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                                print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
                         case 2:  # scale
                             _scale_id += 1
                             scale_coords = box
