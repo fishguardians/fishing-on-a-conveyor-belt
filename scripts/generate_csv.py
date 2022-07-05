@@ -1,18 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-'''camera.py: Video capture module that takes the images of the fish
-    @Author: "Muhammad Abdurraheem and Yip Hou Liang"
-    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
-# import if necessary (built-in, third-party, path, own modules)
 import csv
 import os
 from collections import Counter
 
 from nbformat import write
 
-# open the file in the write mode
-errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
-errwriter = csv.writer(errorfile)
+from scripts.video_processing import errwriter
+
 
 def WriteDataOutput(_video_names):
     fish_id = 0
@@ -37,7 +30,7 @@ def WriteDataOutput(_video_names):
             print('Error: File not found')
             errwriter.writerow(['Serious', 'Files Not Found' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for missing files'])
             return False
-        
+
         for (index, lines) in enumerate(hypos_array):
             try:
                 if index == 0:
@@ -57,7 +50,7 @@ def WriteDataOutput(_video_names):
                 print('Error: Hypothenuse not recorded')
                 errwriter.writerow(['Serious', 'Error with Recording Fish Center' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for images.txt file'])
                 return False
-            
+
 
         for (index, lines) in enumerate(ids_array):
             try:
@@ -72,7 +65,7 @@ def WriteDataOutput(_video_names):
             except:
                 print('Error: Ids not recorded')
                 errwriter.writerow(['Serious', 'Error with Recording ID Tags' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for ids.txt file'])
-                return False            
+                return False
 
         for (index, lines) in enumerate(weights_array):
             try:
@@ -87,7 +80,7 @@ def WriteDataOutput(_video_names):
             except:
                 print('Error: Weights not recorded')
                 errwriter.writerow(['Serious', 'Error with Recording Weights' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for weights.txt file'])
-                return False        
+                return False
 
         for (index, lines) in enumerate(dimensions_array):
             try:
@@ -141,10 +134,10 @@ def WriteDataOutput(_video_names):
                         # get center of occurrences
                         results = sorted(objects, key = lambda x:float(x))
                         breadth = results[int(len(results)/2)]
-            
-            
-            print(indexofhypot, frame, idtag, weight, length, breadth)        
-            
+
+
+            print(indexofhypot, frame, idtag, weight, length, breadth)
+
             write_data.append([fish, frame, hypot, idtag, weight, length, breadth])
 
 
@@ -188,7 +181,7 @@ def WriteDataOutput(_video_names):
         #                     break
 
         #             print(fishes_data)
-                    
+
         #             with open('./output/'+video_name+'/fish_data.csv', 'a') as csvfile:
         #                 writer = csv.writer(csvfile)
         #                 for (index, id) in enumerate(fish_data['id']):

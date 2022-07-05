@@ -6,7 +6,6 @@
 # import if necessary (built-in, third-party, path, own modules)
 import time
 import reset_folders
-
 import scripts.video_processing as video_processing
 import scripts.generate_csv as generate_csv
 import constant
@@ -24,9 +23,6 @@ def main():
     Main Start Function to execute the scripts
     TODO: *Include more documentation*
     """
-
-    start = time.perf_counter()  # To measure time taken to complete video processing
-
     print(
         """\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
 
@@ -41,13 +37,10 @@ def main():
     video_processing.CaptureImagesOnVideo(video_files)
     response = generate_csv.WriteDataOutput(video_files)
 
-    print('Is files able to generate? :'+ response)
-    
+    print('Is files able to generate? :' + response)
+
     print("End of video image capture process: ", current_time)
 
-    finish = time.perf_counter()
-    print(f'Finished in {round(finish-start, 2)} seconds(s)')
 
 if __name__ == "__main__":
     main()
-    
