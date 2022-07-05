@@ -20,6 +20,8 @@ import constant
 import pytesseract
 import streamlit as st
 
+from scripts.FishMeasurement._3_fish_measure_dimensions import sendDimensions
+
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
@@ -430,11 +432,11 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
         cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
+
         # display the window
         # cv2.imshow(name, main_frame)
 
         return main_frame
-    # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
 
     except:
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])

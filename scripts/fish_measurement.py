@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''_fish_measurement.py: Starts the fish measur
+    @Author: "Nicholas Bingei"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+
+# import if necessary (built-in, third-party, path, own modules)
 
 # Fish Dimension modules
 import scripts.FishMeasurement._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
@@ -31,4 +38,3 @@ def fish_measurement(image):
         flag = "ERROR! Please verify measurements for this fish"
 
     return fish_length, fish_depth, cropBelt_output_img, flag
-    
