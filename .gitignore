@@ -158,6 +158,9 @@ installation
 # pytype static type analyzer
 .pytype/
 
+./backup/
+./backup
+
 # Cython debug symbols
 cython_debug/
 
