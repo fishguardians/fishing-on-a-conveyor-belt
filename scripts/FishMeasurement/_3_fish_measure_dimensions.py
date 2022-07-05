@@ -168,7 +168,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         # Hence checks for reference object first
 
         if count == 1:
-            print("")
+            # print("")
             # print("Dimensions of Reference",
             #       "------------",
             #       "Length: {:.2f} cm".format(d_length),
@@ -185,7 +185,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # Count the Fish ID tag after there is additional ref
         elif 2 <= count < 4 and flagged:
-            print("")
+            # print("")
             # print("Dimensions of Fish ID tag",
             #       "------------",
             #       "Length: {:.2f} cm".format(d_length),
@@ -194,7 +194,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # Measure the fish ID tag
         elif count == 2:
-            print("")
+            # print("")
             # print("Dimensions of Fish ID tag",
             #       "------------",
             #       "Length: {:.2f} cm".format(d_length),
