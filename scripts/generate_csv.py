@@ -1,18 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-'''camera.py: Video capture module that takes the images of the fish
-    @Author: "Muhammad Abdurraheem and Yip Hou Liang"
-    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
-# import if necessary (built-in, third-party, path, own modules)
 import csv
 import os
 import math
 
 from collections import Counter
 
-# open the file in the write mode
-errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
-errwriter = csv.writer(errorfile)
+from scripts.video_processing import errwriter
+
 
 def write_data_output(video_name):
     fish_id = 0
@@ -193,7 +186,7 @@ def write_data_output(video_name):
         #                     break
 
         #             print(fishes_data)
-                    
+
         #             with open('./output/'+video_name+'/fish_data.csv', 'a') as csvfile:
         #                 writer = csv.writer(csvfile)
         #                 for (index, id) in enumerate(fish_data['id']):

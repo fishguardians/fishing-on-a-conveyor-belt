@@ -51,12 +51,6 @@ video_processing_window = st.empty()
 
 FINISHED = False
 
-# TODO: For multiple videos have state management to track status of each video
-#   - TODO: Add queue system in sidebar to show current video process queue
-#   - TODO: On start processing st.empty to clear all videos (Queue will be moved to the sidebar)
-#   - TODO: Add progress bar to the video currently processing
-# TODO: Move start button below 'num of unprocessed videos'
-
 # Checks for number of videos currently
 # If no videos inside 'videos' folder, prompt user to transfer some
 if len(cached_videos) == 0:
@@ -92,25 +86,25 @@ if st.session_state.bool_start_processing:
     video_processing.CaptureImagesOnVideo(cached_videos)
 
 # If video processing is done
-# TODO: MAKE IT WORKK!!!!!!!
+# TODO: Make the bool checking for video processing completed to work
 
-if True:
-    video_processing_warning.empty()
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    st.success("Video processing complete at " + current_time)
-    st.balloons()
-    # st.markdown("""
-    # TODO: Buttons to export the CSV Data
-    # TODO: Redirect user to Data Visualization page to view exported CSV data
-    # """)
-
-    st.write('###')  # Line break
-    st.markdown("""
-    ### :three: After processing:
-    1. You can download the output CSV with the fishID, fish's weight fish's dimensions (length and depth)
-    2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data
-    """)
+# if True:
+#     video_processing_warning.empty()
+#     now = datetime.now()
+#     current_time = now.strftime("%H:%M:%S")
+#     st.success("Video processing complete at " + current_time)
+#     st.balloons()
+#     # st.markdown("""
+#     # TODO: Buttons to export the CSV Data
+#     # TODO: Redirect user to Data Visualization page to view exported CSV data
+#     # """)
+#
+#     st.write('###')  # Line break
+#     st.markdown("""
+#     ### :three: After processing:
+#     1. You can download the output CSV with the fishID, fish's weight fish's dimensions (length and depth)
+#     2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data
+#     """)
 
 # st.write('###')
 # st.markdown('### Upload video to start processing')

@@ -26,6 +26,9 @@ Reference length can be modified in constant.py
 
 
 def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
+    ref_measured = False
+    fishID_measured = False
+
     image = removeBg_output_img  # Image for processing
 
     # its is already in greyscale for the process before
@@ -136,17 +139,18 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.1f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
-        # Output length and depth in 2 decimal places
-        # length = "{:.2f}cm".format(dimA_CM)
-        # depth = "{:.2f}cm".format(dimB_CM)
-        length = round(dimA_CM,2)
-        depth = round(dimB_CM,2)
-
         d_length = dimA_CM
         d_depth = dimB_CM
 
-        ref_length_buffer = ref_width + ref_width * 0.05
-        ref_depth_buffer = ref_width + ref_width * 0.05
+        ref_length_buffer_high = ref_width + (ref_width * 0.05)
+        ref_depth_buffer_high = ref_width + (ref_width * 0.05)
+
+        ref_length_buffer_low = ref_width - (ref_width * 0.05)
+        ref_depth_buffer_low = ref_width - (ref_width * 0.05)
+
+        # Output length and depth in 2 decimal places
+        length = "{:.3f}cm".format(dimA_CM)
+        depth = "{:.3f}cm".format(dimB_CM)
 
         # cv2.imwrite("gray.jpg", gray)
         # cv2.imwrite("erode_dilate.jpg", erode_dilate)
@@ -154,11 +158,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # cv2.imshow("gray", gray)
         # cv2.imshow("Erode and dilate", erode_dilate)
-        # cv2.namedWindow("Fish Dimensions", cv2.WINDOW_NORMAL)
-        # cv2.resizeWindow("Fish Dimensions", 768, 432)
         # cv2.imshow("Fish Dimensions", orig)
         # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
 
         # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
         # TODO: For tiny water blob reflections (If smaller than a certain threshold ignore)
@@ -167,51 +168,58 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         # In this order, reference object, fish id tag and fish
         # Hence checks for reference object first
 
-        if count == 1:
+        # If object is smaller than the reference object by 5%, skip
+        if ref_length_buffer_low > d_length or ref_depth_buffer_low > d_depth:
+            print("")
+            # print("SKIPPED OBJECT SMALLER THAN REFERENCE")
+            # print("Dimensions of Object",
+            #       "------------",
+            #       "Length: {:.3} cm".format(d_length),
+            #       "Depth: {:.3} cm".format(d_depth), sep='\n')
+            # print("Value of count:", count)
+
+        # Detected another ref, reset pixel per metric formula
+        elif ref_measured and ref_length_buffer_low < d_length < ref_length_buffer_high and ref_depth_buffer_low \
+                < d_depth < ref_depth_buffer_high:
+            pixelPerMetric = dB / (ref_width / 2.54)
+            # print("")
+            # print("Another reference detected")
+            # print("Dimensions of Reference",
+            #       "------------",
+            #       "Length: {:.3f} cm".format(d_length),
+            #       "Depth: {:.3f} cm".format(d_depth), sep='\n')
+            # print("Value of count:", count)
+
+        # Once suitable reference is found, it will start measurement process
+        elif d_length < ref_length_buffer_high and d_depth < ref_depth_buffer_high:
+            ref_measured = True
             # print("")
             # print("Dimensions of Reference",
             #       "------------",
-            #       "Length: {:.2f} cm".format(d_length),
-            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            # print("Total contours processed: ", count)
-
-        # If there are multiple reference objects detected or contours smaller than the reference
-        # skip them, it will not be counted for
-        elif count > 1 and (d_length <= ref_length_buffer or d_depth <= ref_depth_buffer):
-            flagged = True
-            # print("")
-            # print("Additional object detected, Skipping...")
+            #       "Length: {:.3f} cm".format(d_length),
+            #       "Depth: {:.3f} cm".format(d_depth), sep='\n')
             # print("Value of count:", count)
 
-        # Count the Fish ID tag after there is additional ref
-        elif 2 <= count < 4 and flagged:
+        # Measure the Fish ID tag after ref has been measured
+        elif ref_measured and not fishID_measured and d_length > ref_length_buffer_high:
+            fishID_measured = True
             # print("")
             # print("Dimensions of Fish ID tag",
             #       "------------",
-            #       "Length: {:.2f} cm".format(d_length),
-            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            # print("Total contours processed: ", count)
+            #       "Length: {:.3f} cm".format(d_length),
+            #       "Depth: {:.3f} cm".format(d_depth), sep='\n')
+            # print("Value of count:", count)
 
-        # Measure the fish ID tag
-        elif count == 2:
-            # print("")
-            # print("Dimensions of Fish ID tag",
-            #       "------------",
-            #       "Length: {:.2f} cm".format(d_length),
-            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
-            # print("Total contours processed: ", count)
-
-        # Measure the fish
-        elif count > 2:
+        # Measure the fish, once there are at least 2 counts
+        # And both the ref and fishID have been measured
+        elif ref_measured and fishID_measured and count > 2:
             # print("")
             # print("Dimensions of Fish",
             #       "------------",
-            #       "Length: {:.2f} cm".format(d_length),
-            #       "Depth: {:.2f} cm".format(d_depth), sep='\n')
+            #       "Length: {:.3f} cm".format(d_length),
+            #       "Depth: {:.3f} cm".format(d_depth), sep='\n')
             # print("Total contours processed: ", count)
             return length, depth
-
-        # print("Additional objects detected: ", flagged)
 
 
 # Function is needed for the createTrackbar step downstream
@@ -222,23 +230,6 @@ def nothing(x):
 # Returns the midpoint of 2 points
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
-
-# def output_dimensions(image_list):
-#     if image_list is not None:
-#         filename = 'Fish_Dimensions.csv'
-#
-#         try:
-#             with open(filename, 'w', newline='') as f:
-#                 writer = csv.writer(f, delimiter='\t')
-#                 writer.writerow(['Fish ID', 'Length', 'Depth'])
-#
-#                 for image in image_list:
-#                     head, tail = os.path.split(image.name)
-#                     writer.writerow([tail, image.length, image.depth])
-#         except BaseException as e:
-#             print('BaseException:', filename)
-#         else:
-#             print('Data has been loaded successfully !')
 
 # Displays the title of the image display in the window
 # def show_image(title, image, destroy_all=True):

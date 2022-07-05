@@ -26,9 +26,6 @@ def main():
     Main Start Function to execute the scripts
     TODO: *Include more documentation*
     """
-
-    start = time.perf_counter()  # To measure time taken to complete video processing
-
     print(
         """\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
 
@@ -44,9 +41,6 @@ def main():
     
     print("End of video image capture process: ", current_time)
 
-    finish = time.perf_counter()
-    print(f'Finished in {round(finish-start, 2)} seconds(s)')
 
 if __name__ == "__main__":
     main()
-    
