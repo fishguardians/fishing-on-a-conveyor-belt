@@ -7,6 +7,7 @@
 import csv
 import os
 import math
+
 from collections import Counter
 
 from nbformat import write
@@ -106,6 +107,7 @@ def WriteDataOutput(_video_names):
                 errwriter.writerow(['Serious', 'Error with Recording Weights' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for dimensions.txt file'])
                 return False
 
+
         for items in overall_data:
             fish = 0
             frame = 0
@@ -146,17 +148,20 @@ def WriteDataOutput(_video_names):
                             objects.remove('0.0')
                         results = sorted(objects, key = lambda x:float(x))
                         breadth = results[math.floor(len(results)/2)]      
+
             
             write_data.append([fish, frame, hypot, idtag, weight, length, breadth])
 
 
         print('Generating CSV file for video: ' + video_name)
         with open('./output/'+video_name+'/fish_data.csv', 'w') as csvfile:
+
             writer = csv.writer(csvfile)
             writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight', 'length', 'breadth'])
             writer.writerows(write_data)
 
     return True
+
 
         # try:
         #     for (index, fish) in enumerate(fishes_data):
