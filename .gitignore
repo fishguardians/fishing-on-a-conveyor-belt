@@ -159,7 +159,7 @@ installation
 .pytype/
 
 /backup
-./backup/*
+/backup/*
 
 # Cython debug symbols
 cython_debug/
