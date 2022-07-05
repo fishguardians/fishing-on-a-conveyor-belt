@@ -160,7 +160,7 @@ def WriteDataOutput(_video_names):
             writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight', 'length', 'breadth'])
             writer.writerows(write_data)
 
-    return True
+    return write_data
 
 
         # try:

@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
+import generate_csv
 import streamlit as st
 
 if (os.name == 'nt'):
@@ -127,7 +128,12 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # when stream ends
             if not ret:
                 cap.release()
-                # TODO: uncomment this line to move the video to completed folder
+                # Generate final csv file and then move the file to completed
+                try: 
+                    response = generate_csv.generate_csv(_video_name)
+                except:
+                    errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
+                    continue
                 MoveVideo(_video_name)
                 print(f'Video {index} process complete.')
                 break
@@ -465,7 +471,6 @@ def get_video_length(filename):  # Get video length in seconds for progress bar
     durationInSeconds = int(float(totalNoFrames) / float(fps))
     # print("durationInSeconds: ", durationInSeconds, "s")
     return durationInSeconds
-
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
