@@ -6,6 +6,8 @@
 # import if necessary (built-in, third-party, path, own modules)
 import time
 import reset_folders
+print('Checking if file are corrupted...')
+reset_folders.reset_folders()
 
 import scripts.video_processing as video_processing
 import scripts.generate_csv as generate_csv
@@ -20,6 +22,7 @@ video_files = []
 
 
 def main():
+    
     """
     Main Start Function to execute the scripts
     TODO: *Include more documentation*
