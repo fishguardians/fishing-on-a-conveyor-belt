@@ -123,6 +123,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
         while (cap.isOpened()):
 
             ret, frame = cap.read()
+
             # exact frame counts
             _frame_index += 1
 
@@ -131,7 +132,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 cap.release()
                 # TODO: uncomment this line to move the video to completed folder
                 MoveVideo(_video_name)
-                print(f'Video {index + 1} process complete.')
+                print(f'Video {index} process complete.')
                 break
 
             # Loading image
@@ -169,8 +170,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-
-                    case 0:  # Detected that id tag is found
+                    case 1:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
 
@@ -188,10 +188,11 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # Call the id tag scripts
                         words = text_recognition(id_image)
 
+                        # Call the id tag scripts
+                        words = text_recognition(id_image)
+
                         if len(words) < 7:
-                            errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation',
-                                                'Please check frame ' + str(
-                                                    _frame_index) + '.jpg in /images/' + _video_name + '/id/'])
+                            errwriter.writerow(['Warning', 'ID Tag Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
 
                         # open the file to write
                         with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -199,8 +200,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-
-                    case 1:  # Detected the barramundi fish
+                    case 0:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -242,9 +242,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # open the file to write
                             # error checking for fish dimensions
                             if len(flag) > 0:
-                                errwriter.writerow(['Warning', 'Fish Dimension Not Found', 'Request User Validation',
-                                                    'Please check frame ' + str(
-                                                        _frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
+                                errwriter.writerow(['Warning', 'Fish Dimension Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
                             with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
                                 # write the header
@@ -260,11 +258,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
-                            # print("")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
+                            
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -373,11 +367,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 scale_reading = digit_recognition(frame)
 
                 # error checking for scale reading
-                if (scale_reading == 'N.A'):
-                    errwriter.writerow(['Warning', 'Scale Reading Not Found', 'Request User Validation',
-                                        'Please check frame ' + str(
-                                            _frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
-
+                if(scale_reading == 'N.A'):
+                    errwriter.writerow(['Warning', 'Scale Reading Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
+                    
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
                     # create the csv writer
@@ -387,7 +379,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
             # View Video
             view_video_output = ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name,
-                                          img)
+                                            img)
 
             # For streamlit to display video
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
@@ -395,8 +387,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()
 
-            _skip_frames += 30  # i.e. at 30 fps, this advances one second
-            _frame_index += 29
+            _skip_frames += 15  # i.e. at 30 fps, this advances one second
+            _frame_index += 14
             cap.set(1, _skip_frames)
 
             if cv2.waitKey(1) == ord('q'):
