@@ -10,13 +10,11 @@ import math
 
 from collections import Counter
 
-from nbformat import write
-
 # open the file in the write mode
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
-def WriteDataOutput(_video_names):
+def write_data_output(_video_names):
     fish_id = 0
     overall_data = []
     write_data = []

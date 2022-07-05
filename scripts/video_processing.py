@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
-import generate_csv
 import streamlit as st
 
 if (os.name == 'nt'):
@@ -28,6 +27,7 @@ if (os.name == 'nt'):
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
 from scripts.text_recognition import text_recognition
+from scripts.generate_csv import write_data_output
 from scripts.object_detection import ObjectDetection
 
 # Initialize Object Detection
@@ -130,7 +130,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 cap.release()
                 # Generate final csv file and then move the file to completed
                 try: 
-                    response = generate_csv.generate_csv(_video_name)
+                    response = write_data_output(_video_name)
+                    print(response)
                 except:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
                     continue
