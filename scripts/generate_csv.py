@@ -1,8 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''camera.py: Video capture module that takes the images of the fish
+    @Author: "Muhammad Abdurraheem and Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+# import if necessary (built-in, third-party, path, own modules)
 import csv
 import os
 from collections import Counter
 
 from nbformat import write
+
+# open the file in the write mode
+errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
+errwriter = csv.writer(errorfile)
 
 def WriteDataOutput(_video_names):
     fish_id = 0
