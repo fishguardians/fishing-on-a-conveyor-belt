@@ -395,7 +395,10 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
         # display the window
-        cv2.imshow(name, main_frame)
+        # cv2.imshow(name, main_frame)
+        return main_frame
+    # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
+
     except:
         errwriter.writerow(['Serious', 'ViewVideo Function Error' , 'Fail to View Videos', 'Request technical support'])
 

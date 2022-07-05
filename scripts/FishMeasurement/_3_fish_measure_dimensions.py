@@ -137,8 +137,10 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
                     (255, 255, 255), 2)
 
         # Output length and depth in 2 decimal places
-        length = "{:.2f}cm".format(dimA_CM)
-        depth = "{:.2f}cm".format(dimB_CM)
+        # length = "{:.2f}cm".format(dimA_CM)
+        # depth = "{:.2f}cm".format(dimB_CM)
+        length = round(dimA_CM,2)
+        depth = round(dimB_CM,2)
 
         d_length = dimA_CM
         d_depth = dimB_CM
