@@ -36,6 +36,7 @@ od = ObjectDetection()
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
+
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
 
@@ -75,7 +76,8 @@ def GetVideoNames(path):
             case '.mp4':
                 videos_array.append(file.lower())
             case _:
-                errwriter.writerow(['Warning', 'Unsupported Video Format' , 'Video Not MP4 or MOV', 'Please check ' + str(file) + ' for supported formats'])
+                errwriter.writerow(['Warning', 'Unsupported Video Format', 'Video Not MP4 or MOV',
+                                    'Please check ' + str(file) + ' for supported formats'])
                 continue
     return videos_array
 
@@ -115,7 +117,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
-            errwriter.writerow(['Serious', 'Video Corrupted Error' , 'Video Cannot Process', 'Skipping Video, please check if video is correct'])
+            errwriter.writerow(['Serious', 'Video Corrupted Error', 'Video Cannot Process',
+                                'Skipping Video, please check if video is correct'])
 
         while (cap.isOpened()):
 
@@ -167,7 +170,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-                    case 1:  # Detected that id tag is found
+                    case 0:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
 
@@ -197,7 +200,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-                    case 0:  # Detected the barramundi fish
+                    case 1:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -255,6 +258,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
+                            
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -411,7 +415,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         height, width, channels = main_frame.shape
         # show objects
         if (len(fish) > 0):
-            cv2.rectangle(main_frame, (fish[0], fish[1]), (fish[0] + fish[2], fish[1] + fish[3]), constant.fish_color, 2)
+            cv2.rectangle(main_frame, (fish[0], fish[1]), (fish[0] + fish[2], fish[1] + fish[3]), constant.fish_color,
+                          2)
             cv2.circle(main_frame, fish_center[0], 3, constant.fish_color, -1)
             cv2.putText(main_frame, str(fish), (fish[0] + fish[2], fish[1] + 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0,
                         constant.fish_color, 2)
@@ -419,7 +424,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
             cv2.rectangle(main_frame, (id[0], id[1]), (id[0] + id[2], id[1] + id[3]), constant.id_color, 1)
         if (len(scale) > 0):
             cv2.rectangle(main_frame, (scale[0], scale[1]), (scale[0] + scale[2], scale[1] + scale[3]),
-                        constant.scale_color, 2)
+                          constant.scale_color, 2)
         # show center position of image
         # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
         cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
@@ -432,7 +437,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
     # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
 
     except:
-        errwriter.writerow(['Serious', 'ViewVideo Function Error' , 'Fail to View Videos', 'Request technical support'])
+        errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])
 
 
 def MoveVideo(video):
@@ -443,7 +448,8 @@ def MoveVideo(video):
             os.makedirs('completed_videos/' + video)
             shutil.move("./videos/" + video, 'completed_videos/' + video, copy_function=shutil.copy2)
     except:
-        errwriter.writerow(['Warning', 'Video Reprocessed' , 'Deliberate User Action', 'Processing same videos will use up unnecessary computer resources'])
+        errwriter.writerow(['Warning', 'Video Reprocessed', 'Deliberate User Action',
+                            'Processing same videos will use up unnecessary computer resources'])
 
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
@@ -455,7 +461,7 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         # write to seperate folders for easier book-keeping
         cv2.imwrite('./images/' + _video_name + '/' + _type + '/' + str(_frame_index) + '.jpg', actual_frame)
     except:
-        errwriter.writerow(['Serious', 'SaveImages Function Error' , 'Fail to Save Images', 'Request technical support'])
+        errwriter.writerow(['Serious', 'SaveImages Function Error', 'Fail to Save Images', 'Request technical support'])
 
 
 def get_video_length(filename):  # Get video length in seconds for progress bar
@@ -492,4 +498,3 @@ def count_frames(path, override=False):
     video.release()
     # return the total number of frames in the video
     return total
-    
