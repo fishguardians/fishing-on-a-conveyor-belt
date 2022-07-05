@@ -27,6 +27,7 @@ if (os.name == 'nt'):
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
 from scripts.text_recognition import text_recognition
+from scripts.generate_csv import write_data_output
 from scripts.object_detection import ObjectDetection
 
 # Initialize Object Detection
@@ -130,7 +131,12 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # when stream ends
             if not ret:
                 cap.release()
-                # TODO: uncomment this line to move the video to completed folder
+                # Generate final csv file and then move the file to completed
+                try: 
+                    response = write_data_output(_video_name)
+                except:
+                    errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
+                    continue
                 MoveVideo(_video_name)
                 print(f'Video {index} process complete.')
                 break
@@ -170,7 +176,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-                    case 0:  # Detected that id tag is found
+                    case 1:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
 
@@ -200,7 +206,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-                    case 1:  # Detected the barramundi fish
+                    case 0:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
                         cx = int((x + x + w) / 2)
@@ -258,7 +264,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
-                            
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -471,7 +476,6 @@ def get_video_length(filename):  # Get video length in seconds for progress bar
     durationInSeconds = int(float(totalNoFrames) / float(fps))
     # print("durationInSeconds: ", durationInSeconds, "s")
     return durationInSeconds
-
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
