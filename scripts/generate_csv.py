@@ -4,8 +4,9 @@ import math
 
 from collections import Counter
 
-from scripts.video_processing import errwriter
-
+# open the file in the write mode
+errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
+errwriter = csv.writer(errorfile)
 
 def write_data_output(video_name):
     fish_id = 0
