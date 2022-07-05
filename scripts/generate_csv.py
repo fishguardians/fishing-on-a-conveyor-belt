@@ -6,6 +6,7 @@
 # import if necessary (built-in, third-party, path, own modules)
 import csv
 import os
+import math
 from collections import Counter
 
 from nbformat import write
@@ -105,8 +106,6 @@ def WriteDataOutput(_video_names):
                 errwriter.writerow(['Serious', 'Error with Recording Weights' , 'Missing Output Data', 'Please check /output/' + video_name + ' folder for dimensions.txt file'])
                 return False
 
-        # print(overall_data)
-
         for items in overall_data:
             fish = 0
             frame = 0
@@ -130,29 +129,34 @@ def WriteDataOutput(_video_names):
                         result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
                         idtag = result[0]
                     if k == 'weight':
-                        # sorting on basis of frequency of elements
-                        result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
-                        weight = result[0]
+                        # get center of occurrences
+                        if 'N.A' in objects:
+                            objects.remove('N.A')
+                        results = sorted(objects, key = lambda x:float(x))
+                        weight = results[math.floor(len(results)/2)]
                     if k == 'length':
                         # get center of occurrences
+                        if '0.0' in objects:
+                            objects.remove('0.0')
                         results = sorted(objects, key = lambda x:float(x))
-                        length = results[int(len(results)/2)]
+                        length = results[math.floor(len(results)/2)]
                     if k == 'breadth':
                         # get center of occurrences
+                        if '0.0' in objects:
+                            objects.remove('0.0')
                         results = sorted(objects, key = lambda x:float(x))
-                        breadth = results[int(len(results)/2)]
-            
-            
-            print(indexofhypot, frame, idtag, weight, length, breadth)        
+                        breadth = results[math.floor(len(results)/2)]      
             
             write_data.append([fish, frame, hypot, idtag, weight, length, breadth])
 
 
         print('Generating CSV file for video: ' + video_name)
-        with open('../output/'+video_name+'/fish_data.csv', 'w') as csvfile:
+        with open('./output/'+video_name+'/fish_data.csv', 'w') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight', 'length', 'breadth'])
             writer.writerows(write_data)
+
+    return True
 
         # try:
         #     for (index, fish) in enumerate(fishes_data):
