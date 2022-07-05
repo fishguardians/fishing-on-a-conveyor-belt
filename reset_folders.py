@@ -32,13 +32,13 @@ def reset_folders():
             writer.writerow(['Fatal', 'Backup Download Failed' , 'No Backup Available to download', 'Please check your internet connection and retry'])
 
     # check if the important component exists
-    if not exists('./GUI/'):
-        makedirs('./GUI/')
+    if not exists('./pages/'):
+        makedirs('./pages/')
         writer.writerow(['Serious', 'Missing Folder Error' , 'No GUI Folder Found', 'Attenpting to restore GUI folder from backup'])
         try: 
-            copy_tree("./backup/GUI/", "./GUI/") 
+            copy_tree("./backup/pages/", "./pages/") 
 
-            writer.writerow(['Resolved', 'GUI Folder Restored' , 'Fixed GUI Folder', 'Program functioning as expected'])
+            writer.writerow(['Resolved', 'Frontend Folder Restored' , 'Fixed Frontend Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
