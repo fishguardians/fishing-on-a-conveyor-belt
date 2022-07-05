@@ -158,6 +158,12 @@ installation
 # pytype static type analyzer
 .pytype/
 
+/backup
+**/backup
+
+/dnn_model
+**/dnn_model
+
 # Cython debug symbols
 cython_debug/
 
