@@ -41,8 +41,6 @@ def main():
 
     print('Unprocessed videos found: ' + str(len(video_files)) + '\n')
     video_processing.CaptureImagesOnVideo(video_files)
-
-    print('Is files able to generate? :'+ response)
     
     print("End of video image capture process: ", current_time)
 

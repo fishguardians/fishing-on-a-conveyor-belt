@@ -131,7 +131,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 # Generate final csv file and then move the file to completed
                 try: 
                     response = write_data_output(_video_name)
-                    print(response)
                 except:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
                     continue
