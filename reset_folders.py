@@ -32,12 +32,13 @@ def reset_folders():
             writer.writerow(['Fatal', 'Backup Download Failed' , 'No Backup Available to download', 'Please check your internet connection and retry'])
 
     # check if the important component exists
-    if not exists('./GUI/'):
-        makedirs('./GUI/')
+    if not exists('./pages/'):
+        makedirs('./pages/')
         writer.writerow(['Serious', 'Missing Folder Error' , 'No GUI Folder Found', 'Attenpting to restore GUI folder from backup'])
         try: 
-            copy_tree("./GUI/", "./GUI/") 
-            writer.writerow(['Resolved', 'GUI Folder Restored' , 'Fixed GUI Folder', 'Program functioning as expected'])
+            copy_tree("./backup/pages/", "./pages/") 
+
+            writer.writerow(['Resolved', 'Frontend Folder Restored' , 'Fixed Frontend Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
@@ -45,7 +46,8 @@ def reset_folders():
         makedirs('./scripts/')
         writer.writerow(['Serious', 'Missing Folder Error' , 'No Scripts Folder', 'Attenpting to restore Scripts folder from backup'])
         try:
-            copy_tree("./scripts/", "./scripts/") 
+            copy_tree("./backup/scripts/", "./scripts/") 
+
             writer.writerow(['Resolved', 'Scripts Folder Restored' , 'Fixed Scripts Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
@@ -55,7 +57,8 @@ def reset_folders():
         makedirs('./dnn_model/')
         writer.writerow(['Serious', 'Missing Folder Error' , 'No ML Model Folder', 'Attenpting to restore ML Model folder from backup'])
         try:
-            copy_tree("./dnn_model/", "./dnn_model/") 
+            copy_tree("./backup/dnn_model/", "./dnn_model/") 
+
             writer.writerow(['Resolved', 'Dnn Model Restored' , 'Fixed ML Model Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
@@ -63,7 +66,8 @@ def reset_folders():
     if not dirname('./constants.py'):
         writer.writerow(['Serious', 'Missing Script Error' , 'Missing Constants Script', 'Attempting to restore constants script from backup'])
         try:
-            shutil.copy('./constants.py', './constants.py')
+            shutil.copy('./backup/constants.py', './constants.py')
+            
             writer.writerow(['Resolved', 'Constants Script Restored' , 'Fixed Constants Script', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])

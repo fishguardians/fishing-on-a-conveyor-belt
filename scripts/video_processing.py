@@ -20,6 +20,8 @@ import constant
 import pytesseract
 import streamlit as st
 
+from scripts.FishMeasurement._3_fish_measure_dimensions import sendDimensions
+
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
@@ -27,6 +29,7 @@ if (os.name == 'nt'):
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
 from scripts.text_recognition import text_recognition
+from scripts.generate_csv import write_data_output
 from scripts.object_detection import ObjectDetection
 
 # Initialize Object Detection
@@ -123,15 +126,21 @@ def CaptureImagesOnVideo(videos_to_be_processed):
         while (cap.isOpened()):
 
             ret, frame = cap.read()
+
             # exact frame counts
             _frame_index += 1
 
             # when stream ends
             if not ret:
                 cap.release()
-                # TODO: uncomment this line to move the video to completed folder
+                # Generate final csv file and then move the file to completed
+                try: 
+                    response = write_data_output(_video_name)
+                except:
+                    errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
+                    continue
                 MoveVideo(_video_name)
-                print(f'Video {index + 1} process complete.')
+                print(f'Video {index} process complete.')
                 break
 
             # Loading image
@@ -169,7 +178,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
                 # check if 2 objects are in the image [id tag, fish]
                 match class_ids[index]:
-
                     case 0:  # Detected that id tag is found
                         id_coords = box
                         _id_id += 1
@@ -188,10 +196,11 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                         # Call the id tag scripts
                         words = text_recognition(id_image)
 
+                        # Call the id tag scripts
+                        words = text_recognition(id_image)
+
                         if len(words) < 7:
-                            errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation',
-                                                'Please check frame ' + str(
-                                                    _frame_index) + '.jpg in /images/' + _video_name + '/id/'])
+                            errwriter.writerow(['Warning', 'ID Tag Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
 
                         # open the file to write
                         with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -199,7 +208,6 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             writer = csv.writer(f)
                             # ['#', 'Fish#', 'Frame', 'Value']
                             writer.writerow([_id_id, wells_id, _frame_index, words])
-
                     case 1:  # Detected the barramundi fish
                         fish_coords = box
                         # center point of the fish
@@ -242,9 +250,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                             # open the file to write
                             # error checking for fish dimensions
                             if len(flag) > 0:
-                                errwriter.writerow(['Warning', 'Fish Dimension Not Found', 'Request User Validation',
-                                                    'Please check frame ' + str(
-                                                        _frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
+                                errwriter.writerow(['Warning', 'Fish Dimension Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
                             with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                                 writer = csv.writer(f)
                                 # write the header
@@ -260,11 +266,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
-                            # print("")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                            # print("NEW FISH INCOMING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
+                            
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -373,11 +375,9 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                 scale_reading = digit_recognition(frame)
 
                 # error checking for scale reading
-                if (scale_reading == 'N.A'):
-                    errwriter.writerow(['Warning', 'Scale Reading Not Found', 'Request User Validation',
-                                        'Please check frame ' + str(
-                                            _frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
-
+                if(scale_reading == 'N.A'):
+                    errwriter.writerow(['Warning', 'Scale Reading Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
+                    
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
                     # create the csv writer
@@ -387,7 +387,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
 
             # View Video
             view_video_output = ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name,
-                                          img)
+                                            img)
 
             # For streamlit to display video
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
@@ -395,8 +395,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()
 
-            _skip_frames += 30  # i.e. at 30 fps, this advances one second
-            _frame_index += 29
+            _skip_frames += 15  # i.e. at 30 fps, this advances one second
+            _frame_index += 14
             cap.set(1, _skip_frames)
 
             if cv2.waitKey(1) == ord('q'):
@@ -438,11 +438,11 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
         cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
+
         # display the window
         # cv2.imshow(name, main_frame)
 
         return main_frame
-    # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
 
     except:
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])
@@ -479,7 +479,6 @@ def get_video_length(filename):  # Get video length in seconds for progress bar
     durationInSeconds = int(float(totalNoFrames) / float(fps))
     # print("durationInSeconds: ", durationInSeconds, "s")
     return durationInSeconds
-
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
