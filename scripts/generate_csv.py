@@ -37,10 +37,13 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
+                if (os.name == 'nt'):
+                    if line == ['\n']:
+                        continue
 
                 if line[1]in fish_dict.keys():
-                    fish_dict[line[1]]['hypot'].append(line[3].strip())
-                    fish_dict[line[1]]['frame'].append(line[2].strip())
+                        fish_dict[line[1]]['hypot'].append(line[3].strip())
+                        fish_dict[line[1]]['frame'].append(line[2].strip())
                 else:
                     fish_dict = {line[1]: {'hypot':[line[3].strip()], 'frame':[line[2].strip()], 'id': [], 'weight': [], 'length':[], 'breadth':[]}}
                     if fish_id != line[1]:
@@ -58,6 +61,9 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
+                if (os.name == 'nt'):
+                    if line == ['\n']:
+                        continue
 
                 for items in overall_data:
                     if line[1]in items.keys():
@@ -73,6 +79,9 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
+                if (os.name == 'nt'):
+                    if line == ['\n']:
+                        continue
 
                 for items in overall_data:
                     if line[1] in items.keys():
@@ -88,6 +97,9 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
+                if (os.name == 'nt'):
+                    if line == ['\n']:
+                        continue
 
                 for items in overall_data:
                     if line[1]in items.keys():
