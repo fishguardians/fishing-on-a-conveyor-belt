@@ -5,7 +5,7 @@ import math
 from collections import Counter
 
 # open the file in the write mode
-errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
+errorfile = open('errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
 def write_data_output(video_name):
@@ -14,16 +14,16 @@ def write_data_output(video_name):
     write_data = []
     fish_dict = {}
     try:
-        f = open('./output/'+video_name+'/images.txt','r')
+        f = open('output/'+video_name+'/images.txt','r')
         hypos_array = f.readlines()
         f.close()
-        f = open('./output/'+video_name+'/dimensions.txt','r')
+        f = open('output/'+video_name+'/dimensions.txt','r')
         dimensions_array = f.readlines()
         f.close()
-        f = open('./output/'+video_name+'/ids.txt','r')
+        f = open('output/'+video_name+'/ids.txt','r')
         ids_array = f.readlines()
         f.close()
-        f = open('./output/'+video_name+'/weights.txt','r')
+        f = open('output/'+video_name+'/weights.txt','r')
         weights_array = f.readlines()
         f.close()
     except:
@@ -144,7 +144,7 @@ def write_data_output(video_name):
         write_data.append([fish, frame, hypot, idtag, weight, length, breadth])
 
     print('Generating CSV file for video: ' + video_name)
-    with open('./output/'+video_name+'/fish_data.csv', 'w') as csvfile:
+    with open('output/'+video_name+'/fish_data.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
         writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight', 'length', 'breadth'])

@@ -149,8 +149,10 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         ref_depth_buffer_low = ref_width - (ref_width * 0.05)
 
         # Output length and depth in 2 decimal places
-        length = "{:.3f}cm".format(dimA_CM)
-        depth = "{:.3f}cm".format(dimB_CM)
+        # length = "{:.3f}cm".format(dimA_CM)
+        # depth = "{:.3f}cm".format(dimB_CM)
+        length = round(dimA_CM,3)
+        depth = round(dimB_CM,3)
 
         # cv2.imwrite("gray.jpg", gray)
         # cv2.imwrite("erode_dilate.jpg", erode_dilate)
