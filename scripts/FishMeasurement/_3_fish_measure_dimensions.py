@@ -81,6 +81,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         box = perspective.order_points(box)
 
         orig = og_img  # Source video frame to layover the dimensions
+        orig = cv2.resize(og_img, None, fx=0.4, fy=0.4)
 
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
@@ -139,8 +140,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
-
-        sendDimensions(shrunk_img, dimA_CM, dimB_CM, tltrX, tltrY)
+        # Sends image with dimensions to another module
+        sendDimensions(orig)
 
         d_length = dimA_CM
         d_depth = dimB_CM
@@ -270,8 +271,8 @@ def tuneCanny(image):
     cv2.destroyAllWindows()
     return threshold1, threshold2
 
-
 # Sends image with dimensions to another module
-def sendDimensions(image, length, depth, x, y):
-    print("sent Dimensions")
-    return image, length, depth, x, y
+def sendDimensions(img):
+    # print("sent Dimensions")
+    return img
+

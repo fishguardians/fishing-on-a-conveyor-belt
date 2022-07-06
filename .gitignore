@@ -177,3 +177,6 @@ cython_debug/
 *.weights
 *.weights
 .DS_Store
+*.xml
+*.iml
+*.xml
