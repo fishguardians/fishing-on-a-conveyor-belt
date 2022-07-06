@@ -82,7 +82,6 @@ def reset_folders():
     if not exists('./completed_videos/'):
         makedirs('./completed_videos/')
 
-
     if not exists('./videos/'):
         makedirs('./videos/')
         
