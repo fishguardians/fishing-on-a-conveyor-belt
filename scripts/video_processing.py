@@ -30,9 +30,6 @@ from scripts.text_recognition import text_recognition
 from scripts.generate_csv import write_data_output
 from scripts.object_detection import ObjectDetection
 
-# Initialize Object Detection
-od = ObjectDetection()
-
 # open the file in the write mode
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
@@ -83,7 +80,7 @@ def GetVideoNames(path):
     return videos_array
 
 
-def CaptureImagesOnVideo(videos_to_be_processed):
+def CaptureImagesOnVideo(videos_to_be_processed, od):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
     hypo_threshold = 90
@@ -138,7 +135,7 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
                     continue
                 MoveVideo(_video_name)
-                print(f'Video {index} process complete.')
+                print(f'Video {_video_index + 1} process complete.')
                 break
 
             # Loading image
@@ -392,8 +389,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()
 
-            _skip_frames += 15  # i.e. at 30 fps, this advances one second
-            _frame_index += 14
+            _skip_frames += 30  # i.e. at 30 fps, this advances one second
+            _frame_index += 29
             cap.set(1, _skip_frames)
 
             if cv2.waitKey(1) == ord('q'):
