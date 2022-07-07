@@ -408,6 +408,14 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
+            # TODO: Streamlit KPIs, for user to see whats going on
+            # col1, col2, col3 = st.columns(3)
+            # col1.metric(label="Completion Percentage:", value = round(current_percent))
+            # col2.metric(label="Estimated Time Left:", value = str(round(15)) + 'mins')
+            # col3.metric(label="Fish Caught", value = str(round(9)) + '%')
+            # col2.metric(label="Estimated Time Left:", value=round(eta))
+            # col3.metric(label="Fish Caught", value=round(fish))
+
         cap.release()
         cv2.destroyAllWindows()
 

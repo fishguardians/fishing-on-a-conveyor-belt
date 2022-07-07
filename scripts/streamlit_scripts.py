@@ -5,7 +5,8 @@ import streamlit as st
 """
 Function that sends unprocessed videos from input video folder to cache
 """
-@st.cache
+
+# @st.cache
 def load_videos_cache(video_files):
     video_files = video_processing.GetVideoNames(constant.videos_location)
     return video_files
