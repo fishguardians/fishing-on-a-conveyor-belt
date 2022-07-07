@@ -141,7 +141,8 @@ def CaptureImagesOnVideo(videos_to_be_processed):
                     continue
                 MoveVideo(_video_name)
                 print(f'Video {index} process complete.')
-                break
+                # break
+                return True
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
@@ -437,7 +438,6 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
         cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
         cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
-
 
         # display the window
         # cv2.imshow(name, main_frame)
