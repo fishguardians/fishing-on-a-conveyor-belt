@@ -6,10 +6,8 @@
 # import if necessary (built-in, third-party, path, own modules)
 import time
 import reset_folders
-print('Checking if file are corrupted...')
-reset_folders.reset_folders()
-
 import scripts.video_processing as video_processing
+from scripts.object_detection import ObjectDetection
 import constant
 
 from datetime import datetime
@@ -37,7 +35,9 @@ def main():
     print('Files: ' + str(video_files) + '\n')
 
     print('Unprocessed videos found: ' + str(len(video_files)) + '\n')
-    video_processing.CaptureImagesOnVideo(video_files)
+    # Initialize Object Detection
+    od = ObjectDetection()
+    video_processing.CaptureImagesOnVideo(video_files, od)
     
     print("End of video image capture process: ", current_time)
 
