@@ -168,7 +168,7 @@ installation
 *.json
 
 #ignores the errorlogs.txt file
-errorlogs.txt
+*.txt
 
 # Cython debug symbols
 cython_debug/
