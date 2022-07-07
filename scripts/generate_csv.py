@@ -39,9 +39,8 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
-                if (os.name == 'nt'):
-                    if line == ['\n']:
-                        continue
+                if line == ['\n']:
+                    continue
 
                 if line[1] in fish_dict.keys():
                     fish_dict[line[1]]['hypot'].append(line[3].strip())
@@ -65,9 +64,8 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
-                if (os.name == 'nt'):
-                    if line == ['\n']:
-                        continue
+                if line == ['\n']:
+                    continue
 
                 for items in overall_data:
                     if line[1] in items.keys():
@@ -84,9 +82,8 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
-                if (os.name == 'nt'):
-                    if line == ['\n']:
-                        continue
+                if line == ['\n']:
+                    continue
 
                 for items in overall_data:
                     if line[1] in items.keys():
@@ -103,9 +100,8 @@ def write_data_output(video_name):
                 continue
             else:
                 line = lines.split(',')
-                if (os.name == 'nt'):
-                    if line == ['\n']:
-                        continue
+                if line == ['\n']:
+                    continue
 
                 for items in overall_data:
                     if line[1] in items.keys():
