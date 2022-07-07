@@ -137,7 +137,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     continue
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
-                break
+                # break
+                return True
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
