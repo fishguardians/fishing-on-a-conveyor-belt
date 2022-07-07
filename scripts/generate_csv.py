@@ -164,7 +164,7 @@ def write_data_output(video_name):
     with open('output/' + video_name + '/fish_data.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
-        writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight', 'length', 'breadth'])
+        writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight(kg)', 'length(cm)', 'breadth(cm)'])
         writer.writerows(write_data)
 
     return write_data

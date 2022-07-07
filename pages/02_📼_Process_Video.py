@@ -1,11 +1,13 @@
 import scripts.video_processing as video_processing  # Video processing scripts
 import scripts.streamlit_scripts as st_scripts  # Custom streamlit scripts
-import main as main
 import constant  # Constant Variables
-
-from datetime import datetime
 import streamlit as st
-import time
+import os
+import glob
+import pandas as pd
+from datetime import datetime
+from st_aggrid import AgGrid
+from itertools import count
 
 # Page Configs
 
@@ -50,6 +52,7 @@ start_button = st.empty()
 video_processing_warning = st.empty()
 video_processing_window = st.empty()
 
+ballooned = False
 processing_complete = False
 
 # Checks for number of videos currently
@@ -86,26 +89,82 @@ if st.session_state.bool_start_processing:
     video_player.empty()
     processing_complete = video_processing.CaptureImagesOnVideo(cached_videos)
 
-# If video processing is done
-# TODO: Make the bool checking for video processing completed to work
+# Video Processing KPIs
+# create three columns
+# kpi1, kpi2, kpi3 = st.columns(3)
+#
+# # fill in those three columns with respective metrics or KPIs
+# kpi1.metric(
+#     label="Processing Percentage ⏳",
+#     # value=f"{round(percentage)}%",
+#     # delta=round(avg_age) - 10,
+# )
+#
+# kpi2.metric(
+#     label="Fish Caught 🎣",
+#     # value=int(x),
+#     # delta=-10 + count_married,
+# )
+#
+# kpi3.metric(
+#     label=" ＄",
+#     # value=f"{round(x)} ",
+#     # delta=-round(balance / count_married) * 100,
+# )
 
+
+# If video processing is done
 if processing_complete:
     video_processing_warning.empty()
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     st.success("Video processing complete at " + current_time)
-    st.balloons()
-    # st.markdown("""
-    # TODO: Buttons to export the CSV Data
-    # TODO: Redirect user to Data Visualization page to view exported CSV data
-    # """)
+
+    if not ballooned:
+        for i in count():
+            if i == 0:
+                st.balloons()
+                ballooned = True
+                break
 
     st.write('###')  # Line break
     st.markdown("""
     ### :three: After processing:
-    1. You can download the output CSV with the fishID, fish's weight fish's dimensions (length and depth)
-    2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data
+    1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
+    2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
     """)
+
+    # Create table on the GUI
+    os.chdir('output')
+    file_list = glob.glob('*/**.csv')
+    print('file_list: ', file_list)
+
+    if len(file_list) == 0:
+        st.error(""" Output CSV data folder is currently empty!""")
+
+    else:
+        try:
+            option = st.selectbox(
+                'Which CSV file would you like to view?',
+                file_list)
+
+            df = pd.read_csv(f"{option}")
+            df = df.drop(columns=['frame', 'hypotenuse'])
+            csv = st_scripts.convert_df(df)
+
+            AgGrid(df)
+
+            st.download_button(
+                "Press to Download",
+                csv,
+                "text.csv",
+                "text/csv",
+                key='download-csv'
+            )
+
+        except:
+            st.text("This file is not a CSV file!")
+
 
 # st.write('###')
 # st.markdown('### Upload video to start processing')

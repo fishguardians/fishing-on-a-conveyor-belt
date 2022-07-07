@@ -14,7 +14,6 @@ import random
 import math
 import numpy as np
 from pytesseract import pytesseract
-import matplotlib.pyplot as plt
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
