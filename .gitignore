@@ -164,6 +164,9 @@ installation
 /dnn_model
 **/dnn_model
 
+#ignores google credential account
+*.json
+
 # Cython debug symbols
 cython_debug/
 
