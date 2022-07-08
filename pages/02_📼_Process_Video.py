@@ -74,11 +74,12 @@ try:
 
 
     # Start of 2️⃣ Processing videos from file location
-    part2 = st.container()
-    part2.write('###')
-    part2.markdown('### :two: Processing videos from file location:')
-
     if len(cached_videos) != 0:
+
+        part2 = st.container()
+        part2.write('###')
+        part2.markdown('### :two: Processing videos from file location:')
+
         # Show the button to start video phenotyping process
         num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(cached_videos)) + '\n')
         st.session_state.bool_have_videos = True
@@ -160,7 +161,7 @@ try:
                 part3.download_button(
                     "Press to Download",
                     csv,
-                    file_name,  # TODO: make this print just the name of the video name
+                    file_name,
                     "text/csv",
                     key='download-csv'
                 )
