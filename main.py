@@ -19,7 +19,6 @@ video_files = []
 
 
 def main():
-    
     """
     Main Start Function to execute the scripts
     TODO: *Include more documentation*

@@ -14,11 +14,12 @@ import random
 import math
 import numpy as np
 from pytesseract import pytesseract
-import matplotlib.pyplot as plt
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
 import streamlit as st
+
+from scripts.FishMeasurement._3_fish_measure_dimensions import sendDimensions
 
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
@@ -136,7 +137,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     continue
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
-                break
+                # break
+                return True
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
@@ -261,6 +263,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                                 writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                             SaveImages(cropped_img, _frame_index, _video_name, 'fish')
+                            
                     case 2:  # scale
                         _scale_id += 1
                         scale_coords = box
@@ -405,6 +408,14 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
+            # TODO: Streamlit KPIs, for user to see whats going on
+            # col1, col2, col3 = st.columns(3)
+            # col1.metric(label="Completion Percentage:", value = round(current_percent))
+            # col2.metric(label="Estimated Time Left:", value = str(round(15)) + 'mins')
+            # col3.metric(label="Fish Caught", value = str(round(9)) + '%')
+            # col2.metric(label="Estimated Time Left:", value=round(eta))
+            # col3.metric(label="Fish Caught", value=round(fish))
+
         cap.release()
         cv2.destroyAllWindows()
 
@@ -436,7 +447,6 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         # cv2.imshow(name, main_frame)
 
         return main_frame
-    # TODO: DUMP DIMENSIONS BOXES HERE RETURN HERE
 
     except:
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])

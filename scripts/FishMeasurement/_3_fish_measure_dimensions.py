@@ -81,6 +81,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         box = perspective.order_points(box)
 
         orig = og_img  # Source video frame to layover the dimensions
+        orig = cv2.resize(og_img, None, fx=0.4, fy=0.4)
 
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
@@ -134,10 +135,13 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         dimB_CM = inch_to_cm(dimB)
 
         # Adds the length and depth of the objects onto the source video image frame
-        cv2.putText(orig, "{:.1f}cm".format(dimA_CM), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
+        cv2.putText(orig, "{:.2f}cm".format(dimA_CM), (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
                     0.65, (255, 255, 255), 2)
-        cv2.putText(orig, "{:.1f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
+        cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
+
+        # Sends image with dimensions to another module
+        sendDimensions(orig)
 
         d_length = dimA_CM
         d_depth = dimB_CM
@@ -233,6 +237,7 @@ def nothing(x):
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
+
 # Displays the title of the image display in the window
 # def show_image(title, image, destroy_all=True):
 #     cv2.imshow(title, image)
@@ -240,27 +245,36 @@ def midpoint(ptA, ptB):
 #     if destroy_all:
 #         cv2.destroyAllWindows()
 
-# Creates a window with sliders to adjust canny in the image
-# For specific tuning for new fish types
-# Currently only used for snapper testing
-# def tuneCanny(image):
-#     window = 'canny'
-#     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
-#     cv2.createTrackbar('threshold1', window, 10, 500, nothing)
-#     cv2.createTrackbar('threshold2', window, 10, 500, nothing)
-#
-#     while True:
-#         image_copy = np.copy(image)
-#         threshold1 = cv2.getTrackbarPos('threshold1', window)
-#         threshold2 = cv2.getTrackbarPos('threshold2', window)
-#
-#         # Displays the image based on the new and adjusted threshold values
-#         edged = cv2.Canny(image_copy, threshold1, threshold2)
-#         cv2.imshow('edged', edged)
-#
-#         k = cv2.waitKey(1) & 0xFF
-#         if k == 27:
-#             break
-#
-#     cv2.destroyAllWindows()
-#     return threshold1, threshold2
+
+"""
+Creates a window with sliders to adjust canny in the image
+For specific tuning for new fish types
+Currently only used for snapper testing
+"""
+def tuneCanny(image):
+    window = 'canny'
+    cv2.namedWindow(window, cv2.WINDOW_NORMAL)
+    cv2.createTrackbar('threshold1', window, 10, 500, nothing)
+    cv2.createTrackbar('threshold2', window, 10, 500, nothing)
+
+    while True:
+        image_copy = np.copy(image)
+        threshold1 = cv2.getTrackbarPos('threshold1', window)
+        threshold2 = cv2.getTrackbarPos('threshold2', window)
+
+        # Displays the image based on the new and adjusted threshold values
+        edged = cv2.Canny(image_copy, threshold1, threshold2)
+        cv2.imshow('edged', edged)
+
+        k = cv2.waitKey(1) & 0xFF
+        if k == 27:
+            break
+
+    cv2.destroyAllWindows()
+    return threshold1, threshold2
+
+# Sends image with dimensions to another module
+def sendDimensions(img):
+    # print("sent Dimensions")
+    return img
+

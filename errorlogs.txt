@@ -1,0 +1,11 @@
+Severity#,Title,Message,Action
+Warning,ID Tag Not Found,Request User Validation,Please check frame 571.jpg in /images/20june_fishyy.mp4/id/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 946.jpg in /images/20june_fishyy.mp4/id/
+Warning,Scale Reading Not Found,Request User Validation,Please check frame 1021.jpg in /images/20june_fishyy.mp4/scale/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 1096.jpg in /images/20june_fishyy.mp4/id/
+Warning,Scale Reading Not Found,Request User Validation,Please check frame 1426.jpg in /images/20june_fishyy.mp4/scale/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 1531.jpg in /images/20june_fishyy.mp4/id/
+Warning,Fish Dimension Not Found,Request User Validation,Please check frame 2041.jpg in /images/20june_fishyy.mp4/actual/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 2071.jpg in /images/20june_fishyy.mp4/id/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 2521.jpg in /images/20june_fishyy.mp4/id/
+Warning,ID Tag Not Found,Request User Validation,Please check frame 2596.jpg in /images/20june_fishyy.mp4/id/

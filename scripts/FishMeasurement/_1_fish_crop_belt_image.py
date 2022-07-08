@@ -68,15 +68,3 @@ def crop_belt(image):
     # cv2.destroyAllWindows() # For Debug
 
     return cropBelt_output_img
-
-
-# def get_image_names():
-#     # creating list
-#     image_list = []
-#
-#     # Process folder for image to be processed
-#     for file in glob.glob(constant.image_storage + "testing" + "/*.jpg"):
-#         # appending instances to list
-#         image_list.append(FishImage(file))
-#
-#     return image_list
