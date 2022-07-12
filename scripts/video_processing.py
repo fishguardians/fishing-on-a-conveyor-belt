@@ -134,11 +134,9 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     response = write_data_output(_video_name)
                 except:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
-                    continue
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
-                # break
-                return True
+                break
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
@@ -419,6 +417,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         cap.release()
         cv2.destroyAllWindows()
 
+    return True
 
 def ViewVideo(fish, fish_center, id, scale, name, img):
     """Additional: to see the video while it is processing"""
