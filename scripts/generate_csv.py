@@ -154,13 +154,13 @@ def write_data_output(video_name):
                     results = sorted(objects, key=lambda x: float(x))
                     breadth = results[math.floor(len(results) / 2)]
 
-        write_data.append([fish, frame, hypot, idtag, weight, length, breadth])
+        write_data.append([fish, idtag, weight, length, breadth])
 
     print('Generating CSV file for video: ' + video_name)
-    with open('output/' + video_name + '/fish_data.csv', 'w') as csvfile:
+    with open('results/' + video_name + '_fish_data.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
-        writer.writerow(['fish', 'frame', 'hypotenuse', 'idtag', 'weight(kg)', 'length(cm)', 'breadth(cm)'])
+        writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)'])
         writer.writerows(write_data)
 
     return write_data

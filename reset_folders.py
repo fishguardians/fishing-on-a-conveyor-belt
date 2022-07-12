@@ -52,14 +52,13 @@ def reset_folders():
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
+    if exists('./dnn_model/'):
+        shutil.rmtree('./dnn_model/')
                     
     if not exists('./dnn_model/'):
         makedirs('./dnn_model/')
-        writer.writerow(['Serious', 'Missing Folder Error' , 'No ML Model Folder', 'Attenpting to restore ML Model folder from backup'])
         try:
             copy_tree("./backup/dnn_model/", "./dnn_model/") 
-
-            writer.writerow(['Resolved', 'Dnn Model Restored' , 'Fixed ML Model Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
@@ -75,6 +74,9 @@ def reset_folders():
     # check if the directory exists
     if not exists('./output/'):
         makedirs('./output/')
+
+    if not exists('./results/'):
+        makedirs('./results/')
 
     if not exists('./images/'):
         makedirs('./images/')
