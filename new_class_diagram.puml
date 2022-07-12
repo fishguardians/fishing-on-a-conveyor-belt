@@ -1,0 +1,128 @@
+@startuml
+
+class barramundi_video <<entity>> {
+    str: _type = "barramundi"
+}
+
+class snapper_video <<entity>> {
+    str: _type = "snapper"
+}
+
+class fish_videos <<entity>> {
+    int:_width = 1920
+    int:_height = 1080
+    str:_name
+    int:_size
+    int:_duration
+}
+
+barramundi_video ..|> fish_videos : generalise
+snapper_video ..|> fish_videos : generalise
+
+note right of videos_folder : Contains to-be processed videos only.
+
+class videos_folder <<boundary>> {
+    list[]: _listofvideos
+    insertVideo()
+}
+
+fish_videos "many" }-- "1" videos_folder 
+
+note top of completed_videos_folder : Contains processed videos only.
+
+class completed_videos_folder <<boundary>> {
+    list[]: _listofvideos
+    moveVideo()
+}
+
+class images_folder <<boundary>> {
+    list[]: _listofimages
+    saveImage(_frame_name)
+}
+
+class output_folder <<boundary>> {
+    list[]: _listofcsvs
+    saveCSV()
+}
+
+class application_main_script <<boundary>> {
+    openGUI()
+    runScripts()
+}
+
+application_main_script -up- main_scripts_interfaces : uses >
+
+class main_scripts_interfaces <<interface>> {
+    resetFoldersScript()
+    videoProcessingScript()
+    fishMeasurementScript()
+    textRecognitionScript()
+    digitRecognitionScript()
+    generateCsvScript()
+}
+
+main_scripts_interfaces -left- reset_folders_script : executes >
+
+note bottom of reset_folders_script : Folders are restored when missing.
+
+class reset_folders_script <<boundary>> {
+    checkIfBackupExists()
+    restoreFoldersFromBackup()
+}
+
+main_scripts_interfaces -up- video_processing_script : executes >
+
+class video_processing_script <<boundary>> {
+    getVideosFromFolder()
+    fetchFramesFromVideo()
+    retrieveItemClasses()
+    detectObjectFromImage()
+    cropImage()
+    saveImage()
+    moveVideo()
+}
+
+video_processing_script -down- object_recognition_script : executes >
+object_recognition_script -right- text_recognition_script : executes >
+text_recognition_script -right- fish_measurement_script : executes >
+fish_measurement_script -right- digit_recognition_script : executes >
+digit_recognition_script -right- generate_csv_script : executes >
+
+generate_csv_script -down- output_folder : stores >
+video_processing_script -up- completed_videos_folder : moves >
+video_processing_script -left- images_folder : stores >
+videos_folder -left- video_processing_script : retrieves >
+
+class object_recognition_script <<boundary>> {
+    retrieveClasses()
+    detectObjects()
+}
+
+class text_recognition_script <<boundary>> {
+    filterImage()
+    detectText()
+    saveText()
+}
+
+class generate_csv_script <<boundary>> {
+    retrieveAllData()
+    sortData()
+    getMostAccurateData()
+    storeCSV()
+}
+
+class fish_measurement_script <<boundary>> {
+    cropBackground()
+    outlineContour()
+    measureDimensions()
+    saveDimensions()
+}
+
+class digit_recognition_script <<boundary>> {
+    getRegionOfInterest()
+    rotateImage()
+    contourDigits()
+    readDigitsFromImage()
+    saveReadings()
+}
+
