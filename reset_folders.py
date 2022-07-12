@@ -76,6 +76,9 @@ def reset_folders():
     if not exists('./output/'):
         makedirs('./output/')
 
+    if not exists('./results/'):
+        makedirs('./results/')
+
     if not exists('./images/'):
         makedirs('./images/')
 

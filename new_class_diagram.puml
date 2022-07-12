@@ -41,7 +41,7 @@ class images_folder <<boundary>> {
 }
 
 class output_folder <<boundary>> {
-    list[]: _listofcsvss
+    list[]: _listofcsvs
     saveCSV()
 }
 
@@ -82,7 +82,7 @@ class video_processing_script <<boundary>> {
     moveVideo()
 }
 
-main_scripts_interfaces -right- object_recognition_script : executes >
+video_processing_script -down- object_recognition_script : executes >
 object_recognition_script -right- text_recognition_script : executes >
 text_recognition_script -right- fish_measurement_script : executes >
 fish_measurement_script -right- digit_recognition_script : executes >
