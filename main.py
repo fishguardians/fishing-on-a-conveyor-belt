@@ -4,11 +4,12 @@
     @Author: "Muhammad Abdurraheem, Chen Dong, Nicholas Bingei, Yao YuJing and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
-import time
+
 import reset_folders
 import scripts.video_processing as video_processing
 from scripts.object_detection import ObjectDetection
 import constant
+import streamlit as st
 
 from datetime import datetime
 
@@ -42,4 +43,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    st.header("Hello world")

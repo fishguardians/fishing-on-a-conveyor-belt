@@ -4,22 +4,16 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
-import importlib
 import os
 import shutil
 import csv
 import cv2
-import glob
-import random
 import math
 import numpy as np
-from pytesseract import pytesseract
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
 import streamlit as st
-
-from scripts.FishMeasurement._3_fish_measure_dimensions import sendDimensions
 
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
