@@ -33,12 +33,14 @@ if 'bool_start_processing' not in st.session_state:  # Bool to state whether vid
 
 # Initialize variables
 video_files = video_processing.GetVideoNames(constant.videos_location)
-cached_videos = st_scripts.load_videos_cache(video_files)  # Gets the data from cache for quick processing
+# Causes issues might remove.
+# cached_videos = st_scripts.load_videos_cache(video_files)  # Gets the data from cache for quick processing
 num_of_unprocessed_videos = st.empty()
 video_title = st.empty()
 video_player = st.empty()
 video_processing_warning = st.empty()
 video_processing_window = st.empty()
+fish_species_radio_button = st.empty()
 part1 = st.empty()  # Quick start guide section
 part2 = st.empty()  #
 part3 = st.empty()  #
@@ -64,7 +66,7 @@ part1.markdown("""
 
 # Checks for number of videos currently
 # If no videos inside 'videos' folder, prompt user to transfer some
-if len(cached_videos) == 0:
+if len(video_files) == 0:
     part1.write('###')  # Line break
     part1.warning("""The video folder is currently **empty!**""")
     part1.warning(
@@ -78,18 +80,18 @@ part1.write('###')  # Line break
 
 
 # Start of 2️⃣ Processing videos from file location
-if len(cached_videos) != 0:
+if len(video_files) != 0:
 
     part2 = st.container()
     part2.write('###')
     part2.markdown('### :two: Processing videos from file location:')
 
     # Show the button to start video phenotyping process
-    num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(cached_videos)) + '\n')
+    num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(video_files)) + '\n')
     st.session_state.bool_have_videos = True
 
     # For each video, display it and its name
-    for v in cached_videos:
+    for v in video_files:
         video_name = f"""<style> p.a {{font: bold 1rem Source Sans Pro;}}</style> <p class="a">{v}</p>"""
         part2.write('###')
         video_title = part2.markdown(video_name, unsafe_allow_html=True)
@@ -100,6 +102,20 @@ if len(cached_videos) != 0:
         part2.write('###')
 
     start_button = part2.empty()
+
+    # st.warning("Currently the software does not support detection of the fish species. As young red snappers "
+    #            "have slightly transparent tails, please make that selection as it requires a different model
+    #            to process that fish")
+
+    # fish_species_radio_button = st.radio(
+    #     "Which fish species does the video have?",
+    #     ('Default', 'Baby Red Snapper'))
+
+    # if fish_species_radio_button == 'Barramundi':
+    #     st.write('Barramundi selected.')
+    # else:
+    #     st.write("Baby Red Snapper selected.")
+
     # Create start video processing button
     isclicked = start_button.button("Start Processing Videos")
     if isclicked:
@@ -111,7 +127,7 @@ if len(cached_videos) != 0:
         # Video processing begins
         video_processing_warning = part2.warning("Video processing started...")
         od = ObjectDetection()  # Initialize Object Detection
-        processing_complete = video_processing.CaptureImagesOnVideo(cached_videos, od)
+        processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
 # End of 2️⃣ Processing videos from file location
 
 
@@ -141,12 +157,12 @@ if processing_complete:
         """)
 
     # Create table on the GUI
-    os.chdir('output')
-    file_list = glob.glob('*/**.csv')
+    # os.chdir('./results')
+    file_list = glob.glob('results/**.csv')
     print('file_list: ', file_list)
 
     if len(file_list) == 0:
-        part3.error(""" Output CSV data folder is currently empty!""")
+        part3.error(""" Results CSV data folder is currently empty!""")
 
     else:
         try:
@@ -155,7 +171,6 @@ if processing_complete:
                 file_list)
 
             df = pd.read_csv(f"{option}")
-            df = df.drop(columns=['frame', 'hypotenuse'])
             csv = st_scripts.convert_df(df)
 
             file_name = (str(option[0: option.index(".")]) + '.csv')

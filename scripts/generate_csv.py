@@ -1,6 +1,7 @@
 import csv
 import os
 import math
+import string
 
 from collections import Counter
 
@@ -156,8 +157,9 @@ def write_data_output(video_name):
 
         write_data.append([fish, idtag, weight, length, breadth])
 
-    print('Generating CSV file for video: ' + video_name)
-    with open('results/' + video_name + '_fish_data.csv', 'w') as csvfile:
+    cleaned_name = video_name.translate(str.maketrans('', '', string.punctuation))
+    print('Generating CSV file for video: ' + cleaned_name)
+    with open('results/' + cleaned_name + '_fish_data.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
         writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)'])
