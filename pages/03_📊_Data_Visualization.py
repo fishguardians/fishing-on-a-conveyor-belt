@@ -6,7 +6,7 @@ import numpy as np
 import plotly_express as px
 
 global df
-st.title("Data Visualization")
+st.title("📊 Data Visualization 📊")
 csv_path = "results"
 file_list = os.listdir(csv_path)
 print(file_list)
