@@ -30,6 +30,8 @@ if 'bool_start_processing' not in st.session_state:  # Bool to state whether vid
     st.session_state.bool_start_processing = False
 if 'bool_process_clicked' not in st.session_state:  # Bool to state whether video processing has started
     st.session_state.bool_process_clicked = False
+if 'bool_balloons' not in st.session_state:  # Bool to state whether video processing success balloons has been shown
+    st.session_state.bool_balloons = False
 
 # Initialize variables
 video_files = video_processing.GetVideoNames(constant.videos_location)
@@ -82,7 +84,7 @@ if st.session_state.bool_process_clicked:
     st.write('###')
     st.markdown('### :two: Processing videos from file location:')
     st.warning('If you are seeing this, that means you have reached the end of processing the videos. \n'
-               '\nPlease feel free to continue to view or download the output data.')
+               '\nPlease feel free to continue to view, edit or download the output data.')
 
     st.write('###')  # Line break
     st.markdown("""
@@ -109,9 +111,7 @@ if st.session_state.bool_process_clicked:
 
             df = pd.read_csv(f"{option}")
             csv = st_scripts.convert_df(df)
-
             file_name = (str(option[0: option.index(".")]) + '.csv')
-
             AgGrid(df)
 
             st.download_button(
@@ -206,6 +206,7 @@ else:
             2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
             3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
             """)
+        part3.write('###')  # Line break
 
         # Create table on the GUI
         # os.chdir('./results')
@@ -223,10 +224,18 @@ else:
 
                 df = pd.read_csv(f"{option}")
                 csv = st_scripts.convert_df(df)
-
                 file_name = (str(option[0: option.index(".")]) + '.csv')
-
                 AgGrid(df)
+
+                # TODO: Make the tables editable
+
+                # df = pd.read_csv(f"{option}")
+                # grid_return = AgGrid(df, editable=True)
+                # new_df = grid_return['data']
+                # AgGrid(new_df)
+                #
+                # csv = st_scripts.convert_df(new_df)
+                # file_name = (str(new_df) + '.csv')
 
                 part3.download_button(
                     "Press to Download",
@@ -239,4 +248,3 @@ else:
             except:
                 part3.warning("This file is not a CSV file!")
     # End of 3️⃣  After processing
-

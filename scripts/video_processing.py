@@ -69,6 +69,7 @@ def GetVideoNames(path):
         elif file_extension.lower() == '.mp4':
             videos_array.append(file.lower())
         else:
+            # TODO: For each errwriter get it to display in the GUI sidebar
             errwriter.writerow(['Warning', 'Unsupported Video Format', 'Video Not MP4 or MOV',
                                 'Please check ' + str(file) + ' for supported formats'])
             continue
@@ -86,6 +87,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
     # allocate the id for the fish
     wells_id = 0
 
+    # Initalize line break
+    video_processing_line_break = st.empty()
     # Initalize title of video being processed
     video_processing_title = st.empty()
     # Initialize video processing window in GUI
@@ -112,6 +115,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         video_length = get_video_length(constant.videos_location + _video_name)
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
+
+        seconds_left = video_length
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
@@ -383,6 +388,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                                             img)
 
             # For streamlit to display video
+            video_processing_line_break.markdown('***')
             video_processing_title.info('**Video currently processing:** ' + _video_name)
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
 
@@ -405,24 +411,33 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
-            # Calculate estimated time left in seconds
-            minutes_left = video_length
-            minutes_left -= 30
-            minutes_left = minutes_left/60
+            #TODO: Maybe can combine the lenghts of the videos to calculate the total percentage and estimated time for processing.
 
-            if minutes_left <= 0:
-                minutes_left = 0
-
+            seconds_left -= 1
+            minutes_left = seconds_left/60
             metric_percent = str(round(current_percent)) + '%'
             metric_time_left = str(round(minutes_left, 2)) + ' mins'
             metric_fishes = str(wells_id) + '🐠'
 
+            if current_percent >= 100:
+                metric_percent = '100%'
+                metric_time_left = '0 mins'
+
+            if seconds_left <= 0:
+                metric_percent = '100%'
+                metric_time_left = '0 mins'
+
             with metrics.container():
                 col1, col2, col3 = st.columns(3)
-                col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent)
-                col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left)
-                col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes)
-                time.sleep(1)
+                col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent, help='Percentage of completion '
+                                                                                           'of processing the current'
+                                                                                           ' video.')
+                col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left, help='Typically takes same '
+                                                                                           'amount of time as the '
+                                                                                           'length of the video.')
+                col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes, help='Total number of fish processed '
+                                                                                  'from the videos.')
+                time.sleep(0.01)
 
         cap.release()
         cv2.destroyAllWindows()
