@@ -69,7 +69,8 @@ def write_data_output(video_name):
 
                 for items in overall_data:
                     if line[1] in items.keys():
-                        items[line[1]]['id'].append(line[3].strip())
+                        if len(line[3].strip()) > 6 and len(line[3].strip()) < 10:
+                            items[line[1]]['id'].append(line[3].strip())
         except:
             print('Error: Ids not recorded')
             errwriter.writerow(['Serious', 'Error with Recording ID Tags', 'Missing Output Data',
@@ -132,23 +133,23 @@ def write_data_output(video_name):
                 if k == 'frame':
                     frame = objects[indexofhypot]
                 if k == 'id':
-                    # sorting on basis of frequency of elements
+                    # sorting on basis of frequency of elements, mode
                     result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
                     idtag = result[0]
                 if k == 'weight':
-                    # get center of occurrences
+                    # get median of occurrences
                     if 'N.A' in objects:
                         objects.remove('N.A')
                     results = sorted(objects, key=lambda x: float(x))
                     weight = results[math.floor(len(results) / 2)]
                 if k == 'length':
-                    # get center of occurrences
+                    # get median of occurrences
                     if '0.0' in objects:
                         objects.remove('0.0')
                     results = sorted(objects, key=lambda x: float(x))
                     length = results[math.floor(len(results) / 2)]
                 if k == 'breadth':
-                    # get center of occurrences
+                    # get median of occurrences
                     if '0.0' in objects:
                         objects.remove('0.0')
                     results = sorted(objects, key=lambda x: float(x))
@@ -156,54 +157,51 @@ def write_data_output(video_name):
 
         write_data.append([fish, idtag, weight, length, breadth])
 
+    write_data = check_iqr_data(write_data)
+
     print('Generating CSV file for video: ' + video_name)
     with open('results/' + video_name + '_fish_data.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
-        writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)'])
+        writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)','iqr error'])
         writer.writerows(write_data)
 
     return write_data
 
-    # try:
-    #     for (index, fish) in enumerate(fishes_data):
-    #         for (fish_id, fish_data) in fish.items():
-    #             minframe = min(fish[fish_id]['frame'])
-    #             maxframe = max(fish[fish_id]['frame'])
-    #             minhypot = min(fish[fish_id]['hypot'])
-    #             indexofhypot = fish[fish_id]['hypot'].index(minhypot)
+def check_iqr_data(array):
+    ids = []
+    weights = []
+    lengths = []
+    depths = []
+    for fish in array:
+        if fish[1] not in ids:
+            ids.append(fish[1])
+            weights.append(float(fish[2]))
+            lengths.append(float(fish[3]))
+            depths.append(float(fish[4]))
+    
+    # get interquartile range (IQR)
+    iqr_weight_q1 = np.percentile(weights, 25)
+    iqr_weight_q3 = np.percentile(weights, 75)
+    iqr_length_q1 = np.percentile(lengths, 25)
+    iqr_length_q3 = np.percentile(lengths, 75)
+    iqr_depth_q1 = np.percentile(depths, 25)
+    iqr_depth_q3 = np.percentile(depths, 75)
 
-    #             for (indexid, idtag) in enumerate(idcontent):
-    #                 if indexid == 0:
-    #                     continue
-    #                 idline = idtag.split(',')
-    #                 if idline[2] >= minframe and idline[2] <= maxframe:
-    #                     fish_data['id'].append(idline[3].strip())
-    #                     break
-
-    #             for (weightid, weight) in enumerate(weightcontent):
-    #                 if weightid == 0:
-    #                     continue
-    #                 weightline = weight.split(',')
-    #                 if weightline[2] >= minframe and weightline[2] <= maxframe:
-    #                     fish_data['weight'].append(weightline[3].strip())
-    #                     break
-
-    #             for (dimensionid, dimension) in enumerate(dimensioncontent):
-    #                 if dimensionid == 0:
-    #                     continue
-    #                 dimensionline = dimension.split(',')
-    #                 if dimensionline[2] >= minframe and dimensionline[2] <= maxframe:
-    #                     fish_data['length'].append(dimensionline[3].strip())
-    #                     fish_data['breadth'].append(dimensionline[4].strip())
-    #                     break
-
-    #             print(fishes_data)
-
-    #             with open('./output/'+video_name+'/fish_data.csv', 'a') as csvfile:
-    #                 writer = csv.writer(csvfile)
-    #                 for (index, id) in enumerate(fish_data['id']):
-    #                     writer.writerow([fish_id, fish_data['frame'][index], fish_data['hypot'][index], id, fish_data['weight'][index], fish_data['length'][index], fish_data['breadth'][index]])
-    # except:
-    #     errwriter.writerow(['Serious', 'No or Corrupted Data' , 'Cannot Generate Final CSV', 'Please see if /output/' + video_name + ' has more than 1 row of data'])
-    #     return False
+    iqr_error = ""
+    for fish in array:
+        if float(fish[2]) < iqr_weight_q1:
+            iqr_error += fish[2] + " kg < q1: " + str(round(iqr_weight_q1,3)) + "kg. "
+        if float(fish[2]) > iqr_weight_q3:
+            iqr_error += fish[2] + " kg > q3: " + str(round(iqr_weight_q3,3)) + "kg. "
+        if float(fish[3]) < iqr_length_q1:
+            iqr_error += fish[3] + " cm < q1: " + str(round(iqr_length_q1,3)) + "cm. "
+        if float(fish[3]) > iqr_length_q3:
+            iqr_error += fish[3] + " cm > q3: " + str(round(iqr_length_q3,3)) + "cm. "
+        if float(fish[4]) < iqr_depth_q1:
+            iqr_error += fish[4] + " cm < q1: " + str(round(iqr_depth_q1,3)) + "cm. "
+        if float(fish[4]) > iqr_depth_q3:
+            iqr_error += fish[4] + " cm > q3: " + str(round(iqr_depth_q3,3)) + "cm. "
+        fish.append(iqr_error)
+        iqr_error = ""
+    return array
