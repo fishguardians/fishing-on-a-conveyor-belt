@@ -22,8 +22,8 @@ st.sidebar.success("Select a demo above.")  # Page Sidebar
 st.write('# 📼 Process Video 📼')  # Page Title
 
 # Session State Initialization
-st.write('###')  # Line break
-st.write('🐛 For Debugging 🐛', st.session_state)  # Displays session states
+# st.write('###')  # Line break
+# st.write('🐛 For Debugging 🐛', st.session_state)  # Displays session states
 if 'bool_have_videos' not in st.session_state:  # Bool to state whether there are videos in folder
     st.session_state.bool_have_videos = False
 if 'bool_start_processing' not in st.session_state:  # Bool to state whether video processing has started
@@ -81,16 +81,17 @@ if st.session_state.bool_process_clicked:
 
     st.write('###')
     st.markdown('### :two: Processing videos from file location:')
-    st.warning('If you are seeing this, that means you have reached the end of processing your videos.'
-               'Please feel free to continue to view or download the output data.')
+    st.warning('If you are seeing this, that means you have reached the end of processing the videos. \n'
+               '\nPlease feel free to continue to view or download the output data.')
 
     st.write('###')  # Line break
     st.markdown("""
                 ### :three: After processing:
                 1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
                 2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
-                3. Lastly if you would like to process more videos, click on the **'R'** restart the application.
+                3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
                 """)
+    st.write('###')  # Line break
 
     # Create table on the GUI
     # os.chdir('./results')
@@ -140,14 +141,15 @@ else:
         for v in video_files:
             video_name = f"""<style> p.a {{font: bold 1rem Source Sans Pro;}}</style> <p class="a">{v}</p>"""
             part2.write('###')
-            video_title = part2.markdown(video_name, unsafe_allow_html=True)
+            part2.markdown(video_name, unsafe_allow_html=True)
             v = './videos/' + v
             video_file = open(v, 'rb')
             video = video_file.read()
-            video_player = part2.video(video)
+            part2.video(video)
             part2.write('###')
 
-        start_button = part2.empty()
+        videos_container = st.empty()
+        start_button = st.empty()
 
         # st.warning("Currently the software does not support detection of the fish species. As young red snappers "
         #            "have slightly transparent tails, please make that selection as it requires a different model
@@ -168,12 +170,12 @@ else:
             st.session_state.bool_start_processing = True
             st.session_state.bool_process_clicked = True
             start_button.empty()
-            video_player.empty()
             num_of_unprocessed_videos.empty()
+            videos_container = st.empty()
 
             # Video processing begins
-            video_processing_warning = part2.warning("Video processing started...")
             od = ObjectDetection()  # Initialize Object Detection
+            video_processing_warning = part2.warning("Video processing started...")
             processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
         # End of 2️⃣ Processing videos from file location
 
@@ -199,7 +201,7 @@ else:
             ### :three: After processing:
             1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
             2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
-            3. Lastly if you would like to process more videos, click on the **'R'** restart the application.
+            3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
             """)
 
         # Create table on the GUI
