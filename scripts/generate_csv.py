@@ -1,6 +1,7 @@
 import csv
 import os
 import math
+import numpy as np
 
 from collections import Counter
 
