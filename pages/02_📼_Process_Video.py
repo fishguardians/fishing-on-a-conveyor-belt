@@ -3,7 +3,7 @@ import scripts.streamlit_scripts as st_scripts  # Custom streamlit scripts
 from scripts.object_detection import ObjectDetection
 import constant  # Constant Variables
 import streamlit as st
-import os
+import time
 import glob
 import pandas as pd
 from datetime import datetime
@@ -175,7 +175,10 @@ else:
 
             # Video processing begins
             od = ObjectDetection()  # Initialize Object Detection
-            video_processing_warning = part2.warning("Video processing started...")
+            video_processing_warning = part2.warning("**Video processing started...**")
+            time.sleep(0.2)
+            part2.write('###')  # Line break
+            video_processing_warning.empty()
             processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
         # End of 2️⃣ Processing videos from file location
 
