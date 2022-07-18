@@ -7,7 +7,7 @@ import plotly_express as px
 
 global df
 st.title("Data Visualization")
-csv_path = "output"
+csv_path = "results"
 file_list = os.listdir(csv_path)
 print(file_list)
 
@@ -30,10 +30,10 @@ col1, col2 = st.columns([5, 1])
 col3, col4, col5 = st.columns(3)
 
 try:
-    weight_list = df['Weight(kg)'].tolist()
-    length_list = df['Length(cm)'].tolist()
-    depth_list = df['Depth(cm)'].tolist()
-    num_samples = len(df['Fish#'].tolist())
+    weight_list = df['weight(kg)'].tolist()
+    length_list = df['length(cm)'].tolist()
+    depth_list = df['depth(cm)'].tolist()
+    num_samples = len(df['weight(kg)'].tolist())
     # define function to calculate cv
     cv = lambda x: np.std(x, ddof=1) / np.mean(x) * 100
 
