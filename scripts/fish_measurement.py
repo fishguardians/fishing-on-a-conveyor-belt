@@ -8,12 +8,9 @@
 
 # Fish Dimension modules
 import cv2
-import \
-    scripts.FishMeasurement._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
-import \
-    scripts.FishMeasurement._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
-import \
-    scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
+import scripts.FishMeasurement._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
+import scripts.FishMeasurement._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
+import scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
 
 
 def fish_measurement(image):

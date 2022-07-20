@@ -30,29 +30,12 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     fishID_measured = False
 
     image = removeBg_output_img  # Image for processing
-
-    # its is already in greyscale for the process before
-    # blur it slightly
-    gray = cv2.GaussianBlur(image, (7, 7), 0)
-
-    # For getting thresholds for Canny using the adjustable slides
-    # t1, t2 = tuneCanny(gray) # Demonstration
-    # print(f"Threshold1: {t1}, Threshold2: {t2}")
-    t1, t2 = 10, 10  # For default threshold
-
-    # Performs edge detection, then perform a dilation + erosion to
-    # Closes gaps in between object edges
-    edged = cv2.Canny(gray, t1, t2)
-
-    # Dilation increases the boundaries of regions of foreground pixels.
-    # Areas of foreground pixels expand in size while holes within those regions become smaller.
-
-    kernel = np.ones((4, 4), 'uint8')  # 4 is the minimum before it there will be broken contours
-    dilate = cv2.dilate(edged, kernel, iterations=1)
-    erode_dilate = cv2.erode(dilate, None, iterations=1)
+    cv2.imshow('get_dimensions: image', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     # find contours in the edge map
-    cnts = cv2.findContours(erode_dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     # print("Total number of contours are: ", len(cnts))
 
@@ -66,8 +49,9 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     flagged = False
 
     for c in cnts:
+        x, y, w, h = cv2.boundingRect(c)
         # if the contour is not sufficiently large, ignore it
-        if cv2.contourArea(c) < 1000:
+        if cv2.contourArea(c) < 1000 or (h > 50 and w > 50):
             continue
         count += 1
 
@@ -83,7 +67,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         orig = og_img  # Source video frame to layover the dimensions
         orig = cv2.resize(og_img, None, fx=0.4, fy=0.4)
 
-        cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
 
         # loop over the original points and draw them
@@ -140,9 +123,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
-        # Sends image with dimensions to another module
-        sendDimensions(orig)
-
         d_length = dimA_CM
         d_depth = dimB_CM
 
@@ -153,20 +133,11 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         ref_depth_buffer_low = ref_width - (ref_width * 0.05)
 
         # Output length and depth in 2 decimal places
-        # length = "{:.3f}cm".format(dimA_CM)
-        # depth = "{:.3f}cm".format(dimB_CM)
         length = round(dimA_CM,3)
         depth = round(dimB_CM,3)
 
-        # cv2.imwrite("gray.jpg", gray)
-        # cv2.imwrite("erode_dilate.jpg", erode_dilate)
-        # cv2.imwrite("Measured.jpg", orig)
-
-        # cv2.imshow("gray", gray)
-        # cv2.imshow("Erode and dilate", erode_dilate)
-        # cv2.imshow("Fish Dimensions", orig)
-        # cv2.waitKey(0)
-
+        cv2.imshow("Fish Dimensions", orig)
+        cv2.waitKey(0)
 
         # Contour checking starts from the most left
         # In this order, reference object, fish id tag and fish
@@ -235,44 +206,4 @@ def nothing(x):
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
-
-# Displays the title of the image display in the window
-# def show_image(title, image, destroy_all=True):
-#     cv2.imshow(title, image)
-#     cv2.waitKey(0)
-#     if destroy_all:
-#         cv2.destroyAllWindows()
-
-
-"""
-Creates a window with sliders to adjust canny in the image
-For specific tuning for new fish types
-Currently only used for snapper testing
-"""
-def tuneCanny(image):
-    window = 'canny'
-    cv2.namedWindow(window, cv2.WINDOW_NORMAL)
-    cv2.createTrackbar('threshold1', window, 10, 500, nothing)
-    cv2.createTrackbar('threshold2', window, 10, 500, nothing)
-
-    while True:
-        image_copy = np.copy(image)
-        threshold1 = cv2.getTrackbarPos('threshold1', window)
-        threshold2 = cv2.getTrackbarPos('threshold2', window)
-
-        # Displays the image based on the new and adjusted threshold values
-        edged = cv2.Canny(image_copy, threshold1, threshold2)
-        cv2.imshow('edged', edged)
-
-        k = cv2.waitKey(1) & 0xFF
-        if k == 27:
-            break
-
-    cv2.destroyAllWindows()
-    return threshold1, threshold2
-
-# Sends image with dimensions to another module
-def sendDimensions(img):
-    # print("sent Dimensions")
-    return img
 
