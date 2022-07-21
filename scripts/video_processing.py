@@ -388,7 +388,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                                             img)
 
             # For streamlit to display video
-            # video_processing_line_break.markdown('***')
+            video_processing_line_break.markdown('***')
             video_processing_title.info('**Video currently processing:** ' + _video_name)
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
 

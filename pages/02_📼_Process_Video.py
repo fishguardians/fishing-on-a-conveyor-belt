@@ -153,7 +153,6 @@ else:
             video_file = open(v, 'rb')
             video = video_file.read()
             part2.video(video)
-            part2.write('###')
 
         videos_container = st.empty()
         start_button = st.empty()
