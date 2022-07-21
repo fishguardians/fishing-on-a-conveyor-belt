@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''_fish_measurement.py: Starts the fish measur
+'''_fish_measurement.py: Starts the fish measurement
     @Author: "Nicholas Bingei"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 
