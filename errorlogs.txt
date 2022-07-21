@@ -1,7 +1,0 @@
-Warning,ID Tag Not Found,Request User Validation,Please check frame 571.jpg in /images/crazy1.mp4/id/
-Warning,ID Tag Not Found,Request User Validation,Please check frame 1531.jpg in /images/crazy1.mp4/id/
-Warning,ID Tag Not Found,Request User Validation,Please check frame 2521.jpg in /images/crazy1.mp4/id/
-Warning,ID Tag Not Found,Request User Validation,Please check frame 571.jpg in /images/crazy2.mp4/id/
-Warning,ID Tag Not Found,Request User Validation,Please check frame 1531.jpg in /images/crazy2.mp4/id/
-Warning,ID Tag Not Found,Request User Validation,Please check frame 2521.jpg in /images/crazy2.mp4/id/
-Warning,Video Reprocessed,Deliberate User Action,Processing same videos will use up unnecessary computer resources

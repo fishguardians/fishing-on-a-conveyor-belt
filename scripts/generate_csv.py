@@ -1,7 +1,6 @@
 import csv
 import os
 import math
-import string
 import numpy as np
 
 from collections import Counter
@@ -158,7 +157,6 @@ def write_data_output(video_name):
                     breadth = results[math.floor(len(results) / 2)]
 
         write_data.append([fish, idtag, weight, length, breadth])
-
 
     write_data = check_iqr_data(write_data)
 
