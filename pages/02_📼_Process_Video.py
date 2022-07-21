@@ -13,7 +13,6 @@ import os.path
 
 
 # Page Configs
-
 st.set_page_config(
     page_title="Process Video",
     page_icon="📼",
@@ -21,6 +20,7 @@ st.set_page_config(
 
 # Page Sidebar
 st.write('# 📼 Process Video 📼')  # Page Title
+st.sidebar.info("This page allows you to process the fish phenotyping conveyor belt video recordings")
 
 # Session State Initialization
 # st.write('###')  # Line break

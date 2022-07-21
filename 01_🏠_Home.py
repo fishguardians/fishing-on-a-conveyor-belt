@@ -12,15 +12,17 @@
 
 import streamlit as st
 
+# Page configuration. Only can be written once. Follows the whole application.
 st.set_page_config(
     page_title="Fishing on a Conveyor Belt",
     page_icon="🐠",
 )
 
+# Side bar
 st.write("# 🎣 Welcome to Fishing on a Conveyor Belt 🐟")
-
 st.sidebar.success("**Select a page above!**")
 
+# Main page
 st.markdown(
     """
     Fishing on a Conveyor Belt is a web application that automates data collection from

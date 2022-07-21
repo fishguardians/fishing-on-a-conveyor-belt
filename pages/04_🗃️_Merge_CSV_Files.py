@@ -5,9 +5,8 @@ import pandas as pd
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
-
 st.title("🗃️️ Merging CSV data 🗃️️")
-st.text("This page allows you to upload and merge multiple CSV files")
+st.sidebar.info("This page allows you to upload and merge multiple CSV files")
 instruction_guide = st.expander("Expand or Collapse", True)
 instruction_guide.write('###')  # Line break
 instruction_guide.markdown("""
