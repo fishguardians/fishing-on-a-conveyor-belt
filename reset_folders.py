@@ -52,6 +52,16 @@ def reset_folders():
         except:
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
+    if not exists('./testing/'):
+        makedirs('./testing/')
+        writer.writerow(['Serious', 'Missing Folder Error' , 'No Testing Folder', 'Attenpting to restore Testing folder from backup'])
+        try:
+            copy_tree("./backup/testing/", "./testing/") 
+
+            writer.writerow(['Resolved', 'Testing Folder Restored' , 'Fixed Testing Folder', 'Program functioning as expected'])
+        except:
+            writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
+
     if exists('./dnn_model/'):
         shutil.rmtree('./dnn_model/')
                     
@@ -74,6 +84,15 @@ def reset_folders():
     # check if the directory exists
     if not exists('./output/'):
         makedirs('./output/')
+
+    if not exists('./output/sample/'):
+        makedirs('./output/sample/')
+        try:
+            copy_tree('./backup/testing/sample/', './output/sample/')
+            
+            writer.writerow(['Resolved', 'Sample Output Restored' , 'Fixed Sample Output', 'Program functioning as expected'])
+        except:
+            writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
     if not exists('./results/'):
         makedirs('./results/')
