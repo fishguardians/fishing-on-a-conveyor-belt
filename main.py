@@ -4,7 +4,7 @@
     @Author: "Muhammad Abdurraheem, Chen Dong, Nicholas Bingei, Yao YuJing and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
-import time
+
 import reset_folders
 import streamlit
 import sys
@@ -12,6 +12,7 @@ from streamlit import cli as stcli
 import scripts.video_processing as video_processing
 from scripts.object_detection import ObjectDetection
 import constant
+import streamlit as st
 
 from datetime import datetime
 
@@ -45,8 +46,12 @@ def main():
 
 
 if __name__ == "__main__":
+    # main()
+    # st.header("Hello world")
     if streamlit._is_running_with_streamlit:
         main()
     else:
-        sys.argv = ["streamlit", "run", sys.argv[0]]
+        # sys.argv = ["streamlit", "run", sys.argv[0]]
+        sys.argv = ["streamlit", "run", "01_🏠_Home.py"]
+        # print('sys.argv[0]: ', sys.argv[0])
         sys.exit(stcli.main())

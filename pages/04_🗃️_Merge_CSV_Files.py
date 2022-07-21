@@ -6,7 +6,7 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 
-st.title("Merging CSV data")
+st.title("🗃️️ Merging CSV data 🗃️️")
 st.text("This page allows you to upload and merge multiple CSV files")
 
 master_df = pd.DataFrame()  # the final output CSV after merge

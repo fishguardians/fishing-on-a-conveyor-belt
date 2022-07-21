@@ -4,22 +4,17 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
-import importlib
 import os
 import shutil
 import csv
 import cv2
-import glob
-import random
 import math
 import numpy as np
-from pytesseract import pytesseract
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
 import streamlit as st
-
-from scripts.FishMeasurement._3_fish_measure_dimensions import sendDimensions
+import time
 
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
@@ -74,6 +69,7 @@ def GetVideoNames(path):
         elif file_extension.lower() == '.mp4':
             videos_array.append(file.lower())
         else:
+            # TODO: For each errwriter get it to display in the GUI sidebar
             errwriter.writerow(['Warning', 'Unsupported Video Format', 'Video Not MP4 or MOV',
                                 'Please check ' + str(file) + ' for supported formats'])
             continue
@@ -91,12 +87,19 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
     # allocate the id for the fish
     wells_id = 0
 
+    # Initalize line break
+    video_processing_line_break = st.empty()
+    # Initalize title of video being processed
+    video_processing_title = st.empty()
     # Initialize video processing window in GUI
     video_processing_window = st.empty()
 
     # Create the progress bar
     progress_bar = st.empty()
     progress_bar.progress(0)
+
+    # Initialize metrics
+    metrics = st.empty()
 
     for _video_index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(_video_index + 1) + '...\n')
@@ -112,6 +115,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         video_length = get_video_length(constant.videos_location + _video_name)
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
+
+        seconds_left = video_length
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
@@ -383,6 +388,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                                             img)
 
             # For streamlit to display video
+            video_processing_line_break.markdown('***')
+            video_processing_title.info('**Video currently processing:** ' + _video_name)
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
 
             # check the location of fish center points
@@ -404,16 +411,40 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
-            # TODO: Streamlit KPIs, for user to see whats going on
-            # col1, col2, col3 = st.columns(3)
-            # col1.metric(label="Completion Percentage:", value = round(current_percent))
-            # col2.metric(label="Estimated Time Left:", value = str(round(15)) + 'mins')
-            # col3.metric(label="Fish Caught", value = str(round(9)) + '%')
-            # col2.metric(label="Estimated Time Left:", value=round(eta))
-            # col3.metric(label="Fish Caught", value=round(fish))
+            #TODO: Maybe can combine the lenghts of the videos to calculate the total percentage and estimated time for processing.
+
+            seconds_left -= 1
+            minutes_left = seconds_left/60
+            metric_percent = str(round(current_percent)) + '%'
+            metric_time_left = str(round(minutes_left, 2)) + ' mins'
+            metric_fishes = str(wells_id) + '🐠'
+
+            if current_percent >= 100:
+                metric_percent = '100%'
+                metric_time_left = '0 mins'
+
+            if seconds_left <= 0:
+                metric_percent = '100%'
+                metric_time_left = '0 mins'
+
+            with metrics.container():
+                col1, col2, col3 = st.columns(3)
+                col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent, help='Percentage of completion '
+                                                                                           'of processing the current'
+                                                                                           ' video.')
+                col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left, help='Typically takes same '
+                                                                                           'amount of time as the '
+                                                                                           'length of the video.')
+                col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes, help='Total number of fish processed '
+                                                                                  'from the videos.')
+                time.sleep(0.01)
 
         cap.release()
         cv2.destroyAllWindows()
+
+    metric_percent = 0  # Percentage of processing competition
+    metric_time_left = 0  # Estimated time left for processing
+    metric_fishes = 0  # Number of fish found in the video
 
     return True
 
