@@ -18,7 +18,6 @@ st.set_page_config(
 )
 
 # Page Sidebar
-st.sidebar.success("Select a demo above.")  # Page Sidebar
 st.write('# 📼 Process Video 📼')  # Page Title
 
 # Session State Initialization

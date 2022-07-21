@@ -51,6 +51,6 @@ if __name__ == "__main__":
     if streamlit._is_running_with_streamlit:
         main()
     else:
-        sys.argv = ["streamlit", "run", sys.argv[0]] # To auto run
-        # sys.argv = ["streamlit", "run", "01_🏠_Home.py"] # Manually click the button to run
+        # sys.argv = ["streamlit", "run", sys.argv[0]] # To auto run
+        sys.argv = ["streamlit", "run", "01_🏠_Home.py"] # Manually click the button to run
         sys.exit(stcli.main())

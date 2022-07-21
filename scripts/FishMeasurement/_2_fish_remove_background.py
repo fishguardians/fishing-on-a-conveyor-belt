@@ -83,28 +83,30 @@ def remove_background(cropBelt_output_img):
     # cv2.imshow('cleanup.png', erode_dilate) # Bounding boxes on the original image
 
     # find contours in the edge map
-    cnts = cv2.findContours(cleaned_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-    cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[0])
-
     # TODO: Remove later, for debugging
-    bbox_image = image.copy()
-    # Draw bounding boxes for contours
-    for c in cnts:
-        x, y, w, h = cv2.boundingRect(c)
-        if h > 50 and w > 50: # Only contours as large as than the reference should be returned as ROI
-            roi = bbox_image[y:y + h, x:x + w]
-            # cv2.imshow('regions_of_interest.png', roi) # Shows the fish
-            cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
+    # cnts = cv2.findContours(cleaned_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    # cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[0])
+
+    # bbox_image = image.copy()
+    # # Draw bounding boxes for contours
+    # for c in cnts:
+    #     x, y, w, h = cv2.boundingRect(c)
+    #     if h > 50 and w > 50: # Only contours as large as than the reference should be returned as ROI
+    #         roi = bbox_image[y:y + h, x:x + w]
+    #         # cv2.imshow('regions_of_interest.png', roi) # Shows the fish
+    #         cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
 
     combined_mask_output = cleaned_image
 
     # cv2.imshow('bounding_boxes.png', bbox_image)  # Bounding boxes on the original image
     # cv2.imshow('combined_mask_output.png', combined_mask_output)
-
     return combined_mask_output
 
 
+# Function is needed for the createTrackbar step downstream
+def nothing(x):
+    pass
 
 """
 Creates a window with sliders to adjust canny in the image
