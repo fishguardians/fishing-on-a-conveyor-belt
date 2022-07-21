@@ -66,13 +66,22 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     # loop over the contours individually
     count = 0
 
+    # initialize array of length for objects
+    list_of_objects_length = list()
+
     for c in cnts:
+
+        # Get the contour area of the current object measured
         area = cv2.contourArea(c)
-        print('contour area: ', area)
+        print('objects contour area: ', area)
 
         # Contour area of the reference dot
+        # Anything smaller will be ignored for measurement
         if cv2.contourArea(c) < 500:
+            count += 1
             continue
+
+        # Count number of contours found to
         count += 1
 
         # compute the rotated bounding box of the contour
@@ -84,7 +93,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         box = np.array(box, dtype="int")
         box = perspective.order_points(box)
 
-        orig = og_img  # Source video frame to layover the dimensions
+        # Source video frame to layover the dimensions
+        orig = og_img
         # orig = cv2.resize(og_img, None, fx=0.4, fy=0.4)
         # cv2.imshow('orig', orig)
 
@@ -145,19 +155,41 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
+        # Output length and depth in 3 decimal places
+        length = round(dimA_CM, 3)
+        depth = round(dimB_CM, 3)
+
+        # Shows the source image with bounding boxes with dimensions overlay
+        # cv2.imshow("Fish Dimensions", orig)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+        # append object's length to the list
+        list_of_objects_length.append(dimA_CM)
+        print("")
+        print('list_of_objects_length: ', list_of_objects_length)
+        print('Current count: ', count)
+
+        if count == len(cnts):
+            print('lenght of object: ', length)
+            print('width of object: ', depth)
+            print('_________________________________________________________________________')
+
+            # Sort lengths by largest to smallest. Largest should always be a fish.
+            list_of_objects_length.sort(reverse=True)
+            return length, depth
+
+# Returns the midpoint of 2 points
+def midpoint(ptA, ptB):
+    return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
+
+
+"""
+        # Length buffers for error control
         ref_length_buffer_high = ref_width + (ref_width * 0.05)
         ref_depth_buffer_high = ref_width + (ref_width * 0.05)
-
         ref_length_buffer_low = ref_width - (ref_width * 0.05)
         ref_depth_buffer_low = ref_width - (ref_width * 0.05)
-
-        # Output length and depth in 3 decimal places
-        length = round(dimA_CM,3)
-        depth = round(dimB_CM,3)
-
-        cv2.imshow("Fish Dimensions", orig)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
         # Contour checking starts from left to right
         # In this order, reference object, fish id tag and fish
@@ -165,57 +197,61 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # If object is smaller than the reference object by 5%, skip
         if ref_length_buffer_low > dimA_CM or ref_depth_buffer_low > dimB_CM:
-            print("")
-            print("SKIPPED OBJECT SMALLER THAN REFERENCE")
-            print("Dimensions of Object",
-                  "------------",
-                  "Length: {:.3} cm".format(dimA_CM),
-                  "Depth: {:.3} cm".format(dimB_CM), sep='\n')
+            # print("")
+            # print('contour area: ', area)
+            # print("SKIPPED OBJECT SMALLER THAN REFERENCE")
+            # print("Dimensions of Object",
+            #       "------------",
+            #       "Length: {:.3} cm".format(dimA_CM),
+            #       "Depth: {:.3} cm".format(dimB_CM), sep='\n')
             print("Value of count:", count)
 
         # Detected another ref, reset pixel per metric formula
         elif ref_measured and ref_length_buffer_low < dimA_CM < ref_length_buffer_high and ref_depth_buffer_low \
                 < dimB_CM < ref_depth_buffer_high:
             pixelPerMetric = dB / (ref_width / 2.54)
-            print("")
-            print("Another reference detected")
-            print("Dimensions of Reference",
-                  "------------",
-                  "Length: {:.3f} cm".format(dimA_CM),
-                  "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
+            # print("")
+            # print("Another reference detected")
+            # print('contour area: ', area)
+            # print("Dimensions of Reference",
+            #       "------------",
+            #       "Length: {:.3f} cm".format(dimA_CM),
+            #       "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
             print("Value of count:", count)
 
         # Once suitable reference is found, it will start measurement process
         elif dimA_CM < ref_length_buffer_high and dimB_CM < ref_depth_buffer_high:
             ref_measured = True
-            print("")
-            print("Dimensions of Reference",
-                  "------------",
-                  "Length: {:.3f} cm".format(dimA_CM),
-                  "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
+            # print("")
+            # print('contour area: ', area)
+            # print("Dimensions of Reference",
+            #       "------------",
+            #       "Length: {:.3f} cm".format(dimA_CM),
+            #       "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
             print("Value of count:", count)
 
         # Measure the Fish ID tag after ref has been measured
         elif ref_measured and not fishID_measured and dimA_CM > ref_length_buffer_high:
             fishID_measured = True
-            print("")
-            print("Dimensions of Fish ID tag",
-                  "------------",
-                  "Length: {:.3f} cm".format(dimA_CM),
-                  "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
+            # print("")
+            # print('contour area: ', area)
+            # print("Dimensions of Fish ID tag",
+            #       "------------",
+            #       "Length: {:.3f} cm".format(dimA_CM),
+            #       "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
             print("Value of count:", count)
 
         # Measure the fish, once there are at least 2 counts
         # And both the ref and fishID have been measured
         elif ref_measured and fishID_measured and count > 2:
-            print("")
-            print("Dimensions of Fish",
-                  "------------",
-                  "Length: {:.3f} cm".format(dimA_CM),
-                  "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
-            print("Total contours processed: ", count)
+            # print("")
+            # print('contour area: ', area)
+            # print("Dimensions of Fish",
+            #       "------------",
+            #       "Length: {:.3f} cm".format(dimA_CM),
+            #       "Depth: {:.3f} cm".format(dimB_CM), sep='\n')
+            # print("Total contours processed: ", count)
             return length, depth
+"""
 
-# Returns the midpoint of 2 points
-def midpoint(ptA, ptB):
-    return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
+

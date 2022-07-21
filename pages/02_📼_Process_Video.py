@@ -11,7 +11,6 @@ from st_aggrid import AgGrid
 from itertools import count
 import os.path
 
-
 # Page Configs
 st.set_page_config(
     page_title="Process Video",
@@ -138,15 +137,18 @@ else:
         num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(video_files)) + '\n')
         st.session_state.bool_have_videos = True
 
-        for video_name in video_files:
-            __file__ = f"videos\\{video_name}"
-            part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
+        # for video_name in video_files:
+        #     __file__ = f"videos\\{video_name}"
+        #     part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
         for v in video_files:
-            video_name = f"""<style> p.a {{font: bold 1rem Source Sans Pro;}}</style> <p class="a">{v}</p>"""
+            __file__ = f"videos\\{v}"
+            video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
+            video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
             part2.write('###')
             part2.markdown(video_name, unsafe_allow_html=True)
+            part2.markdown(video_date, unsafe_allow_html=True)
             v = './videos/' + v
             video_file = open(v, 'rb')
             video = video_file.read()
@@ -181,7 +183,7 @@ else:
             # Video processing begins
             od = ObjectDetection()  # Initialize Object Detection
             video_processing_warning = part2.warning("**Video processing started...**")
-            time.sleep(0.2)
+            # time.sleep(0.2)
             part2.write('###')  # Line break
             video_processing_warning.empty()
             processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
