@@ -13,14 +13,14 @@ container1 = st.empty()
 file_list = os.listdir(csv_path)
 #print(file_list)
 
-
 instruction_guide = st.expander("Expand or Collapse", True)
 instruction_guide.write('###')  # Line break
 instruction_guide.markdown("""
         ### Page Guide:
-        1. Select the CSV file you would like to view from the dropdown menu. These are the data extracted from the processed videos.
-        2. To print a page of the selected data spread, press ctrl + P on your keyboard. (Remember to close the sidebar tab first).
+        1. Select the CSV file you would like to view from the dropdown menu. These are the data extracted from the processed videos. Or you can upload your own data\n
+        2. To print a page of the selected data spread, press **'Ctrl'** & **'P'** on your keyboard. (Remember to close the sidebar tab first).
         3. You can also download the graph plots as an image file by hovering your mouse to the top of the graph and clicking on the camera icon.
+        ###
         """)
 st.markdown("###")
 
