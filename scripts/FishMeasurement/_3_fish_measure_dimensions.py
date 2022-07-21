@@ -167,8 +167,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         # cv2.imshow("Fish Dimensions", orig)
         # cv2.waitKey(0)
 
-        # TODO: ADD MORE SOPHISTICATED ERROR CHECKING
-        # TODO: For tiny water blob reflections (If smaller than a certain threshold ignore)
 
         # Contour checking starts from the most left
         # In this order, reference object, fish id tag and fish

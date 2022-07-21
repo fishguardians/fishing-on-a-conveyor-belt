@@ -14,7 +14,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Fishing on a Conveyor Belt",
-    page_icon="🎣",
+    page_icon="🐠",
 )
 
 st.write("# 🎣 Welcome to Fishing on a Conveyor Belt 🐟")

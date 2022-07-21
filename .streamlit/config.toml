@@ -15,6 +15,7 @@
 # Acceptable values: - 'legacy': Serialize DataFrames using Streamlit's custom format. Slow but battle-tested. - 'arrow': Serialize DataFrames using Apache Arrow. Much faster and versatile.
 # Default: "arrow"
 # dataFrameSerialization = "arrow"
+developmentMode = false
 
 
 [logger]
@@ -98,7 +99,7 @@
 
 # The port where the server will listen for browser connections.
 # Default: 8501
-# port = 8501
+ port = 8501
 
 # The base path for the URL where Streamlit should be served from.
 # Default: ""

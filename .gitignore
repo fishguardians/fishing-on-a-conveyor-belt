@@ -186,3 +186,5 @@ cython_debug/
 *.xml
 *.iml
 *.xml
+.idea/misc.xml
+.idea/Measuring-Size-of-Objects-with-OpenCV-master.iml
