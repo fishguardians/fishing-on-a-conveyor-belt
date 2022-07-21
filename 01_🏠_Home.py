@@ -19,7 +19,7 @@ st.set_page_config(
 
 st.write("# 🎣 Welcome to Fishing on a Conveyor Belt 🐟")
 
-st.sidebar.success("Select a demo above.")
+st.sidebar.success("**Select a page above!**")
 
 st.markdown(
     """
@@ -27,5 +27,7 @@ st.markdown(
     a conveyor belt fish phenotyping station.
     
     **👈 Select a demo from the sidebar** to see some explore what the app can do!
+    \n
+    **❌ Click the cross icon** on the top right of the sidebar to hide the sidebar.
 """
 )

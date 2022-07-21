@@ -9,6 +9,8 @@ import pandas as pd
 from datetime import datetime
 from st_aggrid import AgGrid
 from itertools import count
+import os.path
+
 
 # Page Configs
 
@@ -18,7 +20,6 @@ st.set_page_config(
 )
 
 # Page Sidebar
-st.sidebar.success("Select a demo above.")  # Page Sidebar
 st.write('# 📼 Process Video 📼')  # Page Title
 
 # Session State Initialization
@@ -136,6 +137,10 @@ else:
         # Show the button to start video phenotyping process
         num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(video_files)) + '\n')
         st.session_state.bool_have_videos = True
+
+        for video_name in video_files:
+            __file__ = f"videos\\{video_name}"
+            part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
         for v in video_files:

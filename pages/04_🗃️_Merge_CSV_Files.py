@@ -8,6 +8,18 @@ def convert_df(df):
 
 st.title("🗃️️ Merging CSV data 🗃️️")
 st.text("This page allows you to upload and merge multiple CSV files")
+instruction_guide = st.expander("Expand or Collapse", True)
+instruction_guide.write('###')  # Line break
+instruction_guide.markdown("""
+        ### Page Guide:
+        1. Click on the browse files button.
+        2. Hold the **'Ctrl'** key while selecting which files you want to merge with your mouse.
+        3. When you're done with your selection, click on the open button.
+        4. You will see the list of CSV files that is going to be merged. You can choose to remove a file by clicking on the **'X'** button beside it.
+        5. Once you confirmed the files you want to merge, click on the **'Download Merged CSV File'** button.
+        ###
+        """)
+st.markdown("###")
 
 master_df = pd.DataFrame()  # the final output CSV after merge
 merged_file_name = ""

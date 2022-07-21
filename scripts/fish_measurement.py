@@ -8,12 +8,9 @@
 
 # Fish Dimension modules
 import cv2
-import \
-    scripts.FishMeasurement._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
-import \
-    scripts.FishMeasurement._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
-import \
-    scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
+import scripts.FishMeasurement._1_fish_crop_belt_image as cropBelt  # Blacks out all parts of the image apart from the belt
+import scripts.FishMeasurement._2_fish_remove_background as removeBg  # Removes the colour of the belt, leaving intented objects for measurement
+import scripts.FishMeasurement._3_fish_measure_dimensions as getDimensions  # Get dimensions of Fish based on length of reference object
 
 
 def fish_measurement(image):
@@ -34,7 +31,7 @@ def fish_measurement(image):
         fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img,
                                                                og_img)
     except Exception as e:
-        print(e)  # TypeError: cannot unpack non-iterable NoneType object
+        print('Exception at fish measurement module 3! ', e)  # TypeError: cannot unpack non-iterable NoneType object
         flag = "ERROR! Please verify measurements for this fish"
 
     return fish_length, fish_depth, cropBelt_output_img, flag
