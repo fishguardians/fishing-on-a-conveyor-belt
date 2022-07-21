@@ -161,10 +161,10 @@ def write_data_output(video_name):
     write_data = check_iqr_data(write_data)
 
     print('Generating CSV file for video: ' + video_name)
-    with open('results/' + video_name + '_fish_data.csv', 'w') as csvfile:
+    with open('results/' + video_name[:-4] + '.csv', 'w') as csvfile:
 
         writer = csv.writer(csvfile)
-        writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)','iqr error'])
+        writer.writerow(['fish', 'idtag', 'weight(kg)', 'length(cm)', 'depth(cm)','weight diff(iqr)', 'length diff(iqr)', 'depth diff(iqr)'])
         writer.writerows(write_data)
 
     return write_data
@@ -189,20 +189,23 @@ def check_iqr_data(array):
     iqr_depth_q1 = np.percentile(depths, 25)
     iqr_depth_q3 = np.percentile(depths, 75)
 
-    iqr_error = ""
     for fish in array:
         if float(fish[2]) < iqr_weight_q1:
-            iqr_error += fish[2] + " kg < q1: " + str(round(iqr_weight_q1,3)) + "kg. "
+            weight_iqr_error = str(round(float(fish[2]) - iqr_weight_q1,3))
+            fish.append(weight_iqr_error)
         if float(fish[2]) > iqr_weight_q3:
-            iqr_error += fish[2] + " kg > q3: " + str(round(iqr_weight_q3,3)) + "kg. "
+            weight_iqr_error =  "+" + str(round(float(fish[2]) - iqr_weight_q3,3))
+            fish.append(weight_iqr_error)
         if float(fish[3]) < iqr_length_q1:
-            iqr_error += fish[3] + " cm < q1: " + str(round(iqr_length_q1,3)) + "cm. "
+            length_iqr_error =  str(round(float(fish[3]) - iqr_length_q1,3))
+            fish.append(length_iqr_error)
         if float(fish[3]) > iqr_length_q3:
-            iqr_error += fish[3] + " cm > q3: " + str(round(iqr_length_q3,3)) + "cm. "
+            length_iqr_error =  "+" + str(round(float(fish[3]) - iqr_length_q3,3))
+            fish.append(length_iqr_error)
         if float(fish[4]) < iqr_depth_q1:
-            iqr_error += fish[4] + " cm < q1: " + str(round(iqr_depth_q1,3)) + "cm. "
+            depth_iqr_error =  str(round(float(fish[4]) - iqr_depth_q1,3))
+            fish.append(depth_iqr_error)
         if float(fish[4]) > iqr_depth_q3:
-            iqr_error += fish[4] + " cm > q3: " + str(round(iqr_depth_q3,3)) + "cm. "
-        fish.append(iqr_error)
-        iqr_error = ""
+            depth_iqr_error =  "+" + str(round(float(fish[4]) - iqr_depth_q3,3))
+            fish.append(depth_iqr_error)
     return array

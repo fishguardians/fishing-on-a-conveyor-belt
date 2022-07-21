@@ -171,7 +171,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 x, y, w, h = box
 
                 # check if 2 objects are in the image [id tag, fish]
-                if class_ids[index] == 1: # Detected that id tag is found
+                if class_ids[index] == 0: # Detected that id tag is found
                     id_coords = box
                     _id_id += 1
 
@@ -201,7 +201,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                         writer = csv.writer(f)
                         # ['#', 'Fish#', 'Frame', 'Value']
                         writer.writerow([_id_id, wells_id, _frame_index, words])
-                elif class_ids[index] == 0:  # Detected the barramundi fish
+                elif class_ids[index] == 1:  # Detected the barramundi fish
                     fish_coords = box
                     # center point of the fish
                     cx = int((x + x + w) / 2)
@@ -258,7 +258,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                             # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
                             writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
-                    SaveImages(cropped_img, _frame_index, _video_name, 'fish')
+                        SaveImages(cropped_img, _frame_index, _video_name, 'fish')
                         
                 elif class_ids[index] == 2:  # scale
                     _scale_id += 1
