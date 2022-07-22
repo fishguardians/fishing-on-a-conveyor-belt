@@ -36,7 +36,7 @@ def GetVideoNames(path):
     folder = os.listdir(path)
     videos_array = []
 
-    print("FOLDER", folder)
+    # print("FOLDER", folder)
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
@@ -75,7 +75,7 @@ def GetVideoNames(path):
     return videos_array
 
 
-def CaptureImagesOnVideo(videos_to_be_processed, od):
+def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
 
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
@@ -89,6 +89,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
     # Initalize line break
     video_processing_line_break = st.empty()
+    # Initalize warning to tell user not to close tab
+    video_process_warning = st.empty()
     # Initalize title of video being processed
     video_processing_title = st.empty()
     # Initialize video processing window in GUI
@@ -244,22 +246,9 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
                     if (_has_image):
                         # get fish dimensions using image
-
-                        # TODO: Make it work or remove it
-                        # page_process_video = importlib.import_module('.pages.02_📼_Process_Video.py', '')
-                        fish_species = show_fish_options
-                        print('fish_species: ', fish_species)
-
-                        if fish_species == 'Baby Red Snapper':
-                            print('Snapper sent for processing')
-                            fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
-                        else:
-                            fish_species = 'Default'
-                            print('Default/Barramundi sent for processing')
-                            fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
-                        # TODO: Make it work or remove it
-
-                        # fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
+                        # and specify the type image processing model based on the species of the fish
+                        print('video processing.py: fish_species', fish_species)
+                        fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
 
                         # open the file to write
                         # error checking for fish dimensions
@@ -405,6 +394,9 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
             # For streamlit to display video
             video_processing_line_break.markdown('***')
+            video_process_warning.warning(
+                "**Please do not close the tab or explore the website's other pages when the video is processing!** \n"
+                "\n **But feel free to use your browser or other applications while it runs in the background.**")
             video_processing_title.info('**Video currently processing:** ' + _video_name)
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
 
@@ -455,6 +447,13 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
         cap.release()
         cv2.destroyAllWindows()
+        video_processing_window.empty()
+        video_process_warning.empty()
+        video_processing_title.empty()
+        progress_bar.empty()
+        metrics.empty()
+
+        # col1, col2, col3
 
     metric_percent = 0  # Percentage of processing competition
     metric_time_left = 0  # Estimated time left for processing
@@ -558,13 +557,13 @@ def show_fish_options():
         ('Default/Barramundi', 'Baby Red Snapper'),
         help='- If video processing has already started:\n'
              '- **Please do not click the options again.**\n'
-             '- **It will stop the processing!**\n'
-             '- We arent sure why, but we cant remove the button 🤷')
+             '- **It will stop the processing!**')
     fish_selected = st.empty()
 
     if fish_species_radio_button == 'Baby Red Snapper':
         fish_selected.write("Baby Red Snapper selected.")
-        return 'Baby Red Snapper selected'
+        return 'Baby Red Snapper'
+
     else:
         fish_selected.write('Default/Barramundi selected.')
-        return 'Default/Barramundi'
+        return 'Default'

@@ -75,15 +75,17 @@ if len(video_files) == 0 and not st.session_state.bool_process_clicked:
 part1.write('###')  # Line break
 # End of 1️⃣ Quick start guide section
 
+
+# Start of 4️⃣ Editing the CSV table output
 # Checks if the video processing button is clicked
 if st.session_state.bool_process_clicked:
     # preserve the info that you hit a button between runs
     st.session_state.bool_process_clicked = True
 
     st.write('###')
-    st.markdown('### :two: Processing videos from file location:')
-    st.warning('If you are seeing this, that means you have reached the end of processing the videos. \n'
-               '\nPlease feel free to continue to view, edit or download the output data.')
+    st.markdown('### :two: Processing video(s) from file location:')
+    st.info('If you are seeing this, that means you have reached the end of processing the videos. \n'
+               '\nPlease feel free to continue to view, edit or download the output data or explore the other pages.')
 
     st.write('###')  # Line break
     st.markdown("""
@@ -91,6 +93,13 @@ if st.session_state.bool_process_clicked:
                 1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
                 2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
                 3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
+                """)
+    st.write('###')  # Line break
+
+    st.markdown("""
+                ### :four: Checking/Editing results:
+                1. You can edit any of the cells in the table by double clicking it. Feel free to make any changes before you export the table.
+                3. Or you can refer to the sidebar error log to see if the program might have warnings for images it would like you to double check.
                 """)
     st.write('###')  # Line break
 
@@ -102,6 +111,8 @@ if st.session_state.bool_process_clicked:
     if len(file_list) == 0:
         st.error("""- ERROR: 'Results CSV data folder is currently empty'
                     \n - Please refresh the page and process some videos to see the video output data.""")
+    # End of 4️⃣ Editing the CSV table output
+
 
     else:
         try:
@@ -133,7 +144,7 @@ else:
 
         part2 = st.container()
         part2.write('###')
-        part2.markdown('### :two: Processing videos from file location:')
+        part2.markdown('### :two: Processing video(s) from file location:')
 
         # Show the button to start video phenotyping process
         video_number = f"""<p><b>Number of unprocessed videos:</b> {str(len(video_files))}</p>"""
@@ -159,20 +170,7 @@ else:
                 '- Hence, **if processing baby red snappers please select that option**.\n'
                 '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
                 )
-        # fish_species_radio_button = part2.radio(
-        #     "Which fish species does the video(s) have?",
-        #     ('Default/Barramundi', 'Baby Red Snapper'),
-        #     help='- If video processing has already started:\n'
-        #          '- **Please do not click the options again.**\n'
-        #          '- **It will stop the processing!**\n'
-        #          '- We arent sure why, but we cant remove the button 🤷')
-        # fish_selected = part2.empty()
-        #
-        # if fish_species_radio_button == 'Default/Barramundi':
-        #     fish_selected.write('Default/Barramundi selected.')
-        # else:
-        #     fish_selected.write("Baby Red Snapper selected.")
-        video_processing.show_fish_options()
+        fish_species_selected = video_processing.show_fish_options()
         start_button = st.empty()
 
         # Create start video processing button
@@ -184,29 +182,16 @@ else:
             # Remove all previous sections in the gui
             start_button.empty()
             num_of_unprocessed_videos.empty()
-            # fish_selected.empty()
             fish_selected_warning.empty()
-
-            # TODO: Make it work or remove it
-            # Sends type of fish to video processing function
-            # def send_fish_species(fish_species):
-            #     return fish_species
-            #
-            # if fish_species_radio_button == 'Baby Red Snapper':
-            #     print('Baby red snapper selected ent to video processing module')
-            #     send_fish_species(fish_species_radio_button)
-            # else:
-            #     print('Default fish sent to video processing module')
-            #     send_fish_species(fish_species_radio_button)
-            # TODO: Make it work or remove it
 
             # Video processing begins
             od = ObjectDetection()  # Initialize Object Detection
-            video_processing_warning = part2.warning("**Video processing started...**")
-            part2.write('###')  # Line break
-            video_processing_warning.empty()
-            processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
+            video_processing_note = part2.warning("**Video processing started...**")
+            # part2.write('###')  # Line break
+            video_processing_note.empty()
+            processing_complete = video_processing.CaptureImagesOnVideo(video_files, od, fish_species_selected)
     # End of 2️⃣ Processing videos from file location
+
 
     # Start of 3️⃣ After processing:
     # If video processing is done
@@ -238,7 +223,7 @@ else:
         # Create table on the GUI
         # os.chdir('./results')
         file_list = glob.glob('results/**.csv')
-        print('file_list: ', file_list)
+        # print('file_list: ', file_list)
 
         if len(file_list) == 0:
             part3.error(""" Results CSV data folder is currently empty!""")

@@ -21,14 +21,24 @@ Step 2 for fish length image processing
 # that affects the contour processing
 """
 
-def remove_background(cropBelt_output_img):
+def remove_background(cropBelt_output_img, fish_species):
 
     image = cropBelt_output_img.copy()
 
-    # Defining the lower and upper values
-    # of HSV, this will detect yellow colour of the belt
-    Lower_hsv = np.array([20, 70, 100])
-    Upper_hsv = np.array([30, 255, 255])
+    # Defining the lower and upper values of HSV
+    # this will detect yellow colour of the belt
+    # and threshold based on the species of fish on the conveyor belt
+    print('fish_species',fish_species)
+
+    if fish_species == 'Baby Red Snapper':
+        print('Baby Red Snapper')
+        Lower_hsv = np.array([23, 170, 100])
+        Upper_hsv = np.array([30, 255, 255])
+    else:
+        print('Default')
+        Lower_hsv = np.array([20, 70, 100])
+        Upper_hsv = np.array([30, 255, 255])
+
     # creating the mask
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask_yellow_belt = cv2.inRange(hsv_img, Lower_hsv, Upper_hsv)
@@ -78,29 +88,31 @@ def remove_background(cropBelt_output_img):
     for c in cnts:
         (x, y, w, h) = cv2.boundingRect(c)
         cnt_area = w * h
-        if cnt_area < 0.2 * avg_area: # Removes contours smaller than the reference dot
+        # Removes contours smaller than the reference dot
+        if cnt_area < 0.2 * avg_area:
             cleaned_image[y:y + h, x:x + w] = 0
-    # cv2.imshow('cleanup.png', erode_dilate) # Bounding boxes on the original image
+    # Show Bounding boxes overlay on the original image
+    # cv2.imshow('cleanup.png', erode_dilate)
 
-    # find contours in the edge map
     # TODO: Remove later, for debugging
-    # cnts = cv2.findContours(cleaned_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    # cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-    # cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[0])
+    # find contours in the edge map
+    cnts = cv2.findContours(cleaned_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[0])
 
-    # bbox_image = image.copy()
-    # # Draw bounding boxes for contours
-    # for c in cnts:
-    #     x, y, w, h = cv2.boundingRect(c)
-    #     if h > 50 and w > 50: # Only contours as large as than the reference should be returned as ROI
-    #         roi = bbox_image[y:y + h, x:x + w]
-    #         # cv2.imshow('regions_of_interest.png', roi) # Shows the fish
-    #         cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
+    bbox_image = image.copy()
+    # Draw bounding boxes for contours
+    for c in cnts:
+        x, y, w, h = cv2.boundingRect(c)
+        if h > 50 and w > 50: # Only contours as large as than the reference should be returned as ROI
+            roi = bbox_image[y:y + h, x:x + w]
+            # cv2.imshow('regions_of_interest.png', roi) # Shows the fish
+            cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
 
     combined_mask_output = cleaned_image
 
-    # cv2.imshow('bounding_boxes.png', bbox_image)  # Bounding boxes on the original image
-    # cv2.imshow('combined_mask_output.png', combined_mask_output)
+    cv2.imshow('bounding_boxes.png', bbox_image)  # Bounding boxes on the original image
+    cv2.imshow('combined_mask_output.png', combined_mask_output)
     return combined_mask_output
 
 
