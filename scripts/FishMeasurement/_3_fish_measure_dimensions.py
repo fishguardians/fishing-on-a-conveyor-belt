@@ -25,7 +25,6 @@ Reference length can be modified in constant.py
 
 
 def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
-
     # Image for processing
     image = cv2.resize(removeBg_output_img, None, fx=0.4, fy=0.4)
 
@@ -164,8 +163,7 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
             fish_depth = round(fish_dimensions_dict["depth"], 3)
             return fish_length, fish_depth
 
+
 # Returns the midpoint of 2 points
 def midpoint(ptA, ptB):
     return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
-
-

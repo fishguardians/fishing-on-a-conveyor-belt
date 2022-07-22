@@ -4,6 +4,7 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
+import importlib
 import os
 import shutil
 import csv
@@ -19,7 +20,6 @@ import time
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
-# Read the scale
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
 from scripts.text_recognition import text_recognition
@@ -29,7 +29,6 @@ from scripts.object_detection import ObjectDetection
 # open the file in the write mode
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
-
 
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
@@ -77,6 +76,7 @@ def GetVideoNames(path):
 
 
 def CaptureImagesOnVideo(videos_to_be_processed, od):
+
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
     hypo_threshold = 90
@@ -244,7 +244,23 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
                     if (_has_image):
                         # get fish dimensions using image
-                        fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
+
+                        # TODO: Make it work or remove it
+                        # page_process_video = importlib.import_module('.pages.02_📼_Process_Video.py', '')
+                        fish_species = show_fish_options
+                        print('fish_species: ', fish_species)
+
+                        if fish_species == 'Baby Red Snapper':
+                            print('Snapper sent for processing')
+                            fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
+                        else:
+                            fish_species = 'Default'
+                            print('Default/Barramundi sent for processing')
+                            fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
+                        # TODO: Make it work or remove it
+
+                        # fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
+
                         # open the file to write
                         # error checking for fish dimensions
                         if len(flag) > 0:
@@ -411,8 +427,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
-            #TODO: Maybe can combine the lenghts of the videos to calculate the total percentage and estimated time for processing.
-
             seconds_left -= 1
             minutes_left = seconds_left/60
             metric_percent = str(round(current_percent)) + '%'
@@ -503,8 +517,8 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
     except:
         errwriter.writerow(['Serious', 'SaveImages Function Error', 'Fail to Save Images', 'Request technical support'])
 
-
-def get_video_length(filename):  # Get video length in seconds for progress bar
+# Get video length in seconds for progress bar
+def get_video_length(filename):
     vidcapture = cv2.VideoCapture(filename)
     fps = vidcapture.get(cv2.CAP_PROP_FPS)
     totalNoFrames = vidcapture.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -537,3 +551,20 @@ def count_frames(path, override=False):
     video.release()
     # return the total number of frames in the video
     return total
+
+def show_fish_options():
+    fish_species_radio_button = st.radio(
+        "Which fish species does the video(s) have?",
+        ('Default/Barramundi', 'Baby Red Snapper'),
+        help='- If video processing has already started:\n'
+             '- **Please do not click the options again.**\n'
+             '- **It will stop the processing!**\n'
+             '- We arent sure why, but we cant remove the button 🤷')
+    fish_selected = st.empty()
+
+    if fish_species_radio_button == 'Baby Red Snapper':
+        fish_selected.write("Baby Red Snapper selected.")
+        return 'Baby Red Snapper selected'
+    else:
+        fish_selected.write('Default/Barramundi selected.')
+        return 'Default/Barramundi'

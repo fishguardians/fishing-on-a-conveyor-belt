@@ -12,13 +12,13 @@ from itertools import count
 import os.path
 
 # Page Configs
-st.set_page_config(
-    page_title="Process Video",
-    page_icon="📼",
-)
+# st.set_page_config(
+#     page_title="Process Video",
+#     page_icon="📼",
+# )
 
 # Page Sidebar
-st.write('# 📼 Process Video 📼')  # Page Title
+st.title('📼 Process Video 📼')  # Page Title
 st.sidebar.info("This page allows you to process the fish phenotyping conveyor belt video recordings")
 
 # Session State Initialization
@@ -40,7 +40,6 @@ video_title = st.empty()
 video_player = st.empty()
 video_processing_warning = st.empty()
 video_processing_window = st.empty()
-fish_species_radio_button = st.empty()
 part1 = st.empty()  # Quick start guide section
 part2 = st.empty()  # Processing videos from file location
 part3 = st.empty()  # After video processing
@@ -52,7 +51,6 @@ processing_complete = False
 
 # Start of 1️⃣ Quick start guide section
 part1 = st.expander("Expand or Collapse", True)
-
 part1.write('###')  # Line break
 part1.markdown("""
         ### :one: Quick start guide:
@@ -77,9 +75,10 @@ if len(video_files) == 0 and not st.session_state.bool_process_clicked:
 part1.write('###')  # Line break
 # End of 1️⃣ Quick start guide section
 
-
+# Checks if the video processing button is clicked
 if st.session_state.bool_process_clicked:
-    st.session_state.bool_process_clicked = True  # preserve the info that you hit a button between runs
+    # preserve the info that you hit a button between runs
+    st.session_state.bool_process_clicked = True
 
     st.write('###')
     st.markdown('### :two: Processing videos from file location:')
@@ -101,7 +100,8 @@ if st.session_state.bool_process_clicked:
     print('file_list: ', file_list)
 
     if len(file_list) == 0:
-        st.error(""" Results CSV data folder is currently empty!""")
+        st.error("""- ERROR: 'Results CSV data folder is currently empty'
+                    \n - Please refresh the page and process some videos to see the video output data.""")
 
     else:
         try:
@@ -109,11 +109,13 @@ if st.session_state.bool_process_clicked:
                 'Which CSV file would you like to view?',
                 file_list)
 
+            # Display the csv contents in table
             df = pd.read_csv(f"{option}")
             csv = st_scripts.convert_df(df)
             file_name = (str(option[0: option.index(".")]) + '.csv')
             AgGrid(df)
 
+            # Show a download button to download the csv file
             st.download_button(
                 "Press to Download",
                 csv,
@@ -134,12 +136,9 @@ else:
         part2.markdown('### :two: Processing videos from file location:')
 
         # Show the button to start video phenotyping process
-        num_of_unprocessed_videos = part2.markdown('Number of unprocessed videos: ' + str(len(video_files)) + '\n')
+        video_number = f"""<p><b>Number of unprocessed videos:</b> {str(len(video_files))}</p>"""
+        num_of_unprocessed_videos = part2.markdown(video_number, unsafe_allow_html=True)
         st.session_state.bool_have_videos = True
-
-        # for video_name in video_files:
-        #     __file__ = f"videos\\{video_name}"
-        #     part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
         for v in video_files:
@@ -154,39 +153,60 @@ else:
             video = video_file.read()
             part2.video(video)
 
-        videos_container = st.empty()
-        start_button = st.empty()
-
-        # st.warning("Currently the software does not support detection of the fish species. As young red snappers "
-        #            "have slightly transparent tails, please make that selection as it requires a different model
-        #            to process that fish")
-
-        # fish_species_radio_button = st.radio(
-        #     "Which fish species does the video have?",
-        #     ('Default', 'Baby Red Snapper'))
-
-        # if fish_species_radio_button == 'Barramundi':
-        #     st.write('Barramundi selected.')
+        fish_selected_warning = part2.empty()
+        fish_selected_warning.warning(
+                '- As young red snappers have transparent tails, the image processing model is slightly different.\n'
+                '- Hence, **if processing baby red snappers please select that option**.\n'
+                '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
+                )
+        # fish_species_radio_button = part2.radio(
+        #     "Which fish species does the video(s) have?",
+        #     ('Default/Barramundi', 'Baby Red Snapper'),
+        #     help='- If video processing has already started:\n'
+        #          '- **Please do not click the options again.**\n'
+        #          '- **It will stop the processing!**\n'
+        #          '- We arent sure why, but we cant remove the button 🤷')
+        # fish_selected = part2.empty()
+        #
+        # if fish_species_radio_button == 'Default/Barramundi':
+        #     fish_selected.write('Default/Barramundi selected.')
         # else:
-        #     st.write("Baby Red Snapper selected.")
+        #     fish_selected.write("Baby Red Snapper selected.")
+        video_processing.show_fish_options()
+        start_button = st.empty()
 
         # Create start video processing button
         isclicked = start_button.button("Start Processing Videos")
         if isclicked:
             st.session_state.bool_start_processing = True
             st.session_state.bool_process_clicked = True
+
+            # Remove all previous sections in the gui
             start_button.empty()
             num_of_unprocessed_videos.empty()
-            videos_container = st.empty()
+            # fish_selected.empty()
+            fish_selected_warning.empty()
+
+            # TODO: Make it work or remove it
+            # Sends type of fish to video processing function
+            # def send_fish_species(fish_species):
+            #     return fish_species
+            #
+            # if fish_species_radio_button == 'Baby Red Snapper':
+            #     print('Baby red snapper selected ent to video processing module')
+            #     send_fish_species(fish_species_radio_button)
+            # else:
+            #     print('Default fish sent to video processing module')
+            #     send_fish_species(fish_species_radio_button)
+            # TODO: Make it work or remove it
 
             # Video processing begins
             od = ObjectDetection()  # Initialize Object Detection
             video_processing_warning = part2.warning("**Video processing started...**")
-            # time.sleep(0.2)
             part2.write('###')  # Line break
             video_processing_warning.empty()
             processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
-        # End of 2️⃣ Processing videos from file location
+    # End of 2️⃣ Processing videos from file location
 
     # Start of 3️⃣ After processing:
     # If video processing is done
@@ -195,9 +215,10 @@ else:
         st.session_state.bool_start_processing = False
         video_processing_warning.empty()
         now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+        current_time = now.strftime("%I:%M %p")
         part3.success("Video processing complete at " + current_time)
 
+        # Bool to check if balloon gif that states video processed success has been shown
         if not ballooned:
             for i in count():
                 if i == 0:
@@ -239,7 +260,6 @@ else:
                 # grid_return = AgGrid(df, editable=True)
                 # new_df = grid_return['data']
                 # AgGrid(new_df)
-                #
                 # csv = st_scripts.convert_df(new_df)
                 # file_name = (str(new_df) + '.csv')
 
