@@ -31,11 +31,11 @@ def remove_background(cropBelt_output_img, fish_species):
     print('fish_species',fish_species)
 
     if fish_species == 'Baby Red Snapper':
-        print('Baby Red Snapper')
+        # print('Baby Red Snapper')
         Lower_hsv = np.array([23, 170, 100])
         Upper_hsv = np.array([30, 255, 255])
     else:
-        print('Default')
+        # print('Default')
         Lower_hsv = np.array([20, 70, 100])
         Upper_hsv = np.array([30, 255, 255])
 

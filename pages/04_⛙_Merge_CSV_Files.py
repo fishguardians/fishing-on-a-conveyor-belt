@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-
-def convert_df(df):
-    return df.to_csv().encode('utf-8')
+# Page Configs
+st.set_page_config(
+    page_title="Merging CSV data",
+    page_icon="🐠️",
+)
 
 st.title("🗃️️ Merging CSV data 🗃️️")
 st.sidebar.info("This page allows you to upload and merge multiple CSV files")
@@ -29,6 +31,9 @@ uploaded_files = st.file_uploader(label="Upload CSV files to merge.",
                                   accept_multiple_files=True,
                                   type=['csv'])  # Upload file for CSV
 
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
 # check if files are uploaded
 if uploaded_files is not None:
     for file in uploaded_files:
@@ -48,5 +53,3 @@ if uploaded_files is not None:
         "text/csv",
         key='download-csv'
     )
-
-
