@@ -5,14 +5,14 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
 
-import reset_folders
-import streamlit
+
 import sys
 from streamlit import cli as stcli
 import scripts.video_processing as video_processing
 from scripts.object_detection import ObjectDetection
 import constant
 import streamlit as st
+import reset_folders
 
 from datetime import datetime
 
@@ -41,14 +41,15 @@ def main():
     # Initialize Object Detection
     od = ObjectDetection()
     video_processing.CaptureImagesOnVideo(video_files, od)
-    
+
     print("End of video image capture process: ", current_time)
+
+
 
 
 if __name__ == "__main__":
     # main()
-    # st.header("Hello world")
-    if streamlit._is_running_with_streamlit:
+    if st._is_running_with_streamlit:
         main()
     else:
         # sys.argv = ["streamlit", "run", sys.argv[0]]
