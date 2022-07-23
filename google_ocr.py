@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''google_ocr.py: Module that uses internet connection and google text reader to read images
+    @Author: "Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import io
 import os
 

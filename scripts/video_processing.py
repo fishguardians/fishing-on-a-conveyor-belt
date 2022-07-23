@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''camera.py: Video capture module that takes the images of the fish
+'''video_processing.py: Video capture module that takes the images of the fish
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
@@ -263,111 +263,13 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
                         SaveImages(cropped_img, _frame_index, _video_name, 'fish')
                         
-                elif class_ids[index] == 2:  # scale
-                    _scale_id += 1
-                    scale_coords = box
-
-                    ###
-                    # Test Contours
-                    ###
-                    scale_image = img.copy()
-                    scale_image = scale_image[y - 10:y + h + 10, x - 10:x + w + 10]
-                    scale_image = cv2.resize(scale_image, None, fx=2, fy=2)
-                    saveCopy = scale_image.copy()
-
-                    scale_image = cv2.cvtColor(scale_image, cv2.COLOR_BGR2HSV)
-                    GRAY_MIN = np.array([90, 8, 37], np.uint8)
-                    GRAY_MAX = np.array([105, 255, 255], np.uint8)
-
-                    frame_threshed = cv2.inRange(scale_image, GRAY_MIN, GRAY_MAX)
-                    output = cv2.bitwise_and(scale_image, scale_image, mask=frame_threshed)
-                    ret, thresh = cv2.threshold(frame_threshed, 40, 255, 0)  # For shadows
-                    if int(cv2.__version__[0]) > 3:
-                        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                    else:
-                        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
-                                                                    cv2.CHAIN_APPROX_NONE)
-
-                    if len(contours) != 0:
-                        # draw in blue the contours that were founded
-                        cv2.drawContours(output, contours, -1, 255, 3)
-
-                        # find the biggest countour (c) by the area
-                        c = max(contours, key=cv2.contourArea)
-                        x, y, w, h = cv2.boundingRect(c)
-
-                        # draw the biggest contour (c) in green
-                        cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-                        saveCopy = saveCopy[y:y + h, x:x + w]
-                        scale_reading = digit_recognition(saveCopy)
-
-                        # open the file to write
-                        with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
-                            # create the csv writer
-                            writer = csv.writer(f)
-                            # ['#', 'Fish#', 'Frame', 'Weight']
-                            writer.writerow([_scale_id, wells_id, _frame_index, scale_reading])
-
-                    # show the images
-                    # cv2.imshow("Result", np.hstack([scale_image, output]))
-
-                    # cv2.waitKey(0)
-
-                    # digit_recognization(frame, y-16, y+h+16, x-16, x+w+16, h, w)
-
-                    ###
-                    # BGR
-                    ###
-
-                    # scale_image = img.copy()
-                    # scale_image = scale_image[y-10:y+h+10,x-10:x+w+10]
-                    # scale_image = cv2.resize(scale_image, None, fx=2, fy=2)
-
-                    # # grey boundary
-                    # lower = [80,70,60]
-                    # upper = [100,90,80]
-
-                    # # arrays
-                    # lower = np.array(lower, dtype="uint8")
-                    # upper = np.array(upper, dtype="uint8")
-
-                    # # find the colors within the specified boundaries and apply
-                    # # the mask
-                    # mask = cv2.inRange(scale_image, lower, upper)
-                    # output = cv2.bitwise_and(scale_image, scale_image, mask=mask)
-
-                    # ret,thresh = cv2.threshold(mask, 40, 255, 0)
-                    # if (int(cv2.__version__[0]) > 3):
-                    #     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                    # else:
-                    #     im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
-                    # if len(contours) != 0:
-                    #     # draw in blue the contours that were founded
-                    #     cv2.drawContours(output, contours, -1, 255, 3)
-
-                    #     # find the biggest countour (c) by the area
-                    #     c = max(contours, key = cv2.contourArea)
-                    #     x,y,w,h = cv2.boundingRect(c)
-
-                    #     # draw the biggest contour (c) in green
-                    #     cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
-
-                    #     saveCopy = scale_image[y:y+h,x:x+w]
-                    #     if(_has_image == True):
-                    #         SaveImages(saveCopy, _frame_index, _video_name, 'scale')
-
-                    # show the images
-                    # cv2.imshow("Result", np.hstack([scale_image, output]))
-
-                    # cv2.waitKey(0)
                 else:
                     continue
 
             if (_has_image == True):
                 _scale_id += 1
 
+                # retreives the weight from the scale
                 scale_reading = digit_recognition(frame)
 
                 # error checking for scale reading

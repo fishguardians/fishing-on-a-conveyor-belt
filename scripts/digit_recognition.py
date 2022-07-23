@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''digit_recognition.py: Retrieves the weighting scale reading from a given frame
+    @Author: "Chen Dong, Yao Yujing"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import cv2
 import numpy as np
 import imutils

@@ -18,7 +18,12 @@ Install required python libraries  ```pip install -r requirements.txt```
 For educational and research purposes. 
 
 ## Contributing
-Please email Dr. Jose at [jose.domingos1@jcu.edu.sg](mailto:jose.domingos1@jcu.edu.sg) for further details or development.
+For further details or development, email:
+pureskill714[Raheem] - [raheemrocker@gmail.com](mailto:raheemrocker@gmail.com)
+nbinged[Nicholas] - [nbingei@gmail.com](mailto:nbingei@gmail.com)
+Don-Whis[Chen Dong] - [chen809490819@gmail.com](mailto:chen809490819@gmail.com)
+yaoyujing - [yujing1314276@gmail.com](mailto:yujing1314276@gmail.com)
+SageSG[Henry] - [mailstohenry@gmail.com](mailto:mailstohenry@gmail.com)
 
 ## License
 

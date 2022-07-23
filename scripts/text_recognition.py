@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''text_recognition.py: Module that reads the fish id using the given image
+    @Author: "Muhammad Abdurraheem, Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 from pytesseract import pytesseract
 import cv2
 import numpy as np
@@ -5,6 +11,8 @@ import os
 import constant
 
 def text_recognition(image):
+    # Get the text from the fish id image
+
     #increase size to read image better
     image = cv2.resize(image, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # convert from GBR to RGB

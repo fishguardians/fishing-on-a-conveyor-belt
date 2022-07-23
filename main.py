@@ -5,7 +5,6 @@
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
 
-
 import sys
 from streamlit import cli as stcli
 import scripts.video_processing as video_processing
