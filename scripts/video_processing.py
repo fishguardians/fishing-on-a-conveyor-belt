@@ -111,12 +111,10 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         _fish_id, _id_id, _scale_id = 0, 0, 0
         # Class for video capturing from video files, image sequences or cameras
         cap = cv2.VideoCapture(constant.videos_location + _video_name)
-        # Get the video length
-        video_length = get_video_length(constant.videos_location + _video_name)
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
 
-        seconds_left = video_length
+        seconds_left = round(num_of_frames/30)
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
@@ -414,18 +412,19 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             #TODO: Maybe can combine the lenghts of the videos to calculate the total percentage and estimated time for processing.
 
             seconds_left -= 1
-            minutes_left = seconds_left/60
             metric_percent = str(round(current_percent)) + '%'
-            metric_time_left = str(round(minutes_left, 2)) + ' mins'
+            mins_shown = round(seconds_left//60)
+            seconds_shown = str(seconds_left - (mins_shown*60))
+            metric_time_left = str(mins_shown) + ' mins ' + seconds_shown + ' s'
             metric_fishes = str(wells_id) + '🐠'
 
             if current_percent >= 100:
                 metric_percent = '100%'
-                metric_time_left = '0 mins'
+                metric_time_left = 'Done'
 
             if seconds_left <= 0:
                 metric_percent = '100%'
-                metric_time_left = '0 mins'
+                metric_time_left = 'Done'
 
             with metrics.container():
                 col1, col2, col3 = st.columns(3)
@@ -505,15 +504,6 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         cv2.imwrite('./images/' + _video_name + '/' + _type + '/' + str(_frame_index) + '.jpg', actual_frame)
     except:
         errwriter.writerow(['Serious', 'SaveImages Function Error', 'Fail to Save Images', 'Request technical support'])
-
-
-def get_video_length(filename):  # Get video length in seconds for progress bar
-    vidcapture = cv2.VideoCapture(filename)
-    fps = vidcapture.get(cv2.CAP_PROP_FPS)
-    totalNoFrames = vidcapture.get(cv2.CAP_PROP_FRAME_COUNT)
-    durationInSeconds = int(float(totalNoFrames) / float(fps))
-    # print("durationInSeconds: ", durationInSeconds, "s")
-    return durationInSeconds
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
