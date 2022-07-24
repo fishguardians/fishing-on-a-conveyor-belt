@@ -35,8 +35,6 @@ if 'bool_balloons' not in st.session_state:  # Bool to state whether video proce
     st.session_state.bool_balloons = False
 if 'bool_ video_processing_complete' not in st.session_state: # Bool to state whether video processing is completed
     st.session_state.video_processing_complete = False
-if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
-    st.session_state.persistent_error_log = []
 
 # Initialize variables
 video_files = video_processing.GetVideoNames(constant.videos_location)

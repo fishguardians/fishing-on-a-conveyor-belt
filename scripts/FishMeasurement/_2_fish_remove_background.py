@@ -28,7 +28,7 @@ def remove_background(cropBelt_output_img, fish_species):
     # Defining the lower and upper values of HSV
     # this will detect yellow colour of the belt
     # and threshold based on the species of fish on the conveyor belt
-    print('fish_species',fish_species)
+    # print('fish_species',fish_species)
 
     if fish_species == 'Baby Red Snapper':
         # print('Baby Red Snapper')

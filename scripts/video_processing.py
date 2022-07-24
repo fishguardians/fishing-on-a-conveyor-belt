@@ -30,6 +30,10 @@ from scripts.object_detection import ObjectDetection
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
+# Streamlit session state for persistent data
+if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
+    st.session_state.persistent_error_log = []
+
 
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
