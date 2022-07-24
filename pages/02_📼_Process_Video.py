@@ -10,7 +10,7 @@ from datetime import datetime
 from st_aggrid import AgGrid
 from itertools import count
 import os.path
-
+import platform
 
 # Page Configs
 st.set_page_config(
@@ -158,17 +158,22 @@ else:
         st.session_state.bool_have_videos = True
 
         for video_name in video_files:
-            __file__ = f"videos\\{video_name}"
+            if platform == "win32" or platform == "win64":
+                __file__ = f"videos\\{video_name}"
+
+            elif platform == "darwin":
+                __file__ = f"videos/{video_name}"
+
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
         for v in video_files:
+
             __file__ = f"videos\\{v}"
             video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
             video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
             part2.write('###')
             part2.markdown(video_name, unsafe_allow_html=True)
-            part2.markdown(video_date, unsafe_allow_html=True)
             v = './videos/' + v
             video_file = open(v, 'rb')
             video = video_file.read()
