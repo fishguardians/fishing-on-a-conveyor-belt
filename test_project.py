@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''test_project.py: This is a unit test for the entire project module.
+    Run python test_project.py to test all the given modules
+    @Author: "Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import cv2
 import unittest
 import numpy as np
@@ -5,9 +12,6 @@ import os
 import pytesseract
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe" 
-
-"""This is a unit test for the entire project module.
-    Run python test_project.py to test all the given modules"""
 
 import scripts.digit_recognition as dr
 import scripts.generate_csv as gc
@@ -40,7 +44,7 @@ class TestFishMeasurement(unittest.TestCase):
 
 class TestGenerateCSV(unittest.TestCase):
     def runTest(self):
-        # Todo: Drag sample folder from testing to output folder before running
+        # Developers: Drag sample folder from testing to output folder before running
         # Return a output in results folder with a sample
         test1 = gc.write_data_output('sample')
         self.assertEqual(test1[1][2],'0.030', "no output error")

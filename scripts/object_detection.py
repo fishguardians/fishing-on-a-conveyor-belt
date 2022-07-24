@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''object_detection.py: Module that uses YOLOv4 dnn model to detect objects from given frames
+    @Author: "Muhammad Abdurraheem, Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import cv2
 import numpy as np
 

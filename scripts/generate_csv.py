@@ -1,5 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''generate_csv.py: Module that retrieves the entire data output and parse into csv using mean, median and iqr calculations
+    @Author: "Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import csv
-import os
 import math
 import numpy as np
 
@@ -11,6 +16,7 @@ errwriter = csv.writer(errorfile)
 
 
 def write_data_output(video_name):
+    # combine the results of the weights, lengths and depths data into one csv file
     fish_id = 0
     overall_data = []
     write_data = []
@@ -170,6 +176,7 @@ def write_data_output(video_name):
     return write_data
 
 def check_iqr_data(array):
+    # find the iqr of the weights, lengths and depths data from the output folder
     ids = []
     weights = []
     lengths = []

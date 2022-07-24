@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''reset_folders.py: Module check if folders exist and replace any corrupted folders
+    @Author: "Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 
 from os import makedirs
 from os.path import dirname
@@ -9,7 +14,7 @@ import shutil
 from distutils.dir_util import copy_tree
 
 def reset_folders():
-
+    # check if necessary folders exists, if not get from backup
     with open('./errorlogs.txt', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         # write the header for errors
