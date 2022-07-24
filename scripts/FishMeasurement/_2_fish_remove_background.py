@@ -110,9 +110,8 @@ def remove_background(cropBelt_output_img, fish_species):
             cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
 
     combined_mask_output = cleaned_image
-
-    cv2.imshow('bounding_boxes.png', bbox_image)  # Bounding boxes on the original image
-    cv2.imshow('combined_mask_output.png', combined_mask_output)
+    # cv2.imshow('bounding_boxes.png', bbox_image)  # Bounding boxes on the original image
+    # cv2.imshow('combined_mask_output.png', combined_mask_output)
     return combined_mask_output
 
 

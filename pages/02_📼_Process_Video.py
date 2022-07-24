@@ -35,6 +35,9 @@ if 'bool_balloons' not in st.session_state:  # Bool to state whether video proce
     st.session_state.bool_balloons = False
 if 'bool_ video_processing_complete' not in st.session_state: # Bool to state whether video processing is completed
     st.session_state.video_processing_complete = False
+# Streamlit session state for persistent data
+if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
+    st.session_state.persistent_error_log = []
 
 # Initialize variables
 video_files = video_processing.GetVideoNames(constant.videos_location)
@@ -47,10 +50,7 @@ part1 = st.empty()  # Quick start guide section
 part2 = st.empty()  # Processing videos from file location
 part3 = st.empty()  # After video processing
 
-# TODO: Add persistence in state for this function by using 'st.session_state.persistent_error_log'
-# Function to show error log
-# Append this into a streamlit state array to be printed again on 'part 4'
-error_log = video_processing.show_error_log
+# error_log = video_processing.show_error_log
 
 # Main Page Contents:
 # Start of 1️⃣ Quick start guide section
@@ -85,6 +85,10 @@ part1.write('###')  # Line break
 if st.session_state.bool_process_clicked:
     # preserve the info that you hit a button between runs
     st.session_state.bool_process_clicked = True
+
+    # Displays all the errors in error log
+    for error in st.session_state.persistent_error_log:
+        st.sidebar.warning(error)
 
     st.write('###')
     st.markdown('### :two: Processing video(s) from file location:')

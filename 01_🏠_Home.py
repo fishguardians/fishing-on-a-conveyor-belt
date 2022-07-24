@@ -20,11 +20,9 @@ st.set_page_config(
 
 # Side bar
 st.write("# 🎣 Welcome to Fishing on a Conveyor Belt 🐟")
-st.sidebar.success("**Select a page above!**")
+st.sidebar.success("Select a page above!")
 
 # Main page
-st.sidebar.success("**Select a page above!**")
-
 st.markdown(
     """
     Fishing on a Conveyor Belt is a web application that automates data collection from

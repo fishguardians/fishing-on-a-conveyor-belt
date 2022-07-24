@@ -30,10 +30,6 @@ from scripts.object_detection import ObjectDetection
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
-# Streamlit session state for persistent data
-if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
-    st.session_state.persistent_error_log = []
-
 
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
@@ -229,10 +225,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                                     "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + \
                                     "/id/ "
                         show_error_log(error_log)
-                        # st.sidebar.warning("**Warning: 'ID Tag Not Found'** \n\n"
-                        #                                     "Requesting user validation. \n\n"
-                        #                                     "Please check image frame " + str(_frame_index)
-                        #                                      + ".jpg in /images/" + _video_name + "/id/")
+                        st.session_state.persistent_error_log.append(error_log)
 
                     # open the file to write
                     with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -291,11 +284,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                                         "\n\n Please check image frame " + str(_frame_index) + ".jpg in /images/" + \
                                         _video_name + "/actual/"
                             show_error_log(error_log)
-
-                            # st.sidebar.warning("**Warning: 'Fish Could Not Be Measured** \n\n"
-                            #                    "Requesting user validation. \n\n"
-                            #                    "Please check image frame " + str(_frame_index)
-                            #                    + ".jpg in /images/" + _video_name + "/actual/")
+                            st.session_state.persistent_error_log.append(error_log)
 
                         with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                             writer = csv.writer(f)
@@ -331,10 +320,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                     error_log = "**Warning: 'Scale Reading Not Found** \n\n Requesting user validation. \n\n Please " \
                                 "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + "/scale/ "
                     show_error_log(error_log)
-                    # st.sidebar.warning("**Warning: 'Scale Reading Not Found** \n\n"
-                    #                    "Requesting user validation. \n\n"
-                    #                    "Please check image frame " + str(_frame_index)
-                    #                    + ".jpg in /images/" + _video_name + "/scale/")
+                    st.session_state.persistent_error_log.append(error_log)
 
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
@@ -411,8 +397,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
         metrics.empty()
         fish_selected.empty()
 
-        # col1, col2, col3
-
     metric_percent = 0  # Percentage of processing competition
     metric_time_left = 0  # Estimated time left for processing
     metric_fishes = 0  # Number of fish found in the video
@@ -452,11 +436,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])
         error_log = "**Warning: 'View Video Processing Error** \n\n" "Failed to View Videos. \n\n" "Request technical support."
         show_error_log(error_log)
-        # st.sidebar.error("**Warning: 'View Video Processing Error** \n\n"
-        #                    "Failed to View Videos. \n\n"
-        #                    "Request technical support.")
-
-
+        st.session_state.persistent_error_log.append(error_log)
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
@@ -473,9 +453,7 @@ def MoveVideo(video):
         error_log = "**Warning: 'Video(s) Has Already been Processed** \n\n" "Requesting user action to either delete " \
                     "or move video(s). \n\n" "Processing same videos will use up unnecessary computer resources. "
         show_error_log(error_log)
-        # st.sidebar.warning("**Warning: 'Video(s) Has Already been Processed** \n\n"
-        #                    "Requesting user action to either delete or move video(s). \n\n"
-        #                    "Processing same videos will use up unnecessary computer resources.")
+        st.session_state.persistent_error_log.append(error_log)
 
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
@@ -491,9 +469,7 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         error_log = "**Error: 'Issue Saving Images to disk** \n\n" "Failed to Save Images. \n\n" "Request technical " \
                     "support. "
         show_error_log(error_log)
-        # st.sidebar.error("**Error: 'Issue Saving Images to disk** \n\n"
-        #                  "Failed to Save Images. \n\n"
-        #                  "Request technical support.")
+        st.session_state.persistent_error_log.append(error_log)
 
 # Get video length in seconds for progress bar
 def get_video_length(filename):
