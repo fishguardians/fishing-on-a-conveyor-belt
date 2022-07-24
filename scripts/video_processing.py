@@ -642,5 +642,4 @@ def show_fish_options():
 
 
 def show_error_log(error_log):
-    # Append this into a streamlit state array to be printed again on 'part 4'
     return st.sidebar.warning(error_log)
