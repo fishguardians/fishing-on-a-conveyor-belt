@@ -7,7 +7,15 @@ import plotly_express as px
 from sys import platform
 
 global df
+
+# Page Configs
+st.set_page_config(
+    page_title="Data Visualization",
+    page_icon="🐠",
+)
+
 st.title("📊 Data Visualization 📊")
+st.sidebar.info("This page allows visualize the data from your csv files")
 csv_path = "results"
 container1 = st.empty()
 file_list = os.listdir(csv_path)

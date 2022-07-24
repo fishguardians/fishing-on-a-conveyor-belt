@@ -4,6 +4,7 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
+import importlib
 import os
 import shutil
 import csv
@@ -19,7 +20,6 @@ import time
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
-# Read the scale
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
 from scripts.text_recognition import text_recognition
@@ -30,14 +30,21 @@ from scripts.object_detection import ObjectDetection
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
 
+# Streamlit session state for persistent data
+if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
+    st.session_state.persistent_error_log = []
+
 
 def GetVideoNames(path):
     """ # 1 - directory of stored videos """
 
+    # Initialize streamlit sidebar error log
+    video_format_error = st.empty()
+
     folder = os.listdir(path)
     videos_array = []
 
-    print("FOLDER", folder)
+    # print("FOLDER", folder)
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
@@ -69,14 +76,17 @@ def GetVideoNames(path):
         elif file_extension.lower() == '.mp4':
             videos_array.append(file.lower())
         else:
-            # TODO: For each errwriter get it to display in the GUI sidebar
             errwriter.writerow(['Warning', 'Unsupported Video Format', 'Video Not MP4 or MOV',
                                 'Please check ' + str(file) + ' for supported formats'])
+            video_format_error = st.sidebar.warning("**Warning: 'Unsupported video format'** \n\n"
+                                                    "Only MP4 or MOV video formats are supported. \n\n"
+                                                    "Please check if '" + str(file) + "'\nis a supported format")
             continue
+        video_format_error.empty()
     return videos_array
 
 
-def CaptureImagesOnVideo(videos_to_be_processed, od):
+def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
     hypo_threshold = 90
@@ -89,6 +99,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
     # Initalize line break
     video_processing_line_break = st.empty()
+    # Initalize warning to tell user not to close tab
+    video_process_warning = st.empty()
     # Initalize title of video being processed
     video_processing_title = st.empty()
     # Initialize video processing window in GUI
@@ -98,8 +110,10 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
     progress_bar = st.empty()
     progress_bar.progress(0)
 
-    # Initialize metrics
+    # Initialize gui elements
     metrics = st.empty()
+    fish_selected = st.empty()
+    csv_output_error = st.empty()
 
     for _video_index, _video_name in enumerate(videos_to_be_processed):
         print('Processing video ' + str(_video_index + 1) + '...\n')
@@ -113,16 +127,21 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         cap = cv2.VideoCapture(constant.videos_location + _video_name)
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
-
+        # video length in seconds
         seconds_left = round(num_of_frames/30)
+        # initalize error container
+        video_open_error = st.empty()
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
             errwriter.writerow(['Serious', 'Video Corrupted Error', 'Video Cannot Process',
                                 'Skipping Video, please check if video is correct'])
+            video_open_error = st.sidebar.error("**Error: 'Video Corrupted Error'** \n\n"
+                                                "Video cant be processed and will be skipped. \n\n"
+                                                "please check if video is not corrupted.")
 
         while (cap.isOpened()):
-
+            video_open_error.empty()
             ret, frame = cap.read()
 
             # exact frame counts
@@ -132,13 +151,20 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             if not ret:
                 cap.release()
                 # Generate final csv file and then move the file to completed
-                try: 
+                try:
                     response = write_data_output(_video_name)
                 except:
-                    errwriter.writerow(['Serious', 'CSV Output Corrupted Error' , 'Fail to Create CSV', 'Skipping Video, please check if data is inside'])
+                    errwriter.writerow(['Serious', 'CSV Output Corrupted Error', 'Fail to Create CSV',
+                                        'Skipping Video, please check if data is inside'])
+                    csv_output_error = st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
+                                                        "Failed to Create CSV. Skipping Video. \n\n"
+                                                        "Please check if data is inside.")
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
                 break
+
+            # remove error once fixed
+            csv_output_error.empty()
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
@@ -174,7 +200,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 x, y, w, h = box
 
                 # check if 2 objects are in the image [id tag, fish]
-                if class_ids[index] == 0: # Detected that id tag is found
+                if class_ids[index] == 0:  # Detected that id tag is found
                     id_coords = box
                     _id_id += 1
 
@@ -196,7 +222,17 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     words = text_recognition(id_image)
 
                     if len(words) < 7:
-                        errwriter.writerow(['Warning', 'ID Tag Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
+                        errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation', 'Please check '
+                                                                                                      'frame ' +
+                                            str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
+                        error_log = "**Warning: 'ID Tag Not Found'** \n\n Requesting user validation. \n\n Please " \
+                                    "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + \
+                                    "/id/ "
+                        show_error_log(error_log)
+                        # st.sidebar.warning("**Warning: 'ID Tag Not Found'** \n\n"
+                        #                                     "Requesting user validation. \n\n"
+                        #                                     "Please check image frame " + str(_frame_index)
+                        #                                      + ".jpg in /images/" + _video_name + "/id/")
 
                     # open the file to write
                     with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -242,11 +278,25 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
                     if (_has_image):
                         # get fish dimensions using image
-                        fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy())
+                        # and specify the type image processing model based on the species of the fish
+                        fish_length, fish_depth, cropped_img, flag = fish_measurement(frame.copy(), fish_species)
+
                         # open the file to write
                         # error checking for fish dimensions
                         if len(flag) > 0:
-                            errwriter.writerow(['Warning', 'Fish Dimension Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
+                            errwriter.writerow(['Warning', 'Fish Dimensions Not Found', 'Request User Validation',
+                                                'Please check frame ' + str(
+                                                    _frame_index) + '.jpg in /images/' + _video_name + '/actual/'])
+                            error_log = "**Warning: 'Fish Could Not Be Measured** \n\n Requesting user validation. " \
+                                        "\n\n Please check image frame " + str(_frame_index) + ".jpg in /images/" + \
+                                        _video_name + "/actual/"
+                            show_error_log(error_log)
+
+                            # st.sidebar.warning("**Warning: 'Fish Could Not Be Measured** \n\n"
+                            #                    "Requesting user validation. \n\n"
+                            #                    "Please check image frame " + str(_frame_index)
+                            #                    + ".jpg in /images/" + _video_name + "/actual/")
+
                         with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                             writer = csv.writer(f)
                             # write the header
@@ -273,9 +323,19 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 scale_reading = digit_recognition(frame)
 
                 # error checking for scale reading
-                if(scale_reading == 'N.A'):
-                    errwriter.writerow(['Warning', 'Scale Reading Not Found' , 'Request User Validation', 'Please check frame ' + str(_frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
-                    
+                if (scale_reading == 'N.A'):
+                    errwriter.writerow(['Warning', 'Scale Reading Not Found', 'Request User Validation', 'Please '
+                                                                                                         'check '
+                                                                                                         'frame ' +
+                                        str(_frame_index) + '.jpg in /images/' + _video_name + '/scale/'])
+                    error_log = "**Warning: 'Scale Reading Not Found** \n\n Requesting user validation. \n\n Please " \
+                                "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + "/scale/ "
+                    show_error_log(error_log)
+                    # st.sidebar.warning("**Warning: 'Scale Reading Not Found** \n\n"
+                    #                    "Requesting user validation. \n\n"
+                    #                    "Please check image frame " + str(_frame_index)
+                    #                    + ".jpg in /images/" + _video_name + "/scale/")
+
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
                     # create the csv writer
@@ -285,10 +345,13 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
             # View Video
             view_video_output = ViewVideo(fish_coords, fish_center_coords, id_coords, scale_coords, _video_name,
-                                            img)
+                                          img)
 
             # For streamlit to display video
             video_processing_line_break.markdown('***')
+            video_process_warning.warning(
+                "**Please do not close the tab or explore the website's other pages when the video is processing!** \n"
+                "\n **But feel free to use your browser or other applications while it runs in the background.**")
             video_processing_title.info('**Video currently processing:** ' + _video_name)
             video_processing_window.image(view_video_output, channels='BGR', use_column_width=True)
 
@@ -311,9 +374,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             else:
                 progress_bar.progress(current_percent)
 
-            #TODO: Maybe can combine the lenghts of the videos to calculate the total percentage and estimated time for processing.
-
             seconds_left -= 1
+            minutes_left = seconds_left / 60
             metric_percent = str(round(current_percent)) + '%'
             mins_shown = round(seconds_left//60)
             seconds_shown = str(seconds_left - (mins_shown*60))
@@ -342,12 +404,21 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
         cap.release()
         cv2.destroyAllWindows()
+        video_processing_window.empty()
+        video_process_warning.empty()
+        video_processing_title.empty()
+        progress_bar.empty()
+        metrics.empty()
+        fish_selected.empty()
+
+        # col1, col2, col3
 
     metric_percent = 0  # Percentage of processing competition
     metric_time_left = 0  # Estimated time left for processing
     metric_fishes = 0  # Number of fish found in the video
 
     return True
+
 
 def ViewVideo(fish, fish_center, id, scale, name, img):
     """Additional: to see the video while it is processing"""
@@ -379,6 +450,11 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
 
     except:
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])
+        error_log = "**Warning: 'View Video Processing Error** \n\n" "Failed to View Videos. \n\n" "Request technical support."
+        show_error_log(error_log)
+        # st.sidebar.error("**Warning: 'View Video Processing Error** \n\n"
+        #                    "Failed to View Videos. \n\n"
+        #                    "Request technical support.")
 
 
 def MoveVideo(video):
@@ -394,6 +470,12 @@ def MoveVideo(video):
     except:
         errwriter.writerow(['Warning', 'Same Video Re-Processed', 'Deliberate User Action',
                             'Processing same videos will use up unnecessary computer resources'])
+        error_log = "**Warning: 'Video(s) Has Already been Processed** \n\n" "Requesting user action to either delete " \
+                    "or move video(s). \n\n" "Processing same videos will use up unnecessary computer resources. "
+        show_error_log(error_log)
+        # st.sidebar.warning("**Warning: 'Video(s) Has Already been Processed** \n\n"
+        #                    "Requesting user action to either delete or move video(s). \n\n"
+        #                    "Processing same videos will use up unnecessary computer resources.")
 
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
@@ -406,6 +488,22 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         cv2.imwrite('./images/' + _video_name + '/' + _type + '/' + str(_frame_index) + '.jpg', actual_frame)
     except:
         errwriter.writerow(['Serious', 'SaveImages Function Error', 'Fail to Save Images', 'Request technical support'])
+        error_log = "**Error: 'Issue Saving Images to disk** \n\n" "Failed to Save Images. \n\n" "Request technical " \
+                    "support. "
+        show_error_log(error_log)
+        # st.sidebar.error("**Error: 'Issue Saving Images to disk** \n\n"
+        #                  "Failed to Save Images. \n\n"
+        #                  "Request technical support.")
+
+# Get video length in seconds for progress bar
+def get_video_length(filename):
+    vidcapture = cv2.VideoCapture(filename)
+    fps = vidcapture.get(cv2.CAP_PROP_FPS)
+    totalNoFrames = vidcapture.get(cv2.CAP_PROP_FRAME_COUNT)
+    durationInSeconds = int(float(totalNoFrames) / float(fps))
+    # print("durationInSeconds: ", durationInSeconds, "s")
+    return durationInSeconds
+
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
@@ -432,3 +530,25 @@ def count_frames(path, override=False):
     video.release()
     # return the total number of frames in the video
     return total
+
+
+def show_fish_options():
+    fish_species_radio_button = st.radio(
+        "Which fish species does the video(s) have?",
+        ('Default/Barramundi', 'Baby Red Snapper'),
+        help='- If video processing has already started:\n'
+             '- **Please do not click the options again.**\n'
+             '- **It will stop the processing!**')
+    fish_selected = st.empty()
+
+    if fish_species_radio_button == 'Baby Red Snapper':
+        fish_selected.write("Baby Red Snapper selected.")
+        return 'Baby Red Snapper'
+
+    else:
+        fish_selected.write('Default/Barramundi selected.')
+        return 'Default'
+
+
+def show_error_log(error_log):
+    return st.sidebar.warning(error_log)
