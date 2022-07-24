@@ -121,12 +121,10 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
         _fish_id, _id_id, _scale_id = 0, 0, 0
         # Class for video capturing from video files, image sequences or cameras
         cap = cv2.VideoCapture(constant.videos_location + _video_name)
-        # Get the video length
-        video_length = get_video_length(constant.videos_location + _video_name)
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
         # video length in seconds
-        seconds_left = video_length
+        seconds_left = round(num_of_frames/30)
         # initalize error container
         video_open_error = st.empty()
 
@@ -473,16 +471,18 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
             seconds_left -= 1
             minutes_left = seconds_left / 60
             metric_percent = str(round(current_percent)) + '%'
-            metric_time_left = str(round(minutes_left, 2)) + ' mins'
+            mins_shown = round(seconds_left//60)
+            seconds_shown = str(seconds_left - (mins_shown*60))
+            metric_time_left = str(mins_shown) + ' mins ' + seconds_shown + ' s'
             metric_fishes = str(wells_id) + '🐠'
 
             if current_percent >= 100:
                 metric_percent = '100%'
-                metric_time_left = '0 mins'
+                metric_time_left = 'Done'
 
             if seconds_left <= 0:
                 metric_percent = '100%'
-                metric_time_left = '0 mins'
+                metric_time_left = 'Done'
 
             with metrics.container():
                 col1, col2, col3 = st.columns(3)
@@ -554,12 +554,15 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
+        shutil.rmtree('completed_videos/' + video + '/')
         # check if the directory exists
         if not os.path.exists('completed_videos/' + video):
             os.makedirs('completed_videos/' + video)
             shutil.move("./videos/" + video, 'completed_videos/' + video, copy_function=shutil.copy2)
+        else:
+            os.remove('videos/' + video)
     except:
-        errwriter.writerow(['Warning', 'Video Reprocessed', 'Deliberate User Action',
+        errwriter.writerow(['Warning', 'Same Video Re-Processed', 'Deliberate User Action',
                             'Processing same videos will use up unnecessary computer resources'])
         error_log = "**Warning: 'Video(s) Has Already been Processed** \n\n" "Requesting user action to either delete " \
                     "or move video(s). \n\n" "Processing same videos will use up unnecessary computer resources. "

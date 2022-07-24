@@ -19,6 +19,7 @@ st.sidebar.info("This page allows visualize the data from your csv files")
 csv_path = "results"
 container1 = st.empty()
 file_list = os.listdir(csv_path)
+#print(file_list)
 
 instruction_guide = st.expander("Expand or Collapse", True)
 instruction_guide.write('###')  # Line break

@@ -11,6 +11,7 @@ from st_aggrid import AgGrid
 from itertools import count
 import os.path
 
+
 # Page Configs
 st.set_page_config(
     page_title="Process Video",
@@ -155,6 +156,10 @@ else:
         video_number = f"""<p><b>Number of unprocessed videos:</b> {str(len(video_files))}</p>"""
         num_of_unprocessed_videos = part2.markdown(video_number, unsafe_allow_html=True)
         st.session_state.bool_have_videos = True
+
+        for video_name in video_files:
+            __file__ = f"videos\\{video_name}"
+            part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
         for v in video_files:
