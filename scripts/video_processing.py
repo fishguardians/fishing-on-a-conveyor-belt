@@ -56,7 +56,7 @@ def GetVideoNames(path):
             with open('output/' + file + '/dimensions.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 # write the header for dimension
-                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
+                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
             with open('output/' + file + '/ids.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 # write the header for id
@@ -196,7 +196,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                 x, y, w, h = box
 
                 # check if 2 objects are in the image [id tag, fish]
-                if class_ids[index] == 0:  # Detected that id tag is found
+                if class_ids[index] == 1:  # Detected that id tag is found
                     id_coords = box
                     _id_id += 1
 
@@ -233,7 +233,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                         writer = csv.writer(f)
                         # ['#', 'Fish#', 'Frame', 'Value']
                         writer.writerow([_id_id, wells_id, _frame_index, words])
-                elif class_ids[index] == 1:  # Detected the barramundi fish
+                elif class_ids[index] == 0:  # Detected the barramundi fish
                     fish_coords = box
                     # center point of the fish
                     cx = int((x + x + w) / 2)
@@ -297,7 +297,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                             'Length' - length of the fish (From head to tail)
                             'Depth' - the length of the depth of the fish (Widest point of the fish)
                             """
-                            # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
+                            # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
                             writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                         SaveImages(cropped_img, _frame_index, _video_name, 'fish')
