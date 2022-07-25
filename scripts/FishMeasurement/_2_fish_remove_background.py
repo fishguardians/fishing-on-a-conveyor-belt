@@ -91,7 +91,6 @@ def remove_background(cropBelt_output_img, fish_species):
         # Removes contours smaller than the reference dot
         if cnt_area < 0.2 * avg_area:
             cleaned_image[y:y + h, x:x + w] = 0
-    # Show Bounding boxes overlay on the original image
     # cv2.imshow('cleanup.png', erode_dilate)
 
     # TODO: Remove later, for debugging

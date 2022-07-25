@@ -25,6 +25,10 @@ def fish_measurement(image, fish_species):
     og_img = image.copy()
     og_img = cv2.resize(og_img, None, fx=0.4, fy=0.4)
 
+    # print('')
+    # print('')
+    # print('New fish coming in ')
+
     # 1. Run cropBelt function to black out all but the belt in the image
     cropBelt_output_img = cropBelt.crop_belt(image)
 

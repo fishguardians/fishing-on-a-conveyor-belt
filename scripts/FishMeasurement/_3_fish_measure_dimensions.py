@@ -50,11 +50,11 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         area = cv2.contourArea(c)
         # print('objects contour area: ', area)
 
-        # Contour area of the reference dot
-        # Anything smaller will be ignored for measurement
-        if cv2.contourArea(c) < 500:
-            count += 1
-            continue
+        # # Contour area of the reference dot
+        # # Anything smaller will be ignored for measurement
+        # if cv2.contourArea(c) < 500:
+        #     count += 1
+        #     continue
 
         # Count number of contours found to
         count += 1
@@ -70,11 +70,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
         # Source video frame to layover the dimensions
         orig = og_img
-        # orig = cv2.resize(og_img, None, fx=0.4, fy=0.4)
-        # cv2.imshow('orig', orig)
 
         cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
-        # cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)qq
 
         # loop over the original points and draw them
         for (x, y) in box:
@@ -130,12 +127,9 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
-        # Output length and depth in 3 decimal places
-        length = round(dimA_CM, 3)
-        depth = round(dimB_CM, 3)
 
         # Shows the source image with bounding boxes with dimensions overlay
-        # cv2.imshow("Fish Dimensions", orig)
+        # cv2.imshow("Fish Dimensions with bounding boxes", orig)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
@@ -152,7 +146,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         if count == len(cnts):
             # print('length of object: ', length)
             # print('width of object: ', depth)
-            # print('_________________________________________________________________________')
 
             # Sort lengths by largest to smallest. Largest should always be a fish.
             sorted_object_list = sorted(list_of_objects_length, key=lambda d: d['length'], reverse=True)
