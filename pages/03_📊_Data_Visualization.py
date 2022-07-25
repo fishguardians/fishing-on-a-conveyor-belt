@@ -4,12 +4,33 @@ import pandas as pd
 import statistics as stats
 import numpy as np
 import plotly_express as px
+from sys import platform
 
 global df
+
+# Page Configs
+st.set_page_config(
+    page_title="Data Visualization",
+    page_icon="🐠",
+)
+
 st.title("📊 Data Visualization 📊")
+st.sidebar.info("This page allows visualize the data from your csv files")
 csv_path = "results"
+container1 = st.empty()
 file_list = os.listdir(csv_path)
-print(file_list)
+#print(file_list)
+
+instruction_guide = st.expander("Expand or Collapse", True)
+instruction_guide.write('###')  # Line break
+instruction_guide.markdown("""
+        ### Page Guide:
+        1. Select the CSV file you would like to view from the dropdown menu. These are the data extracted from the processed videos. Or you can upload your own data\n
+        2. To print a page of the selected data spread, press **'Ctrl'** & **'P'** on your keyboard. (Remember to close the sidebar tab first).
+        3. You can also download the graph plots as an image file by hovering your mouse to the top of the graph and clicking on the camera icon.
+        ###
+        """)
+st.markdown("###")
 
 if len(file_list) == 0:
     st.error(""" Output CSV data folder is currently empty!""")
@@ -19,9 +40,12 @@ else:
         option = st.selectbox(
             'Which CSV file would you like to view?',
             file_list)
-
-        df = pd.read_csv(f"{csv_path}\\{option}")
-        st.write(df)
+        if platform == "win32" or platform == "win64":
+            df = pd.read_csv(f"{csv_path}\\{option}")
+            st.write(df)
+        elif platform == "darwin":
+            df = pd.read_csv(f"{csv_path}/{option}")
+            st.write(df)
     except:
         st.text("This file is not a CSV file!")
 
@@ -114,6 +138,7 @@ try:
 
     with col1:
         st.text(f"Number of Samples: {num_samples}")
+        st.markdown("###")
 
     with col3:
         st.subheader("Weight Stats(Kg)")
@@ -150,6 +175,7 @@ try:
         st.text(f"Standard Deviation: {depth_sd}")
         st.text(f"Variance: {depth_variance}")
         st.text(f"C.V: {depth_cv}")
+        st.markdown("###")
 
     chart_select = st.selectbox(label="Select the chart type",
                                 options=["Scatterplots", "Lineplots", "Histograms", "Boxplots"])
@@ -193,4 +219,4 @@ try:
     st.plotly_chart(plot)  # display the chart
 
 except:
-    print("")
+    st.text("Error : Unable to load stats and graphs!")
