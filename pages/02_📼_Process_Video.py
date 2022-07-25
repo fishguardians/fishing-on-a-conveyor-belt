@@ -117,7 +117,9 @@ if st.session_state.bool_process_clicked:
 
     if len(file_list) == 0:
         st.error("""- ERROR: 'Results CSV data folder is currently empty'
-                    \n - Please refresh the page and process some videos to see the video output data.""")
+                    \n - Please refresh the page and process some videos to see the video output data.
+                    \n - Or check the sidebar error log if something went wrong with processing the output data.
+                    """)
     # End of 4️⃣ Editing the CSV table output
 
 
@@ -254,7 +256,7 @@ else:
 
                 # Display the csv contents in table
                 df = pd.read_csv(f"{option}")
-                grid_return = AgGrid(df, editable=True, enable_enterprise_modules=True, exportDataAsCsv=True,
+                grid_return = AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
                                      getDataAsCsv=True)
                 new_df = grid_return['data']
                 file_name = (str(option[0: option.index(".")]) + '.csv')

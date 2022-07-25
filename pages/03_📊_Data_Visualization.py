@@ -86,6 +86,11 @@ try:
     weight_cv = cv(weight_list)
     weight_cv = "{:.3f}".format(weight_cv)
 
+    weight_Q1 = np.percentile(weight_list, 25, interpolation='midpoint')
+    weight_Q3 = np.percentile(weight_list, 75, interpolation='midpoint')
+    weight_iqr = weight_Q3 - weight_Q1
+    weight_iqr = "{:.3f}".format(weight_iqr)
+
     # variables for length stats
     length_mean = stats.mean(length_list)
     length_mean = "{:.3f}".format(length_mean)
@@ -110,6 +115,11 @@ try:
 
     length_cv = cv(length_list)
     length_cv = "{:.3f}".format(length_cv)
+
+    length_Q1 = np.percentile(length_list, 25, interpolation='midpoint')
+    length_Q3 = np.percentile(length_list, 75, interpolation='midpoint')
+    length_iqr = length_Q3 - length_Q1
+    length_iqr = "{:.3f}".format(length_iqr)
 
     # variables for depth stats
     depth_mean = stats.mean(depth_list)
@@ -136,6 +146,11 @@ try:
     depth_cv = cv(depth_list)
     depth_cv = "{:.3f}".format(depth_cv)
 
+    depth_Q1 = np.percentile(depth_list, 25, interpolation='midpoint')
+    depth_Q3 = np.percentile(depth_list, 75, interpolation='midpoint')
+    depth_iqr = depth_Q3 - depth_Q1
+    depth_iqr = "{:.3f}".format(depth_iqr)
+
     with col1:
         st.text(f"Number of Samples: {num_samples}")
         st.markdown("###")
@@ -151,6 +166,7 @@ try:
         st.text(f"Standard Deviation: {weight_sd}")
         st.text(f"Variance: {weight_variance}")
         st.text(f"C.V: {weight_cv}")
+        st.text(f"IQR: {weight_iqr}")
 
     with col4:
         st.subheader("Length Stats(cm)")
@@ -163,6 +179,7 @@ try:
         st.text(f"Standard Deviation: {length_sd}")
         st.text(f"Variance: {length_variance}")
         st.text(f"C.V: {length_cv}")
+        st.text(f"IQR: {length_iqr}")
 
     with col5:
         st.subheader("Depth Stats(cm)")
@@ -175,6 +192,7 @@ try:
         st.text(f"Standard Deviation: {depth_sd}")
         st.text(f"Variance: {depth_variance}")
         st.text(f"C.V: {depth_cv}")
+        st.text(f"IQRe: {depth_iqr}")
         st.markdown("###")
 
     chart_select = st.selectbox(label="Select the chart type",
