@@ -23,8 +23,8 @@ st.title('📼 Process Video 📼')  # Page Title
 st.sidebar.info("This page allows you to process the fish phenotyping conveyor belt video recordings")
 
 # Session State Initialization
-st.write('###')  # Line break
-st.write('🐛 For Debugging 🐛', st.session_state)  # Displays session states
+# st.write('###')  # Line break
+# st.write('🐛 For Debugging 🐛', st.session_state)  # Displays session states
 if 'bool_have_videos' not in st.session_state:  # Bool to state whether there are videos in folder
     st.session_state.bool_have_videos = False
 if 'bool_start_processing' not in st.session_state:  # Bool to state whether video processing has started
@@ -35,6 +35,8 @@ if 'bool_balloons' not in st.session_state:  # Bool to state whether video proce
     st.session_state.bool_balloons = False
 if 'bool_ video_processing_complete' not in st.session_state: # Bool to state whether video processing is completed
     st.session_state.video_processing_complete = False
+if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
+    st.session_state.persistent_error_log = []
 
 # Initialize variables
 video_files = video_processing.GetVideoNames(constant.videos_location)
@@ -47,10 +49,7 @@ part1 = st.empty()  # Quick start guide section
 part2 = st.empty()  # Processing videos from file location
 part3 = st.empty()  # After video processing
 
-# TODO: Add persistence in state for this function by using 'st.session_state.persistent_error_log'
-# Function to show error log
-# Append this into a streamlit state array to be printed again on 'part 4'
-error_log = video_processing.show_error_log
+# error_log = video_processing.show_error_log
 
 # Main Page Contents:
 # Start of 1️⃣ Quick start guide section
@@ -86,6 +85,10 @@ if st.session_state.bool_process_clicked:
     # preserve the info that you hit a button between runs
     st.session_state.bool_process_clicked = True
 
+    # Displays all the errors in error log
+    for error in st.session_state.persistent_error_log:
+        st.sidebar.warning(error)
+
     st.write('###')
     st.markdown('### :two: Processing video(s) from file location:')
     st.info('If you are seeing this, that means you have reached the end of processing the videos. \n'
@@ -100,23 +103,17 @@ if st.session_state.bool_process_clicked:
                 """)
     st.write('###')  # Line break
 
-    st.markdown("""
-                ### :four: Checking/Editing results:
-                1. You can edit any of the cells in the table by double clicking it. Feel free to make any changes before you export the table.
-                3. Or you can refer to the sidebar error log to see if the program might have warnings for images it would like you to double check.
-                """)
-    st.write('###')  # Line break
-
     # Create table on the GUI
     # os.chdir('./results')
     file_list = glob.glob('results/**.csv')
-    print('file_list: ', file_list)
+    # print('file_list: ', file_list)
 
     if len(file_list) == 0:
         st.error("""- ERROR: 'Results CSV data folder is currently empty'
-                    \n - Please refresh the page and process some videos to see the video output data.""")
+                    \n - Please refresh the page and process some videos to see the video output data.
+                    \n - Or check the sidebar error log if something went wrong with processing the output data.
+                    """)
     # End of 4️⃣ Editing the CSV table output
-
 
     else:
         try:
@@ -126,10 +123,11 @@ if st.session_state.bool_process_clicked:
 
             # Display the csv contents in table
             df = pd.read_csv(f"{option}")
-            csv = st_scripts.convert_df(df)
+            grid_return = AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+                                 getDataAsCsv=True)
+            new_df = grid_return['data']
             file_name = (str(option[0: option.index(".")]) + '.csv')
-            AgGrid(df)
-
+            csv = st_scripts.convert_df(new_df)
             # Show a download button to download the csv file
             st.download_button(
                 "Press to Download",
@@ -228,8 +226,9 @@ else:
         part3.markdown("""
             ### :three: After processing:
             1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
-            2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
-            3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
+            2. If there any changes that need to be made, you can edit directly from the table by double clicking the cells.
+            3. Or go over to the Data Visualization page to view graphs and charts with your newly processed data.
+            4. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
             """)
         part3.write('###')  # Line break
 
@@ -247,21 +246,15 @@ else:
                     'Which CSV file would you like to view?',
                     file_list)
 
+                # Display the csv contents in table
                 df = pd.read_csv(f"{option}")
-                csv = st_scripts.convert_df(df)
+                grid_return = AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+                                     getDataAsCsv=True)
+                new_df = grid_return['data']
                 file_name = (str(option[0: option.index(".")]) + '.csv')
-                AgGrid(df)
-
-                # TODO: Make the tables editable
-
-                # df = pd.read_csv(f"{option}")
-                # grid_return = AgGrid(df, editable=True)
-                # new_df = grid_return['data']
-                # AgGrid(new_df)
-                # csv = st_scripts.convert_df(new_df)
-                # file_name = (str(new_df) + '.csv')
-
-                part3.download_button(
+                csv = st_scripts.convert_df(new_df)
+                # Show a download button to download the csv file
+                st.download_button(
                     "Press to Download",
                     csv,
                     file_name,
@@ -270,5 +263,5 @@ else:
                 )
 
             except:
-                part3.warning("This file is not a CSV file!")
+                print("This file is not a CSV file!")
     # End of 3️⃣  After processing

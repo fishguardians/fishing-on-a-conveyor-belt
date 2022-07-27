@@ -17,22 +17,19 @@ import pytesseract
 import streamlit as st
 import time
 
+from scripts.text_recognition import text_recognition
+
 if (os.name == 'nt'):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
-from scripts.text_recognition import text_recognition
+from scripts.google_ocr import google_ocr
 from scripts.generate_csv import write_data_output
-from scripts.object_detection import ObjectDetection
 
 # open the file in the write mode
 errorfile = open('./errorlogs.txt', 'a', encoding='UTF8')
 errwriter = csv.writer(errorfile)
-
-# Streamlit session state for persistent data
-if 'persistent_error_log' not in st.session_state:  # List kept in statement for persistent error log
-    st.session_state.persistent_error_log = []
 
 
 def GetVideoNames(path):
@@ -60,7 +57,7 @@ def GetVideoNames(path):
             with open('output/' + file + '/dimensions.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 # write the header for dimension
-                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
+                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
             with open('output/' + file + '/ids.txt', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 # write the header for id
@@ -89,7 +86,7 @@ def GetVideoNames(path):
 def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
-    hypo_threshold = 90
+    hypo_threshold = 200
     # center points curr
     prev_center_pts = []
     # check if last 3 frames has a fish
@@ -168,9 +165,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
-            img = cv2.resize(img, None, fx=0.4, fy=0.4)
-
-            og_img = frame.copy()
 
             # Width & Height of img
             height, width, channels = img.shape
@@ -200,39 +194,34 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                 x, y, w, h = box
 
                 # check if 2 objects are in the image [id tag, fish]
-                if class_ids[index] == 0:  # Detected that id tag is found
+                if class_ids[index] == 1:  # Detected that id tag is found
                     id_coords = box
                     _id_id += 1
 
                     # Work with a copy of the smaller version of image
-                    id_image = img.copy()
+                    id_image = frame.copy()
                     # Give some padding to ensure values are read properly
                     if y - 10 < 0 or y + h + 10 > height or x - 10 < 0 or x + w + 10 > width:
                         id_image = id_image[y:y + h, x:x + w]
                     else:
                         id_image = id_image[y - 10:y + h + 10, x - 10:x + w + 10]
-
+                    
                     # Save for reference checking
                     SaveImages(id_image, _frame_index, _video_name, 'id')
 
                     # Call the id tag scripts
                     words = text_recognition(id_image)
+                    # words = google_ocr('./images/'+_video_name + '/id/' + str(_frame_index) + '.jpg')
 
-                    # Call the id tag scripts
-                    words = text_recognition(id_image)
-
-                    if len(words) < 7:
+                    if len(words) < 6 or len(words) > 6:
                         errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation', 'Please check '
-                                                                                                      'frame ' +
+                                                                                                    'frame ' +
                                             str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
-                        error_log = "**Warning: 'ID Tag Not Found'** \n\n Requesting user validation. \n\n Please " \
+                        error_log = "**Warning: 'ID Tag Not 6 characters'** \n\n Requesting user validation. \n\n Please " \
                                     "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + \
                                     "/id/ "
                         show_error_log(error_log)
-                        # st.sidebar.warning("**Warning: 'ID Tag Not Found'** \n\n"
-                        #                                     "Requesting user validation. \n\n"
-                        #                                     "Please check image frame " + str(_frame_index)
-                        #                                      + ".jpg in /images/" + _video_name + "/id/")
+                        st.session_state.persistent_error_log.append(error_log)
 
                     # open the file to write
                     with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -240,7 +229,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                         writer = csv.writer(f)
                         # ['#', 'Fish#', 'Frame', 'Value']
                         writer.writerow([_id_id, wells_id, _frame_index, words])
-                elif class_ids[index] == 1:  # Detected the barramundi fish
+                    
+                elif class_ids[index] == 0:  # Detected the barramundi fish
                     fish_coords = box
                     # center point of the fish
                     cx = int((x + x + w) / 2)
@@ -272,7 +262,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
 
                     # reset checker
                     else:
-                        hypo_threshold = 90  # Try to another fish that is closer
+                        hypo_threshold = 200  # Try to another fish that is closer
 
                     check_empty = 0
 
@@ -291,11 +281,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                                         "\n\n Please check image frame " + str(_frame_index) + ".jpg in /images/" + \
                                         _video_name + "/actual/"
                             show_error_log(error_log)
-
-                            # st.sidebar.warning("**Warning: 'Fish Could Not Be Measured** \n\n"
-                            #                    "Requesting user validation. \n\n"
-                            #                    "Please check image frame " + str(_frame_index)
-                            #                    + ".jpg in /images/" + _video_name + "/actual/")
+                            st.session_state.persistent_error_log.append(error_log)
 
                         with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                             writer = csv.writer(f)
@@ -308,7 +294,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                             'Length' - length of the fish (From head to tail)
                             'Depth' - the length of the depth of the fish (Widest point of the fish)
                             """
-                            # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth'])
+                            # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
                             writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                         SaveImages(cropped_img, _frame_index, _video_name, 'fish')
@@ -331,10 +317,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                     error_log = "**Warning: 'Scale Reading Not Found** \n\n Requesting user validation. \n\n Please " \
                                 "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + "/scale/ "
                     show_error_log(error_log)
-                    # st.sidebar.warning("**Warning: 'Scale Reading Not Found** \n\n"
-                    #                    "Requesting user validation. \n\n"
-                    #                    "Please check image frame " + str(_frame_index)
-                    #                    + ".jpg in /images/" + _video_name + "/scale/")
+                    st.session_state.persistent_error_log.append(error_log)
 
                 # open the file to write
                 with open('output/' + _video_name + '/weights.txt', 'a', encoding='UTF8') as f:
@@ -375,7 +358,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
                 progress_bar.progress(current_percent)
 
             seconds_left -= 1
-            minutes_left = seconds_left / 60
             metric_percent = str(round(current_percent)) + '%'
             mins_shown = round(seconds_left//60)
             seconds_shown = str(seconds_left - (mins_shown*60))
@@ -411,8 +393,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, fish_species):
         metrics.empty()
         fish_selected.empty()
 
-        # col1, col2, col3
-
     metric_percent = 0  # Percentage of processing competition
     metric_time_left = 0  # Estimated time left for processing
     metric_fishes = 0  # Number of fish found in the video
@@ -440,8 +420,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
                           constant.scale_color, 2)
         # show center position of image
         # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
-        cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
-        cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
+        # cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
+        # cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
         # display the window
         # cv2.imshow(name, main_frame)
@@ -452,11 +432,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         errwriter.writerow(['Serious', 'ViewVideo Function Error', 'Fail to View Videos', 'Request technical support'])
         error_log = "**Warning: 'View Video Processing Error** \n\n" "Failed to View Videos. \n\n" "Request technical support."
         show_error_log(error_log)
-        # st.sidebar.error("**Warning: 'View Video Processing Error** \n\n"
-        #                    "Failed to View Videos. \n\n"
-        #                    "Request technical support.")
-
-
+        st.session_state.persistent_error_log.append(error_log)
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
@@ -473,9 +449,7 @@ def MoveVideo(video):
         error_log = "**Warning: 'Video(s) Has Already been Processed** \n\n" "Requesting user action to either delete " \
                     "or move video(s). \n\n" "Processing same videos will use up unnecessary computer resources. "
         show_error_log(error_log)
-        # st.sidebar.warning("**Warning: 'Video(s) Has Already been Processed** \n\n"
-        #                    "Requesting user action to either delete or move video(s). \n\n"
-        #                    "Processing same videos will use up unnecessary computer resources.")
+        st.session_state.persistent_error_log.append(error_log)
 
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
@@ -491,19 +465,7 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         error_log = "**Error: 'Issue Saving Images to disk** \n\n" "Failed to Save Images. \n\n" "Request technical " \
                     "support. "
         show_error_log(error_log)
-        # st.sidebar.error("**Error: 'Issue Saving Images to disk** \n\n"
-        #                  "Failed to Save Images. \n\n"
-        #                  "Request technical support.")
-
-# Get video length in seconds for progress bar
-def get_video_length(filename):
-    vidcapture = cv2.VideoCapture(filename)
-    fps = vidcapture.get(cv2.CAP_PROP_FPS)
-    totalNoFrames = vidcapture.get(cv2.CAP_PROP_FRAME_COUNT)
-    durationInSeconds = int(float(totalNoFrames) / float(fps))
-    # print("durationInSeconds: ", durationInSeconds, "s")
-    return durationInSeconds
-
+        st.session_state.persistent_error_log.append(error_log)
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
