@@ -24,7 +24,6 @@ if (os.name == 'nt'):
 
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
-from scripts.google_ocr import google_ocr
 from scripts.generate_csv import write_data_output
 
 # open the file in the write mode
@@ -134,13 +133,12 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             print("Error opening video stream or file")
             errwriter.writerow(['Serious', 'Video Corrupted Error', 'Video Cannot Process',
                                 'Skipping Video, please check if video is correct'])
-            video_open_error = st.sidebar.error("**Error: 'Video Corrupted Error'** \n\n"
+            st.sidebar.error("**Error: 'Video Corrupted Error'** \n\n"
                                                 "Video cant be processed and will be skipped. \n\n"
-                                                "please check if video is not corrupted.")
-            check_error_log.sidebar.error("Please see 'errorlogs.txt' in the program's directory")
+                                                "Please check if video is not corrupted.")
+            st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
 
         while (cap.isOpened()):
-            video_open_error.empty()
             check_error_log.empty()
             ret, frame = cap.read()
 
@@ -156,16 +154,13 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 except:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error', 'Fail to Create CSV',
                                         'Skipping Video, please check if data is inside'])
-                    csv_output_error = st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
+                    st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
                                                         "Failed to Create CSV. Skipping Video. \n\n"
-                                                        "Please check if data is inside.")
-                    st.sidebar.error("Please see 'errorlogs.txt' in the program's directory")
+                                                        "Please check if csv file is inside results folder.")
+                    st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
                 break
-
-            # remove error once fixed
-            csv_output_error.empty()
 
             # Loading image
             img = frame.copy()  # 1080 1920 original image
@@ -221,9 +216,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                         errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation', 'Please check '
                                                                                                     'frame ' +
                                             str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
-                        error_log = "**Warning: 'ID Tag Not 6 characters'** \n\n Requesting user validation. \n\n Please " \
-                                    "check image frame " + str(_frame_index) + ".jpg in /images/" + _video_name + \
-                                    "/id/ "
 
                     # open the file to write
                     with open('output/' + _video_name + '/ids.txt', 'a', encoding='UTF8') as f:
@@ -426,7 +418,7 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         error_log = "**Warning: 'View Video Processing Error** \n\n" "Failed to View Videos. \n\n" "Request technical support."
         show_error_log(error_log)
         st.session_state.persistent_error_log.append(error_log)
-        st.sidebar.error("Please see 'errorlogs.txt' in the program's directory")
+        st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
@@ -455,7 +447,7 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
                     "support. "
         show_error_log(error_log)
         st.session_state.persistent_error_log.append(error_log)
-        st.sidebar.error("Please see 'errorlogs.txt' in the program's directory")
+        st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):

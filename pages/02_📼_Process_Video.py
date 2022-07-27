@@ -97,7 +97,7 @@ if st.session_state.bool_process_clicked:
                 ### :three: After processing:
                 1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
                 2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
-                3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
+                3. Lastly if you would like to process more videos, please **refresh** the page or hit the **'F5'** key to restart the application.
                 """)
     st.write('###')  # Line break
 

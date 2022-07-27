@@ -47,7 +47,7 @@ def crop_belt(image):
     # Add black border in the left of belt (5% width of the belt area)
     add_border_l = cv2.rectangle(image, (x, y), (int(x + width * 0.05), y + height), (0, 0, 0), -1)
     end_x = int(x + width)
-    start_x = int(end_x - width * 0.03)
+    start_x = int(end_x - width * 0.035)
     add_border_r = cv2.rectangle(add_border_l, (start_x, y), (end_x, y + height), (0, 0, 0), -1)
     # Fill left side of belt background with colour black
     colored_left = cv2.rectangle(add_border_r, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
