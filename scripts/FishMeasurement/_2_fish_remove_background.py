@@ -21,7 +21,7 @@ Step 2 for fish length image processing
 # that affects the contour processing
 """
 
-def remove_background(cropBelt_output_img, fish_species):
+def remove_background(cropBelt_output_img):
 
     image = cropBelt_output_img.copy()
 
@@ -30,14 +30,14 @@ def remove_background(cropBelt_output_img, fish_species):
     # and threshold based on the species of fish on the conveyor belt
     # print('fish_species',fish_species)
 
-    if fish_species == 'Baby Red Snapper':
-        # print('Baby Red Snapper')
-        Lower_hsv = np.array([20, 170, 100])
-        Upper_hsv = np.array([30, 255, 255])
-    else:
+    # if fish_species == 'Baby Red Snapper':
+    #     # print('Baby Red Snapper')
+    #     Lower_hsv = np.array([20, 170, 100])
+    #     Upper_hsv = np.array([30, 255, 255])
+    # else:
         # print('Default')
-        Lower_hsv = np.array([20, 70, 100])
-        Upper_hsv = np.array([30, 255, 255])
+    Lower_hsv = np.array([20, 70, 100])
+    Upper_hsv = np.array([30, 255, 255])
 
     # creating the mask
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
