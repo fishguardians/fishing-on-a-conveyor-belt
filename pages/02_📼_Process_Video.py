@@ -103,13 +103,6 @@ if st.session_state.bool_process_clicked:
                 """)
     st.write('###')  # Line break
 
-    st.markdown("""
-                ### :four: Checking/Editing results:
-                1. You can edit any of the cells in the table by double clicking it. Feel free to make any changes before you export the table.
-                3. Or you can refer to the sidebar error log to see if the program might have warnings for images it would like you to double check.
-                """)
-    st.write('###')  # Line break
-
     # Create table on the GUI
     # os.chdir('./results')
     file_list = glob.glob('results/**.csv')
@@ -122,7 +115,6 @@ if st.session_state.bool_process_clicked:
                     """)
     # End of 4️⃣ Editing the CSV table output
 
-
     else:
         try:
             option = st.selectbox(
@@ -131,7 +123,7 @@ if st.session_state.bool_process_clicked:
 
             # Display the csv contents in table
             df = pd.read_csv(f"{option}")
-            grid_return = AgGrid(df, editable=True, enable_enterprise_modules=True, exportDataAsCsv=True,
+            grid_return = AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
                                  getDataAsCsv=True)
             new_df = grid_return['data']
             file_name = (str(option[0: option.index(".")]) + '.csv')
@@ -269,8 +261,6 @@ else:
                     "text/csv",
                     key='download-csv'
                 )
-
-                st.button('Edit CSV Mode')
 
             except:
                 print("This file is not a CSV file!")

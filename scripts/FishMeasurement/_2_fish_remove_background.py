@@ -32,7 +32,7 @@ def remove_background(cropBelt_output_img, fish_species):
 
     if fish_species == 'Baby Red Snapper':
         # print('Baby Red Snapper')
-        Lower_hsv = np.array([23, 170, 100])
+        Lower_hsv = np.array([20, 170, 100])
         Upper_hsv = np.array([30, 255, 255])
     else:
         # print('Default')
@@ -93,7 +93,6 @@ def remove_background(cropBelt_output_img, fish_species):
             cleaned_image[y:y + h, x:x + w] = 0
     # cv2.imshow('cleanup.png', erode_dilate)
 
-    # TODO: Remove later, for debugging
     # find contours in the edge map
     cnts = cv2.findContours(cleaned_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
