@@ -13,11 +13,9 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = './googleaccount.json'
 # Instantiates a client
 client = vision.ImageAnnotatorClient()
 
-testCase = ['181.jpg','481.jpg','781.jpg','1051.jpg','1441.jpg','1621.jpg','2041.jpg','2491.jpg','2641.jpg']
+def google_ocr(image_path):
 
-for names in testCase:
-    # The name of the image file to annotate
-    file_name = os.path.abspath('./images/20June_fishyy.mp4/id/'+ names)
+    file_name = os.path.abspath(image_path)
 
     # Loads the image into memory
     with io.open(file_name, 'rb') as image_file:
@@ -29,10 +27,13 @@ for names in testCase:
     annotations = text_detection_response.text_annotations
     if len(annotations) > 0:
         text = annotations[0].description
+        text=text.replace(" ", "")
+        text=text.replace("\n", "")
     else:
         text = ""
     # print("Extracted text {} from image ({} chars).".format(text, len(text)))
-    print(text.replace(" ", ""))
+
+    return text
 
 
 # # Performs label detection on the image file

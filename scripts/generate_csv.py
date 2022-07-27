@@ -64,7 +64,7 @@ def write_data_output(video_name):
             errwriter.writerow(['Serious', 'Error with Recording Fish Center', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for images.txt file'])
             return False
-
+    
     for (index, lines) in enumerate(ids_array):
         try:
             if index == 0:
@@ -76,14 +76,13 @@ def write_data_output(video_name):
 
                 for items in overall_data:
                     if line[1] in items.keys():
-                        if len(line[3].strip()) > 6 and len(line[3].strip()) < 10:
-                            items[line[1]]['id'].append(line[3].strip())
+                        items[line[1]]['id'].append(line[3].strip())
         except:
             print('Error: Ids not recorded')
             errwriter.writerow(['Serious', 'Error with Recording ID Tags', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for ids.txt file'])
             return False
-
+    
     for (index, lines) in enumerate(weights_array):
         try:
             if index == 0:
@@ -101,7 +100,7 @@ def write_data_output(video_name):
             errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for weights.txt file'])
             return False
-
+    
     for (index, lines) in enumerate(dimensions_array):
         try:
             if index == 0:
@@ -120,7 +119,7 @@ def write_data_output(video_name):
             errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for dimensions.txt file'])
             return False
-
+    
     for items in overall_data:
         fish = 0
         frame = 0
@@ -161,9 +160,9 @@ def write_data_output(video_name):
                         objects.remove('0.0')
                     results = sorted(objects, key=lambda x: float(x))
                     breadth = results[math.floor(len(results) / 2)]
-
+        
         write_data.append([fish, idtag, weight, length, breadth])
-
+    
     write_data = check_iqr_data(write_data)
 
     print('Generating CSV file for video: ' + video_name)
@@ -197,22 +196,25 @@ def check_iqr_data(array):
     iqr_depth_q3 = np.percentile(depths, 75)
 
     for fish in array:
+        weight_iqr_error = " "
+        length_iqr_error = " "
+        depth_iqr_error = " "
         if float(fish[2]) < iqr_weight_q1:
             weight_iqr_error = str(round(float(fish[2]) - iqr_weight_q1,3))
-            fish.append(weight_iqr_error)
         if float(fish[2]) > iqr_weight_q3:
             weight_iqr_error =  "+" + str(round(float(fish[2]) - iqr_weight_q3,3))
-            fish.append(weight_iqr_error)
+        fish.append(weight_iqr_error)
+
         if float(fish[3]) < iqr_length_q1:
             length_iqr_error =  str(round(float(fish[3]) - iqr_length_q1,3))
-            fish.append(length_iqr_error)
         if float(fish[3]) > iqr_length_q3:
             length_iqr_error =  "+" + str(round(float(fish[3]) - iqr_length_q3,3))
-            fish.append(length_iqr_error)
+        fish.append(length_iqr_error)
+        
         if float(fish[4]) < iqr_depth_q1:
             depth_iqr_error =  str(round(float(fish[4]) - iqr_depth_q1,3))
-            fish.append(depth_iqr_error)
         if float(fish[4]) > iqr_depth_q3:
             depth_iqr_error =  "+" + str(round(float(fish[4]) - iqr_depth_q3,3))
-            fish.append(depth_iqr_error)
+        fish.append(depth_iqr_error)
+        
     return array

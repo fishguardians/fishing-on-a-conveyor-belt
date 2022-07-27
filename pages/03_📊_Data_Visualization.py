@@ -86,8 +86,8 @@ try:
     weight_cv = cv(weight_list)
     weight_cv = "{:.3f}".format(weight_cv)
 
-    weight_Q1 = np.percentile(weight_list, 25, interpolation='midpoint')
-    weight_Q3 = np.percentile(weight_list, 75, interpolation='midpoint')
+    weight_Q1 = np.percentile(weight_list, 25, method='midpoint')
+    weight_Q3 = np.percentile(weight_list, 75, method='midpoint')
     weight_iqr = weight_Q3 - weight_Q1
     weight_iqr = "{:.3f}".format(weight_iqr)
 
@@ -116,8 +116,8 @@ try:
     length_cv = cv(length_list)
     length_cv = "{:.3f}".format(length_cv)
 
-    length_Q1 = np.percentile(length_list, 25, interpolation='midpoint')
-    length_Q3 = np.percentile(length_list, 75, interpolation='midpoint')
+    length_Q1 = np.percentile(length_list, 25, method='midpoint')
+    length_Q3 = np.percentile(length_list, 75, method='midpoint')
     length_iqr = length_Q3 - length_Q1
     length_iqr = "{:.3f}".format(length_iqr)
 
@@ -146,8 +146,8 @@ try:
     depth_cv = cv(depth_list)
     depth_cv = "{:.3f}".format(depth_cv)
 
-    depth_Q1 = np.percentile(depth_list, 25, interpolation='midpoint')
-    depth_Q3 = np.percentile(depth_list, 75, interpolation='midpoint')
+    depth_Q1 = np.percentile(depth_list, 25, method='midpoint')
+    depth_Q3 = np.percentile(depth_list, 75, method='midpoint')
     depth_iqr = depth_Q3 - depth_Q1
     depth_iqr = "{:.3f}".format(depth_iqr)
 
