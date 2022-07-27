@@ -26,7 +26,7 @@ def digit_recognition(image,angle=5.0):
     roi_color = get_roi(image)
     roi_grey = cv2.cvtColor(roi_color, cv2.COLOR_BGR2GRAY) #greyscale image 
     roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
-    roi = cv2.resize(roi_grey, None,None,fx=0.7,fy=0.7) #resize image
+    roi = cv2.resize(roi_grey, None,None,fx=1.0,fy=1.0) #resize image
     roi= imutils.rotate(roi, angle)
     # cv2.imshow("first roi", roi)
     # cv2.waitKey(0)
