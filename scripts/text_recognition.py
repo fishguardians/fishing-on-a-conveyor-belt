@@ -13,8 +13,14 @@ import constant
 def text_recognition(image):
     # Get the text from the fish id image
 
+    # Super resolution for image
+    sr = cv2.dnn_superres.DnnSuperResImpl_create()
+    path = "dnn_model/LapSRN_x8.pb"
+    sr.readModel(path)
+    sr.setModel("lapsrn",8)
+    image = sr.upsample(image)
+
     #increase size to read image better
-    image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # convert from GBR to RGB
     image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)  # change orientation
     

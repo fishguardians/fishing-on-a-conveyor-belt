@@ -31,7 +31,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     # find contours in the edge map
     cnts = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
-    # print("Total number of contours are: ", len(cnts))
 
     # sort the contours from left-to-right and initialize the
     # 'pixels per metric' calibration variable
@@ -45,16 +44,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
     list_of_objects_length = list()
 
     for c in cnts:
-
-        # Get the contour area of the current object measured
-        area = cv2.contourArea(c)
-        # print('objects contour area: ', area)
-
-        # # Contour area of the reference dot
-        # # Anything smaller will be ignored for measurement
-        # if cv2.contourArea(c) < 500:
-        #     count += 1
-        #     continue
 
         # Count number of contours found to
         count += 1
@@ -127,7 +116,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         cv2.putText(orig, "{:.2f}cm".format(dimB_CM), (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
                     (255, 255, 255), 2)
 
-
         # Shows the source image with bounding boxes with dimensions overlay
         # cv2.imshow("Fish Dimensions with bounding boxes", orig)
         # cv2.waitKey(0)
@@ -139,13 +127,10 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
             "depth": dimB_CM}
 
         list_of_objects_length.append(object_length_dict)
-        # print("")
-        # print('list_of_objects_length: ', list_of_objects_length)
-        # print('Current count: ', count)
 
         if count == len(cnts):
-            # print('length of object: ', length)
-            # print('width of object: ', depth)
+            # print('length of object: ', dimA_CM)
+            # print('width of object: ', dimB_CM)
 
             # Sort lengths by largest to smallest. Largest should always be a fish.
             sorted_object_list = sorted(list_of_objects_length, key=lambda d: d['length'], reverse=True)
@@ -154,6 +139,8 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
             fish_length = round(fish_dimensions_dict["length"], 3)
             fish_depth = round(fish_dimensions_dict["depth"], 3)
+            # print('Fish length: ', fish_length)
+            # print('Fish depth: ', fish_depth)
             return fish_length, fish_depth
 
 

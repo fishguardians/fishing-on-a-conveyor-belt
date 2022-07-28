@@ -23,8 +23,6 @@ st.title('📼 Process Video 📼')  # Page Title
 st.sidebar.info("This page allows you to process the fish phenotyping conveyor belt video recordings")
 
 # Session State Initialization
-# st.write('###')  # Line break
-# st.write('🐛 For Debugging 🐛', st.session_state)  # Displays session states
 if 'bool_have_videos' not in st.session_state:  # Bool to state whether there are videos in folder
     st.session_state.bool_have_videos = False
 if 'bool_start_processing' not in st.session_state:  # Bool to state whether video processing has started
@@ -99,15 +97,12 @@ if st.session_state.bool_process_clicked:
                 ### :three: After processing:
                 1. You can download the output CSV with the fish's ID, weight and dimensions (length and depth).
                 2. Or go over to the Data Visualization page to view graphs and charts with the newly processed data.
-                3. Lastly if you would like to process more videos, please refresh the page or hit **'F5'** key to restart the application.
+                3. Lastly if you would like to process more videos, please **refresh** the page or hit the **'F5'** key to restart the application.
                 """)
     st.write('###')  # Line break
 
     # Create table on the GUI
-    # os.chdir('./results')
     file_list = glob.glob('results/**.csv')
-    # print('file_list: ', file_list)
-
     if len(file_list) == 0:
         st.error("""- ERROR: 'Results CSV data folder is currently empty'
                     \n - Please refresh the page and process some videos to see the video output data.
@@ -163,25 +158,25 @@ else:
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
-        for v in video_files:
+        # for v in video_files:
 
-            __file__ = f"videos\\{v}"
-            video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
-            video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
-            part2.write('###')
-            part2.markdown(video_name, unsafe_allow_html=True)
-            v = './videos/' + v
-            video_file = open(v, 'rb')
-            video = video_file.read()
-            part2.video(video)
+        #     __file__ = f"videos\\{v}"
+        #     video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
+        #     video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
+        #     part2.write('###')
+        #     part2.markdown(video_name, unsafe_allow_html=True)
+        #     v = './videos/' + v
+        #     video_file = open(v, 'rb')
+        #     video = video_file.read()
+        #     part2.video(video)
 
-        fish_selected_warning = part2.empty()
-        fish_selected_warning.warning(
-                '- As young red snappers have transparent tails, the image processing model is slightly different.\n'
-                '- Hence, **if processing baby red snappers please select that option**.\n'
-                '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
-                )
-        fish_species_selected = video_processing.show_fish_options()
+        # fish_selected_warning = part2.empty()
+        # fish_selected_warning.warning(
+        #         '- As young red snappers have transparent tails, the image processing model is slightly different.\n'
+        #         '- Hence, **if processing baby red snappers please select that option**.\n'
+        #         '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
+        #         )
+        # fish_species_selected = video_processing.show_fish_options()
         start_button = st.empty()
 
         # Create start video processing button
@@ -193,14 +188,12 @@ else:
             # Remove all previous sections in the gui
             start_button.empty()
             num_of_unprocessed_videos.empty()
-            fish_selected_warning.empty()
 
             # Video processing begins
             od = ObjectDetection()  # Initialize Object Detection
             video_processing_note = part2.warning("**Video processing started...**")
-            # part2.write('###')  # Line break
             video_processing_note.empty()
-            st.session_state.video_processing_complete = video_processing.CaptureImagesOnVideo(video_files, od, fish_species_selected)
+            st.session_state.video_processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
     # End of 2️⃣ Processing videos from file location
 
 

@@ -8,11 +8,6 @@
 
 import numpy as np
 import cv2
-import os
-import constant
-import glob
-import sys
-from pathlib import Path
 
 """
 Step 1 for fish length image processing
@@ -49,11 +44,10 @@ def crop_belt(image):
 
     # Add black border to belt center to cover background leftovers
     # For any offset if the belt is film tilted or slightly diagonal
-    # cv2.rectangle(Parameters: image, start_point, end_point, color, thickness)
     # Add black border in the left of belt (5% width of the belt area)
     add_border_l = cv2.rectangle(image, (x, y), (int(x + width * 0.05), y + height), (0, 0, 0), -1)
     end_x = int(x + width)
-    start_x = int(end_x - width * 0.08)  # Change based on percentage 5% or more
+    start_x = int(end_x - width * 0.035)
     add_border_r = cv2.rectangle(add_border_l, (start_x, y), (end_x, y + height), (0, 0, 0), -1)
     # Fill left side of belt background with colour black
     colored_left = cv2.rectangle(add_border_r, (0, 0), (0 + x, y + height), (0, 0, 0), -1)
@@ -63,7 +57,7 @@ def crop_belt(image):
     cropBelt_output_img = colored_right
 
     # # Display the output result
-    # cv2.imshow("Remove Background Result", image.img)
+    # cv2.imshow("Remove Background Result", image)
     # cv2.waitKey(0) # For Debug
     # cv2.destroyAllWindows() # For Debug
 
