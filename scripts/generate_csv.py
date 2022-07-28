@@ -55,7 +55,7 @@ def write_data_output(video_name):
                 else:
                     fish_dict = {
                         line[1]: {'hypot': [line[3].strip()], 'frame': [line[2].strip()], 'id': [], 'weight': [],
-                                  'length': [], 'breadth': []}}
+                                  'length': [], 'depth': []}}
                     if fish_id != line[1]:
                         fish_id = line[1]
                         overall_data.append(fish_dict)
@@ -113,12 +113,13 @@ def write_data_output(video_name):
                 for items in overall_data:
                     if line[1] in items.keys():
                         items[line[1]]['length'].append(line[3].strip())
-                        items[line[1]]['breadth'].append(line[4].strip())
+                        items[line[1]]['depth'].append(line[4].strip())
         except:
             print('Error: Weights not recorded')
             errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for dimensions.txt file'])
             return False
+    
     
     for items in overall_data:
         fish = 0
@@ -127,7 +128,7 @@ def write_data_output(video_name):
         idtag = 0
         weight = 0.0
         length = ""
-        breadth = ""
+        depth = ""
         indexofhypot = 0
 
         for key, value in items.items():
@@ -139,30 +140,28 @@ def write_data_output(video_name):
                 if k == 'frame':
                     frame = objects[indexofhypot]
                 if k == 'id':
+                    if '' in objects:
+                        objects.remove('')
                     # sorting on basis of frequency of elements, mode
                     result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
                     idtag = result[0]
                 if k == 'weight':
                     # get median of occurrences
-                    if 'N.A' in objects:
-                        objects.remove('N.A')
+                    objects = list(map(lambda x: x.replace('N.A', '0.0'), objects))
                     results = sorted(objects, key=lambda x: float(x))
                     weight = results[math.floor(len(results) / 2)]
                 if k == 'length':
                     # get median of occurrences
-                    if '0.0' in objects:
-                        objects.remove('0.0')
                     results = sorted(objects, key=lambda x: float(x))
                     length = results[math.floor(len(results) / 2)]
-                if k == 'breadth':
+                if k == 'depth':
                     # get median of occurrences
-                    if '0.0' in objects:
-                        objects.remove('0.0')
                     results = sorted(objects, key=lambda x: float(x))
-                    breadth = results[math.floor(len(results) / 2)]
+                    depth = results[math.floor(len(results) / 2)]
         
-        write_data.append([fish, idtag, weight, length, breadth])
-    
+        # add the calculated value into the data
+        write_data.append([fish, idtag, weight, length, depth])
+    # add iqr of the results
     write_data = check_iqr_data(write_data)
 
     print('Generating CSV file for video: ' + video_name)
@@ -203,18 +202,18 @@ def check_iqr_data(array):
             weight_iqr_error = str(round(float(fish[2]) - iqr_weight_q1,3))
         if float(fish[2]) > iqr_weight_q3:
             weight_iqr_error =  "+" + str(round(float(fish[2]) - iqr_weight_q3,3))
-        fish.append(weight_iqr_error)
 
         if float(fish[3]) < iqr_length_q1:
             length_iqr_error =  str(round(float(fish[3]) - iqr_length_q1,3))
         if float(fish[3]) > iqr_length_q3:
             length_iqr_error =  "+" + str(round(float(fish[3]) - iqr_length_q3,3))
-        fish.append(length_iqr_error)
         
         if float(fish[4]) < iqr_depth_q1:
             depth_iqr_error =  str(round(float(fish[4]) - iqr_depth_q1,3))
         if float(fish[4]) > iqr_depth_q3:
             depth_iqr_error =  "+" + str(round(float(fish[4]) - iqr_depth_q3,3))
+        fish.append(weight_iqr_error)
+        fish.append(length_iqr_error)
         fish.append(depth_iqr_error)
         
     return array

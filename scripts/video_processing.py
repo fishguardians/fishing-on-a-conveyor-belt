@@ -49,22 +49,6 @@ def GetVideoNames(path):
             # check if the directory exists
             if not os.path.exists('output/' + file):
                 os.makedirs('output/' + file)
-            with open('output/' + file + '/images.txt', 'w', encoding='UTF8') as f:
-                writer = csv.writer(f)
-                # write the header for hypothenuse
-                writer.writerow(['#', 'Fish#', 'Frame', 'Hypothenuse'])
-            with open('output/' + file + '/dimensions.txt', 'w', encoding='UTF8') as f:
-                writer = csv.writer(f)
-                # write the header for dimension
-                writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
-            with open('output/' + file + '/ids.txt', 'w', encoding='UTF8') as f:
-                writer = csv.writer(f)
-                # write the header for id
-                writer.writerow(['#', 'Fish#', 'Frame', 'Value'])
-            with open('output/' + file + '/weights.txt', 'w', encoding='UTF8') as f:
-                writer = csv.writer(f)
-                # write the header for weight
-                writer.writerow(['#', 'Fish#', 'Frame', 'Weight'])
 
         # Add to list of videos to be processed
         if file_extension.lower() == '.mov':
@@ -128,6 +112,23 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         # initalize error container
         video_open_error = st.empty()
         check_error_log = st.empty()
+
+        with open('output/' + _video_name + '/images.txt', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            # write the header for hypothenuse
+            writer.writerow(['#', 'Fish#', 'Frame', 'Hypothenuse'])
+        with open('output/' + _video_name + '/dimensions.txt', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            # write the header for dimension
+            writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
+        with open('output/' + _video_name + '/ids.txt', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            # write the header for id
+            writer.writerow(['#', 'Fish#', 'Frame', 'Value'])
+        with open('output/' + _video_name + '/weights.txt', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            # write the header for weight
+            writer.writerow(['#', 'Fish#', 'Frame', 'Weight'])
 
         if (cap.isOpened() == False):
             print("Error opening video stream or file")
@@ -405,8 +406,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
                           constant.scale_color, 2)
         # show center position of image
         # cv2.circle(main_frame, (int(width/2), int(height/2)), 3, (0,0,255), -1)
-        # cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
-        # cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
+        cv2.line(main_frame, (0, int(height / 2)), (width, int(height / 2)), (0, 0, 255), 1)
+        cv2.line(main_frame, ((int(width / 2), 0)), (int(width / 2), height), (0, 0, 255), 1)
 
         # display the window
         # cv2.imshow(name, main_frame)
@@ -427,8 +428,6 @@ def MoveVideo(video):
         if not os.path.exists('completed_videos/' + video):
             os.makedirs('completed_videos/' + video)
             shutil.move("./videos/" + video, 'completed_videos/' + video, copy_function=shutil.copy2)
-        else:
-            os.remove('videos/' + video)
     except:
         errwriter.writerow(['Warning', 'Same Video Re-Processed', 'Deliberate User Action',
                             'Processing same videos will use up unnecessary computer resources'])

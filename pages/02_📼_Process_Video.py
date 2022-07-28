@@ -158,17 +158,25 @@ else:
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
         # For each video, display it and its name
-        for v in video_files:
+        # for v in video_files:
 
-            __file__ = f"videos\\{v}"
-            video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
-            video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
-            part2.write('###')
-            part2.markdown(video_name, unsafe_allow_html=True)
-            v = './videos/' + v
-            video_file = open(v, 'rb')
-            video = video_file.read()
-            part2.video(video)
+        #     __file__ = f"videos\\{v}"
+        #     video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
+        #     video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
+        #     part2.write('###')
+        #     part2.markdown(video_name, unsafe_allow_html=True)
+        #     v = './videos/' + v
+        #     video_file = open(v, 'rb')
+        #     video = video_file.read()
+        #     part2.video(video)
+
+        # fish_selected_warning = part2.empty()
+        # fish_selected_warning.warning(
+        #         '- As young red snappers have transparent tails, the image processing model is slightly different.\n'
+        #         '- Hence, **if processing baby red snappers please select that option**.\n'
+        #         '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
+        #         )
+        # fish_species_selected = video_processing.show_fish_options()
         start_button = st.empty()
 
         # Create start video processing button
