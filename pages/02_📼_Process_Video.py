@@ -57,9 +57,8 @@ part1.markdown("""
         ### :one: Quick start guide:
         1. Please prepare the videos on your computer.
         2. Transfer the videos into the 'videos' folder of the application.
-        3. Once your done, press the **'R'** key to refresh the app.
-        4. You can then watch the preview of the video(s).
-        5. Once you're ready to go hit the 'Start Processing Videos' button!
+        3. After transferring, press the **'R'** key to refresh the app.
+        4. Once you're ready to go hit the 'Start Processing Videos' button!
         """)
 
 # Checks for number of videos currently
@@ -157,26 +156,7 @@ else:
 
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
-        # For each video, display it and its name
-        # for v in video_files:
-
-        #     __file__ = f"videos\\{v}"
-        #     video_name = f"""<p><b>Video Title:</b> '{v}'</p>"""
-        #     video_date = f"""<p><b>Recorded on:</b> {time.ctime(os.path.getctime(__file__))}</p>"""
-        #     part2.write('###')
-        #     part2.markdown(video_name, unsafe_allow_html=True)
-        #     v = './videos/' + v
-        #     video_file = open(v, 'rb')
-        #     video = video_file.read()
-        #     part2.video(video)
-
-        # fish_selected_warning = part2.empty()
-        # fish_selected_warning.warning(
-        #         '- As young red snappers have transparent tails, the image processing model is slightly different.\n'
-        #         '- Hence, **if processing baby red snappers please select that option**.\n'
-        #         '- Please avoid mixing barramundi with baby snappers in the video queue for best results.'
-        #         )
-        # fish_species_selected = video_processing.show_fish_options()
+        part2.write('###')
         start_button = st.empty()
 
         # Create start video processing button
@@ -205,7 +185,7 @@ else:
         video_processing_warning.empty()
         now = datetime.now()
         current_time = now.strftime("%I:%M %p")
-        part3.success("Video processing complete at " + current_time)
+        part3.success("Video processing completed at " + current_time)
 
         # Bool to check if balloon gif that states video processed success has been shown
         if not st.session_state.bool_balloons:

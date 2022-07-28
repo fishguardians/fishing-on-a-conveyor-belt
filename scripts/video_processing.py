@@ -16,6 +16,7 @@ import constant
 import pytesseract
 import streamlit as st
 import time
+from datetime import datetime
 
 from scripts.text_recognition import text_recognition
 
@@ -135,7 +136,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             errwriter.writerow(['Serious', 'Video Corrupted Error', 'Video Cannot Process',
                                 'Skipping Video, please check if video is correct'])
             st.sidebar.error("**Error: 'Video Corrupted Error'** \n\n"
-                                                "Video cant be processed and will be skipped. \n\n"
+                                                "Video can't be processed and will be skipped. \n\n"
                                                 "Please check if video is not corrupted.")
             st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
 
@@ -363,6 +364,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 metric_percent = '100%'
                 metric_time_left = 'Done'
 
+
             with metrics.container():
                 col1, col2, col3 = st.columns(3)
                 col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent, help='Percentage of completion '
@@ -377,6 +379,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
         cap.release()
         cv2.destroyAllWindows()
+
         video_processing_window.empty()
         video_process_warning.empty()
         video_processing_title.empty()
@@ -384,9 +387,9 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         metrics.empty()
         fish_selected.empty()
 
-    metric_percent = 0  # Percentage of processing competition
-    metric_time_left = 0  # Estimated time left for processing
-    metric_fishes = 0  # Number of fish found in the video
+        now = datetime.now()
+        current_time = now.strftime("%I:%M %p")
+        st.sidebar.success(_video_name + " completed processing at " + current_time)
 
     return True
 
