@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
+import scripts.generate_csv as generate_csv
 
 # Page Configs
+from st_aggrid import AgGrid
+
 st.set_page_config(
     page_title="Merging CSV data",
     page_icon="🐠️",
@@ -23,6 +26,7 @@ instruction_guide.markdown("""
         """)
 st.markdown("###")
 
+new_df = pd.DataFrame()
 master_df = pd.DataFrame()  # the final output CSV after merge
 merged_file_name = ""
 
@@ -39,14 +43,26 @@ def convert_df(df):
 if uploaded_files is not None:
     for file in uploaded_files:
         df_list = pd.read_csv(file)
+        df_list = df_list.iloc[: , :-3]
         master_df = master_df.append(df_list)
+
+        new_list = master_df.values.tolist()
+        extra_list = []
+        for item_in_list in new_list:
+            extra_list.append([str(i) for i in item_in_list])
+
+        new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(iqr)", "length diff(iqr)", "depth diff(iqr)"])
         st.text(file.name)
-        st.write(df_list)
+        # st.dataframe(df_list)
+        AgGrid(df_list, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+               getDataAsCsv=True)
         merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
 
     st.text("Merged Data")
-    st.write(master_df)
-    merged_csv = convert_df(master_df)
+    # st.dataframe(new_df)
+    AgGrid(new_df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+           getDataAsCsv=True)
+    merged_csv = convert_df(new_df)
     st.download_button(
         "Download Merged CSV file",
         merged_csv,
