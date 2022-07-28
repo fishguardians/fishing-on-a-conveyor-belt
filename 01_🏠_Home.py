@@ -31,5 +31,19 @@ st.markdown(
     **👈 Select a demo from the sidebar** to see some explore what the app can do!
     \n
     **❌ Click the cross icon** on the top right of the sidebar to hide the sidebar.
-"""
-)
+""")
+
+st.markdown("***")
+
+st.markdown("""##### **Useful Folders in Program's directory:**\n
+\n **/completed_videos/** -> Where videos will be transfered to 
+after processing. A folder will be created under each video's name, where the video will reside.
+
+\n **/images/** -> Where video frames(images) output during processing are transferred to. Split into 3 parts, 'actual', 'fish' 
+and 'id'. 'actual' for the full video frame extracted. 
+'fish' for fish image being processed. And 'id' for the id tag being processed.
+
+\n **/results/** -> Where CSVs are output after video processing is completed.
+
+\n **/videos/** -> Where to transfer videos for processing.
+""")

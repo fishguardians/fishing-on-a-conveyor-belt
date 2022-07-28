@@ -6,6 +6,8 @@ import numpy as np
 import plotly_express as px
 from sys import platform
 
+from st_aggrid import AgGrid
+
 global df
 
 # Page Configs
@@ -19,7 +21,6 @@ st.sidebar.info("This page allows visualize the data from your csv files")
 csv_path = "results"
 container1 = st.empty()
 file_list = os.listdir(csv_path)
-#print(file_list)
 
 instruction_guide = st.expander("Expand or Collapse", True)
 instruction_guide.write('###')  # Line break
@@ -33,7 +34,9 @@ instruction_guide.markdown("""
 st.markdown("###")
 
 if len(file_list) == 0:
-    st.error(""" Output CSV data folder is currently empty!""")
+    st.warning("""The CSV results folder is currently **empty!**""")
+    st.warning("""Please **process** some videos or add some CSV files to the
+    **'results'** folder of the program directory.""")
 
 else:
     try:
@@ -42,10 +45,14 @@ else:
             file_list)
         if platform == "win32" or platform == "win64":
             df = pd.read_csv(f"{csv_path}\\{option}")
-            st.write(df)
+            # st.dataframe(df)
+            AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+                                 getDataAsCsv=True)
         elif platform == "darwin":
             df = pd.read_csv(f"{csv_path}/{option}")
-            st.write(df)
+            # st.dataframe(df)
+            AgGrid(df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+                                 getDataAsCsv=True)
     except:
         st.text("This file is not a CSV file!")
 
@@ -232,10 +239,9 @@ try:
     plot.update_layout(
 
         xaxis_title=x_label,
-
         yaxis_title=y_label
     )
-    st.plotly_chart(plot)  # display the chart
+    st.plotly_chart(plot, use_container_width=True)  # display the chart
 
 except:
     st.text("Error : Unable to load stats and graphs!")

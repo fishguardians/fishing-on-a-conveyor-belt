@@ -3,6 +3,8 @@ import pandas as pd
 import scripts.generate_csv as generate_csv
 
 # Page Configs
+from st_aggrid import AgGrid
+
 st.set_page_config(
     page_title="Merging CSV data",
     page_icon="🐠️",
@@ -51,11 +53,15 @@ if uploaded_files is not None:
 
         new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(iqr)", "length diff(iqr)", "depth diff(iqr)"])
         st.text(file.name)
-        st.write(df_list)
+        # st.dataframe(df_list)
+        AgGrid(df_list, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+               getDataAsCsv=True)
         merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
 
     st.text("Merged Data")
-    st.write(new_df)
+
+    AgGrid(new_df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
+           getDataAsCsv=True)
     merged_csv = convert_df(new_df)
     st.download_button(
         "Download Merged CSV file",
