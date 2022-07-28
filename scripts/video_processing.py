@@ -428,7 +428,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
-        shutil.rmtree('completed_videos/' + video + '/')
+        if os.path.exists('completed_videos/' + video):
+            shutil.rmtree('completed_videos/' + video + '/')
         # check if the directory exists
         if not os.path.exists('completed_videos/' + video):
             os.makedirs('completed_videos/' + video)
