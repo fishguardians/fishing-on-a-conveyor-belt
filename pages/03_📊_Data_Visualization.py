@@ -153,7 +153,7 @@ try:
 
     with col1:
         st.text(f"Number of Samples: {num_samples}")
-        st.markdown("###")
+        st.markdown('***')
 
     with col3:
         st.subheader("Weight Stats(Kg)")
@@ -193,10 +193,11 @@ try:
         st.text(f"Variance: {depth_variance}")
         st.text(f"C.V: {depth_cv}")
         st.text(f"IQRe: {depth_iqr}")
-        st.markdown("###")
 
-    chart_select = st.selectbox(label="Select the chart type",
-                                options=["Scatterplots", "Lineplots", "Histograms", "Boxplots"])
+    st.markdown('***')
+    st.write('**Scatter Plot Axis selection:**')
+
+    chart_select = "Scatterplots"
 
     # If scatterplot is selected
     if chart_select == 'Scatterplots':
