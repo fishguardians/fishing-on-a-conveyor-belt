@@ -156,7 +156,6 @@ else:
 
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
-        part2.write('###')
         start_button = st.empty()
 
         # Create start video processing button

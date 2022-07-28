@@ -109,7 +109,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
         # video length in seconds
-        seconds_left = round(num_of_frames/30)
+        seconds_left = round(num_of_frames / 30)
         # initalize error container
         video_open_error = st.empty()
         check_error_log = st.empty()
@@ -121,7 +121,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
         with open('output/' + _video_name + '/dimensions.txt', 'w', encoding='UTF8') as f:
             writer = csv.writer(f)
             # write the header for dimension
-            writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
+            writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth', 'Flag'])
         with open('output/' + _video_name + '/ids.txt', 'w', encoding='UTF8') as f:
             writer = csv.writer(f)
             # write the header for id
@@ -136,8 +136,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             errwriter.writerow(['Serious', 'Video Corrupted Error', 'Video Cannot Process',
                                 'Skipping Video, please check if video is correct'])
             st.sidebar.error("**Error: 'Video Corrupted Error'** \n\n"
-                                                "Video can't be processed and will be skipped. \n\n"
-                                                "Please check if video is not corrupted.")
+                             "Video can't be processed and will be skipped. \n\n"
+                             "Please check if video is not corrupted.")
             st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
 
         while (cap.isOpened()):
@@ -157,10 +157,10 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error', 'Fail to Create CSV',
                                         'Skipping Video, please check if data is inside'])
                     st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
-                                                        "Failed to Create CSV. Skipping Video. \n\n"
-                                                        "Please check if csv file is inside results folder.")
+                                     "Failed to Create CSV. Skipping Video. \n\n"
+                                     "Please check if csv file is inside results folder.")
                     st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
-                
+
                 # Change fish caught to 0
                 wells_id = 0
 
@@ -211,7 +211,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                         id_image = id_image[y:y + h, x:x + w]
                     else:
                         id_image = id_image[y - 10:y + h + 10, x - 10:x + w + 10]
-                    
+
                     # Save for reference checking
                     SaveImages(id_image, _frame_index, _video_name, 'id')
 
@@ -221,7 +221,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
                     if len(words) < 6 or len(words) > 6:
                         errwriter.writerow(['Warning', 'ID Tag Not Found', 'Request User Validation', 'Please check '
-                                                                                                    'frame ' +
+                                                                                                      'frame ' +
                                             str(_frame_index) + '.jpg in /images/' + _video_name + '/id/'])
 
                     # open the file to write
@@ -230,7 +230,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                         writer = csv.writer(f)
                         # ['#', 'Fish#', 'Frame', 'Value']
                         writer.writerow([_id_id, wells_id, _frame_index, words])
-                    
+
                 elif class_ids[index] == 0:  # Detected the barramundi fish
                     fish_coords = box
                     # center point of the fish
@@ -294,7 +294,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                             writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                         SaveImages(cropped_img, _frame_index, _video_name, 'fish')
-                        
+
                 else:
                     continue
 
@@ -351,8 +351,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
             seconds_left -= 1
             metric_percent = str(round(current_percent)) + '%'
-            mins_shown = round(seconds_left//60)
-            seconds_shown = str(seconds_left - (mins_shown*60))
+            mins_shown = round(seconds_left // 60)
+            seconds_shown = str(seconds_left - (mins_shown * 60))
             metric_time_left = str(mins_shown) + ' mins ' + seconds_shown + ' s'
             metric_fishes = str(wells_id) + '🐠'
 
@@ -364,17 +364,14 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                 metric_percent = '100%'
                 metric_time_left = 'Done'
 
-
             with metrics.container():
                 col1, col2, col3 = st.columns(3)
-                col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent, help='Percentage of completion '
-                                                                                           'of processing the current'
-                                                                                           ' video.')
-                col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left, help='Typically takes same '
-                                                                                           'amount of time as the '
-                                                                                           'length of the video.')
-                col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes, help='Total number of fish processed '
-                                                                                  'from the videos.')
+                col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent,
+                            help='Percentage of completion of processing the current video.')
+                col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left,
+                            help='Processing typically takes the same length of time as the video.')
+                col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes,
+                            help='Total number of fish processed from the current video.')
                 time.sleep(0.01)
 
         cap.release()
@@ -389,7 +386,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
 
         now = datetime.now()
         current_time = now.strftime("%I:%M %p")
-        st.sidebar.success(_video_name + " completed processing at " + current_time)
+        st.sidebar.success("Video: " + _video_name + " completed processing at " + current_time)
 
     return True
 
@@ -428,6 +425,8 @@ def ViewVideo(fish, fish_center, id, scale, name, img):
         show_error_log(error_log)
         st.session_state.persistent_error_log.append(error_log)
         st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
+
+
 def MoveVideo(video):
     """Move the processed videos to completed folder so they will not run again"""
     try:
@@ -439,6 +438,7 @@ def MoveVideo(video):
     except:
         errwriter.writerow(['Warning', 'Same Video Re-Processed', 'Deliberate User Action',
                             'Processing same videos will use up unnecessary computer resources'])
+
 
 def SaveImages(actual_frame, _frame_index, _video_name, _type):
     """Store images function"""
@@ -455,6 +455,7 @@ def SaveImages(actual_frame, _frame_index, _video_name, _type):
         show_error_log(error_log)
         st.session_state.persistent_error_log.append(error_log)
         st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
+
 
 # Count the total number of frames in a video with OpenCV and Python
 def count_frames(path, override=False):
@@ -481,6 +482,7 @@ def count_frames(path, override=False):
     video.release()
     # return the total number of frames in the video
     return total
+
 
 def show_error_log(error_log):
     return st.sidebar.warning(error_log)
