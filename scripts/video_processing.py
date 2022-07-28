@@ -159,6 +159,11 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                                                         "Failed to Create CSV. Skipping Video. \n\n"
                                                         "Please check if csv file is inside results folder.")
                     st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
+                
+                # Change fish caught to 0
+                wells_id = 0
+
+                # Shift the video to completed
                 MoveVideo(_video_name)
                 print(f'Video {_video_index + 1} process complete.')
                 break
