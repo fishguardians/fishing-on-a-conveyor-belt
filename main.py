@@ -40,9 +40,6 @@ def main():
 
     print("End of video image capture process: ", current_time)
 
-
-
-
 if __name__ == "__main__":
     print('Checking if file are corrupted...')
     reset_folders.reset_folders()
