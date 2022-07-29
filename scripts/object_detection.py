@@ -1,9 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''object_detection.py: Module that uses YOLOv4 dnn model to detect objects from given frames
+    @Author: "Muhammad Abdurraheem, Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+    
 import cv2
 import numpy as np
 
 
 class ObjectDetection:
-    def __init__(self, weights_path="./dnn_model/yolov3_training_last.weights", cfg_path="./dnn_model/yolov3.cfg"):
+    def __init__(self, weights_path="./dnn_model/yolov4_training_last.weights", cfg_path="./dnn_model/yolov4.cfg"):
         self.nmsThreshold = 0.4
         self.confThreshold = 0.5
         self.image_size = 416

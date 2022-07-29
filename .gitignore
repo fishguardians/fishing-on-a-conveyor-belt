@@ -158,6 +158,18 @@ installation
 # pytype static type analyzer
 .pytype/
 
+/backup
+**/backup
+
+/dnn_model
+**/dnn_model
+
+#ignores google credential account
+*.json
+
+#ignores the errorlogs.txt file
+errorlogs.txt
+
 # Cython debug symbols
 cython_debug/
 
@@ -166,7 +178,13 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
 /dnn_model
 *.weights
 *.weights
+.DS_Store
+*.xml
+*.iml
+*.xml
+.idea/misc.xml
+.idea/Measuring-Size-of-Objects-with-OpenCV-master.iml
