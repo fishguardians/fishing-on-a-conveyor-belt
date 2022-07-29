@@ -34,11 +34,9 @@ def text_recognition(image, user_ocr_whitelist):
 
     # opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     # cv2.imshow("test", opening)
-
-    print('user_ocr_whitelist in text_recognition ', user_ocr_whitelist)
     
     text = pytesseract.image_to_string(image, \
-                                        config='-l eng --psm 3 --oem 3 -c tessedit_char_whitelist="' + str(user_ocr_whitelist) + '" tessedit_char_blacklist="' + constant.tess_blacklist + '"')
+                                        config='-l eng --psm 3 --oem 3 -c tessedit_char_whitelist="' + str(user_ocr_whitelist) + '"')
                                         
     words = ''.join(char for char in text if char.isalnum())
     return words

@@ -151,15 +151,16 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
             if not ret:
                 cap.release()
                 # Generate final csv file and then move the file to completed
-                try:
-                    response = write_data_output(_video_name)
-                except:
+                response = write_data_output(_video_name)
+                
+                if not response:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error', 'Fail to Create CSV',
                                         'Skipping Video, please check if data is inside'])
                     st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
                                      "Failed to Create CSV. Skipping Video. \n\n"
                                      "Please check if csv file is inside results folder.")
                     st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
+                    return False
 
                 # Change fish caught to 0
                 wells_id = 0
@@ -214,8 +215,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
 
                     # Save for reference checking
                     SaveImages(id_image, _frame_index, _video_name, 'id')
-
-                    print('video processing: user_ocr_whitelist: ', user_ocr_whitelist)
 
                     # Call the id tag scripts
                     words = text_recognition(id_image, user_ocr_whitelist)
