@@ -68,7 +68,7 @@ if len(video_files) == 0 and not st.session_state.bool_process_clicked:
     part1.warning("""The video folder is currently **empty!**""")
     part1.warning(
         """
-        \n Transfer the video(s) to the **'videos'** directory of the program. As illustrated the image below.
+        \n Transfer the video(s) to the **'videos'** folder of the program's directory. As illustrated the image below.
         """)
     part1.image('pages/assets/transfer_video_instructions.jpg')
 
