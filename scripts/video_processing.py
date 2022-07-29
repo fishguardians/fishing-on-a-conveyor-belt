@@ -109,7 +109,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
         # Get the number of frames in video
         num_of_frames = count_frames(constant.videos_location + _video_name)
         # video length in seconds
-        seconds_left = round(num_of_frames / 30)
+        seconds_left = round(num_of_frames / 15)
         # initalize error container
         video_open_error = st.empty()
         check_error_log = st.empty()
@@ -335,8 +335,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
             # check the location of fish center points
             prev_center_pts = fish_center_coords.copy()
 
-            _skip_frames += 30  # i.e. at 30 fps, this advances one second
-            _frame_index += 29
+            _skip_frames += 15  # i.e. at 30 fps, this advances one second
+            _frame_index += 14
             cap.set(1, _skip_frames)
 
             if cv2.waitKey(1) == ord('q'):
