@@ -13,7 +13,6 @@ scale_color = (255, 255, 255)
 belt_color = (0, 255, 0)
 
 tess_blacklist = ''
-tess_whitelist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz'
 
 # Fish Dimension Module Constants
 ref_width = 1.9  # Width of black circle reference dot

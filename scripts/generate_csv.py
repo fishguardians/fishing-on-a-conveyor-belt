@@ -18,6 +18,7 @@ errwriter = csv.writer(errorfile)
 def write_data_output(video_name):
     # combine the results of the weights, lengths and depths data into one csv file
     fish_id = 0
+    fish_index = 0
     overall_data = []
     write_data = []
     fish_dict = {}
@@ -49,13 +50,15 @@ def write_data_output(video_name):
                 if line == ['\n']:
                     continue
 
+                fish_index += 1
                 if line[1] in fish_dict.keys():
                     fish_dict[line[1]]['hypot'].append(line[3].strip())
                     fish_dict[line[1]]['frame'].append(line[2].strip())
+                    fish_dict[line[1]]['index'] = fish_index
                 else:
                     fish_dict = {
                         line[1]: {'hypot': [line[3].strip()], 'frame': [line[2].strip()], 'id': [], 'weight': [],
-                                  'length': [], 'depth': []}}
+                                  'length': [], 'depth': [],'index': fish_index}}
                     if fish_id != line[1]:
                         fish_id = line[1]
                         overall_data.append(fish_dict)
@@ -64,7 +67,7 @@ def write_data_output(video_name):
             errwriter.writerow(['Serious', 'Error with Recording Fish Center', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for images.txt file'])
             return False
-    
+
     for (index, lines) in enumerate(ids_array):
         try:
             if index == 0:
@@ -77,6 +80,8 @@ def write_data_output(video_name):
                 for items in overall_data:
                     if line[1] in items.keys():
                         items[line[1]]['id'].append(line[3].strip())
+                    else:
+                        continue
         except:
             print('Error: Ids not recorded')
             errwriter.writerow(['Serious', 'Error with Recording ID Tags', 'Missing Output Data',
@@ -95,6 +100,8 @@ def write_data_output(video_name):
                 for items in overall_data:
                     if line[1] in items.keys():
                         items[line[1]]['weight'].append(line[3].strip())
+                    else:
+                        continue
         except:
             print('Error: Weights not recorded')
             errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
@@ -114,6 +121,8 @@ def write_data_output(video_name):
                     if line[1] in items.keys():
                         items[line[1]]['length'].append(line[3].strip())
                         items[line[1]]['depth'].append(line[4].strip())
+                    else:
+                        continue
         except:
             print('Error: Weights not recorded')
             errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
@@ -158,7 +167,7 @@ def write_data_output(video_name):
                     # get median of occurrences
                     results = sorted(objects, key=lambda x: float(x))
                     depth = results[math.floor(len(results) / 2)]
-        
+        print([fish, idtag, weight, length, depth])
         # add the calculated value into the data
         write_data.append([fish, idtag, weight, length, depth])
     # add iqr of the results

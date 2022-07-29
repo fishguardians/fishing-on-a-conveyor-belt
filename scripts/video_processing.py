@@ -67,7 +67,7 @@ def GetVideoNames(path):
     return videos_array
 
 
-def CaptureImagesOnVideo(videos_to_be_processed, od):
+def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
     hypo_threshold = 200
@@ -151,15 +151,16 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
             if not ret:
                 cap.release()
                 # Generate final csv file and then move the file to completed
-                try:
-                    response = write_data_output(_video_name)
-                except:
+                response = write_data_output(_video_name)
+                
+                if not response:
                     errwriter.writerow(['Serious', 'CSV Output Corrupted Error', 'Fail to Create CSV',
                                         'Skipping Video, please check if data is inside'])
                     st.sidebar.error("**Error: 'CSV Output Corrupted Error'** \n\n"
                                      "Failed to Create CSV. Skipping Video. \n\n"
                                      "Please check if csv file is inside results folder.")
                     st.sidebar.error("Please see **'errorlogs.txt'** in the program's directory.")
+                    return False
 
                 # Change fish caught to 0
                 wells_id = 0
@@ -216,7 +217,8 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     SaveImages(id_image, _frame_index, _video_name, 'id')
 
                     # Call the id tag scripts
-                    words = text_recognition(id_image)
+                    words = text_recognition(id_image, user_ocr_whitelist)
+                    # words = text_recognition(id_image)
                     # words = google_ocr('./images/'+_video_name + '/id/' + str(_frame_index) + '.jpg')
 
                     if len(words) < 6 or len(words) > 6:
@@ -487,3 +489,13 @@ def count_frames(path, override=False):
 
 def show_error_log(error_log):
     return st.sidebar.warning(error_log)
+
+def users_ocr_whitelist():
+    st.markdown("###")
+    users_whitelist = st.text_input("Please remove characters not present in the Fish ID Tags:",
+                  value="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz",
+                  help="This helps the program to only allow certain characters that appear on the ID tags to be processed. \n Reducing mistaken characters.")
+
+    print('users_whitelist: ', users_whitelist)
+
+    return users_whitelist

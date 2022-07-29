@@ -10,7 +10,7 @@ import numpy as np
 import os
 import constant
 
-def text_recognition(image):
+def text_recognition(image, user_ocr_whitelist):
     # Get the text from the fish id image
 
     # Super resolution for image
@@ -36,7 +36,7 @@ def text_recognition(image):
     # cv2.imshow("test", opening)
     
     text = pytesseract.image_to_string(image, \
-                                        config='-l eng --psm 3 --oem 3 -c tessedit_char_whitelist="' + constant.tess_whitelist + '" tessedit_char_blacklist="' + constant.tess_blacklist + '"')
+                                        config='-l eng --psm 3 --oem 3 -c tessedit_char_whitelist="' + str(user_ocr_whitelist) + '"')
                                         
     words = ''.join(char for char in text if char.isalnum())
     return words
