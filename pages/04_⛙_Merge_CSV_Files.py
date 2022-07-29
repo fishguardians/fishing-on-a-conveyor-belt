@@ -59,7 +59,7 @@ if uploaded_files is not None:
         merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
 
     st.text("Merged Data")
-    # st.dataframe(new_df)
+
     AgGrid(new_df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
            getDataAsCsv=True)
     merged_csv = convert_df(new_df)
