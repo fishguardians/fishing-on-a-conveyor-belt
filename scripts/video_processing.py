@@ -67,7 +67,7 @@ def GetVideoNames(path):
     return videos_array
 
 
-def CaptureImagesOnVideo(videos_to_be_processed, od):
+def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
     """# 2 - Process the videos [batch processing]"""
     # check for smallest distance
     hypo_threshold = 200
@@ -215,8 +215,11 @@ def CaptureImagesOnVideo(videos_to_be_processed, od):
                     # Save for reference checking
                     SaveImages(id_image, _frame_index, _video_name, 'id')
 
+                    print('video processing: user_ocr_whitelist: ', user_ocr_whitelist)
+
                     # Call the id tag scripts
-                    words = text_recognition(id_image)
+                    words = text_recognition(id_image, user_ocr_whitelist)
+                    # words = text_recognition(id_image)
                     # words = google_ocr('./images/'+_video_name + '/id/' + str(_frame_index) + '.jpg')
 
                     if len(words) < 6 or len(words) > 6:
@@ -487,3 +490,13 @@ def count_frames(path, override=False):
 
 def show_error_log(error_log):
     return st.sidebar.warning(error_log)
+
+def users_ocr_whitelist():
+    st.markdown("###")
+    users_whitelist = st.text_input("Please remove characters not present in the Fish ID Tags:",
+                  value="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz",
+                  help="This helps the program to only allow certain characters that appear on the ID tags to be processed. \n Reducing mistaken characters.")
+
+    print('users_whitelist: ', users_whitelist)
+
+    return users_whitelist

@@ -156,6 +156,7 @@ else:
 
             part2.markdown(f"{video_name} created on  : {time.ctime(os.path.getctime(__file__))}")
 
+        user_ocr_whitelist = video_processing.users_ocr_whitelist()
         start_button = st.empty()
 
         # Create start video processing button
@@ -172,7 +173,7 @@ else:
             od = ObjectDetection()  # Initialize Object Detection
             video_processing_note = part2.warning("**Video processing started...**")
             video_processing_note.empty()
-            st.session_state.video_processing_complete = video_processing.CaptureImagesOnVideo(video_files, od)
+            st.session_state.video_processing_complete = video_processing.CaptureImagesOnVideo(video_files, od, user_ocr_whitelist)
     # End of 2️⃣ Processing videos from file location
 
 
