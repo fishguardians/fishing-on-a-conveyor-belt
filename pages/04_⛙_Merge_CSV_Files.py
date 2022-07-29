@@ -25,8 +25,10 @@ instruction_guide.markdown("""
 st.markdown("###")
 
 new_df = pd.DataFrame()
+show_df_list = pd.DataFrame()
 master_df = pd.DataFrame()  # the final output CSV after merge
 merged_file_name = ""
+merged_csv = []
 
 # Setup file upload
 uploaded_files = st.file_uploader(label="Upload CSV files to merge.",
@@ -41,8 +43,17 @@ def convert_df(df):
 if uploaded_files is not None:
     for file in uploaded_files:
         df_list = pd.read_csv(file)
+        show_df_list = df_list.copy()
         df_list = df_list.iloc[: , :-3]
-        master_df = master_df.append(df_list)
+        merged_csv.append(df_list)
+        
+        st.text(file.name)
+        st.write(show_df_list)
+        merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
+    
+    # check if there is merged data before showing
+    if merged_csv:
+        master_df = pd.concat(merged_csv)
 
         new_list = master_df.values.tolist()
         extra_list = []
@@ -50,17 +61,14 @@ if uploaded_files is not None:
             extra_list.append([str(i) for i in item_in_list])
 
         new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(iqr)", "length diff(iqr)", "depth diff(iqr)"])
-        st.text(file.name)
-        st.write(df_list)
-        merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
 
-    st.text("Merged Data")
-    st.write(new_df)
-    merged_csv = convert_df(new_df)
-    st.download_button(
-        "Download Merged CSV file",
-        merged_csv,
-        f"{merged_file_name}",
-        "text/csv",
-        key='download-csv'
-    )
+        st.text("Merged Data")
+        st.dataframe(new_df)
+        merged_csv = convert_df(new_df)
+        st.download_button(
+            "Download Merged CSV file",
+            merged_csv,
+            f"{merged_file_name}",
+            "text/csv",
+            key='download-csv'
+        )
