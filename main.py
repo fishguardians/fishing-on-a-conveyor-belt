@@ -29,9 +29,6 @@ def main():
     print(
         """\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
 
-    print('Checking if file are corrupted...')
-    reset_folders.reset_folders()
-
     print('Retrieving file names from "videos" folder...')
     video_files = video_processing.GetVideoNames(constant.videos_location)
     print('Files: ' + str(video_files) + '\n')
@@ -47,7 +44,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
+    print('Checking if file are corrupted...')
+    reset_folders.reset_folders()
     if st._is_running_with_streamlit:
         main()
     else:
