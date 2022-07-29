@@ -99,7 +99,8 @@ def write_data_output(video_name):
 
                 for items in overall_data:
                     if line[1] in items.keys():
-                        items[line[1]]['weight'].append(line[3].strip())
+                        if line[3].strip():
+                            items[line[1]]['weight'].append(line[3].strip())
                     else:
                         continue
         except:
