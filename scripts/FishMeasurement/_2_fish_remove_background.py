@@ -27,15 +27,6 @@ def remove_background(cropBelt_output_img):
 
     # Defining the lower and upper values of HSV
     # this will detect yellow colour of the belt
-    # and threshold based on the species of fish on the conveyor belt
-    # print('fish_species',fish_species)
-
-    # if fish_species == 'Baby Red Snapper':
-    #     # print('Baby Red Snapper')
-    #     Lower_hsv = np.array([20, 170, 100])
-    #     Upper_hsv = np.array([30, 255, 255])
-    # else:
-        # print('Default')
     Lower_hsv = np.array([20, 70, 100])
     Upper_hsv = np.array([30, 255, 255])
 
@@ -87,7 +78,7 @@ def remove_background(cropBelt_output_img):
         (x, y, w, h) = cv2.boundingRect(c)
         cnt_area = w * h
         # Removes contours smaller than the reference dot
-        if cnt_area < 0.2 * avg_area:
+        if cnt_area < 0.1 * avg_area:
             cleaned_image[y:y + h, x:x + w] = 0
 
     # find contours in the edge map
@@ -99,7 +90,7 @@ def remove_background(cropBelt_output_img):
     # Draw bounding boxes for contours
     for c in cnts:
         x, y, w, h = cv2.boundingRect(c)
-        if h > 50 and w > 50: # Only contours as large as than the reference should be returned as ROI
+        if h > 20 and w > 20: # Only contours as large as than the reference should be returned as ROI
             roi = bbox_image[y:y + h, x:x + w]
             cv2.rectangle(bbox_image, (x,y), (x+w, y+h), (36, 255, 12), 2)
 
