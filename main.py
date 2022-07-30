@@ -7,19 +7,8 @@
 
 import sys
 from streamlit import cli as stcli
-import scripts.video_processing as video_processing
-from scripts.object_detection import ObjectDetection
-import constant
 import streamlit as st
 import reset_folders
-
-from datetime import datetime
-
-now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-
-video_files = []
-
 
 def main():
     """
@@ -28,17 +17,6 @@ def main():
     """
     print(
         """\nFishing on a Conveyor Belt \nAn integrative team project done by students of SIT \nIn collaboration with James Cook University\n""")
-
-    print('Retrieving file names from "videos" folder...')
-    video_files = video_processing.GetVideoNames(constant.videos_location)
-    print('Files: ' + str(video_files) + '\n')
-
-    print('Unprocessed videos found: ' + str(len(video_files)) + '\n')
-    # Initialize Object Detection
-    od = ObjectDetection()
-    video_processing.CaptureImagesOnVideo(video_files, od)
-
-    print("End of video image capture process: ", current_time)
 
 if __name__ == "__main__":
     print('Checking if file are corrupted...')
