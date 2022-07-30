@@ -129,18 +129,13 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
         list_of_objects_length.append(object_length_dict)
 
         if count == len(cnts):
-            # print('length of object: ', dimA_CM)
-            # print('width of object: ', dimB_CM)
 
             # Sort lengths by largest to smallest. Largest should always be a fish.
             sorted_object_list = sorted(list_of_objects_length, key=lambda d: d['length'], reverse=True)
-            # print('sorted_object_list', sorted_object_list)
             fish_dimensions_dict = sorted_object_list[0]
 
             fish_length = round(fish_dimensions_dict["length"], 3)
             fish_depth = round(fish_dimensions_dict["depth"], 3)
-            # print('Fish length: ', fish_length)
-            # print('Fish depth: ', fish_depth)
             return fish_length, fish_depth
 
 
