@@ -70,7 +70,7 @@ if uploaded_files is not None:
         for item_in_list in new_list:
             extra_list.append([str(i) for i in item_in_list])
 
-        new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(combined iqr)", "length diff(combined iqr)", "depth diff(combined iqr)"])
+        new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "location", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(combined iqr)", "length diff(combined iqr)", "depth diff(combined iqr)"])
 
         st.text("Combined CSV")
         AgGrid(new_df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
