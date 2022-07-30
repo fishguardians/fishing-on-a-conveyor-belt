@@ -45,7 +45,6 @@ def get_dimensions(removeBg_output_img: object, og_img: object) -> object:
 
     for c in cnts:
 
-        print('contour areas: ', cv2.contourArea(c))
         # if the contour is not sufficiently large, ignore it
         if cv2.contourArea(c) < 150:
             count += 1
