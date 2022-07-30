@@ -4,13 +4,11 @@
     @Author: "Muhammad Abdurraheem and Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
 # import if necessary (built-in, third-party, path, own modules)
-import importlib
 import os
 import shutil
 import csv
 import cv2
 import math
-import numpy as np
 from imutils.video.count_frames import count_frames_manual
 import constant
 import pytesseract
@@ -40,8 +38,6 @@ def GetVideoNames(path):
 
     folder = os.listdir(path)
     videos_array = []
-
-    # print("FOLDER", folder)
 
     for file in folder:
         _, file_extension = os.path.splitext(file)
@@ -111,7 +107,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
         # video length in seconds
         seconds_left = round(num_of_frames / 15)
         # initalize error container
-        video_open_error = st.empty()
         check_error_log = st.empty()
 
         with open('output/' + _video_name + '/images.txt', 'w', encoding='UTF8') as f:
@@ -191,8 +186,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
             # check if can save img
             _has_image = False
 
-            # print(class_ids, prev_center_pts, check_empty)
-
             # if there's no fish add the tracker empty by 1
             if (prev_center_pts == []):
                 check_empty += 1
@@ -218,7 +211,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
 
                     # Call the id tag scripts
                     words = text_recognition(id_image, user_ocr_whitelist)
-                    # words = text_recognition(id_image)
                     # words = google_ocr('./images/'+_video_name + '/id/' + str(_frame_index) + '.jpg')
 
                     if len(words) < 6 or len(words) > 6:
@@ -241,7 +233,6 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
                     fish_center_coords.append((cx, cy))
 
                     hypothenuse = round(math.hypot(cx - posX, cy - posY))
-                    # print(hypothenuse, hypo_threshold)
 
                     if (prev_center_pts == [] and check_empty >= 2):
                         # check if the previous 3 frames are empty if not it is the same fish
@@ -283,16 +274,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
 
                         with open('output/' + _video_name + '/dimensions.txt', 'a', encoding='UTF8') as f:
                             writer = csv.writer(f)
-                            # write the header
-
-                            """
-                            '#' - fish_id is the # unique key for the data
-                            'Fish#' - current num of fish that's passing through the conveyor belt
-                            'Frame' - the num value of the frame of the video image taken
-                            'Length' - length of the fish (From head to tail)
-                            'Depth' - the length of the depth of the fish (Widest point of the fish)
-                            """
-                            # writer.writerow(['#', 'Fish#', 'Frame', 'Length', 'Depth','Flag'])
+                            # write the fish dimension
                             writer.writerow([_fish_id, wells_id, _frame_index, fish_length, fish_depth, flag])
 
                         SaveImages(cropped_img, _frame_index, _video_name, 'fish')
@@ -470,17 +452,14 @@ def count_frames(path, override=False):
     # method of counting frames
     if override:
         total = count_frames_manual(video)
-
     # otherwise, let's try the fast way first
     else:
 
         try:
             total = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-
         # uh-oh, we got an error -- revert to counting manually
         except:
             total = count_frames_manual(video)
-
     # release the video file pointer
     video.release()
     # return the total number of frames in the video
@@ -495,7 +474,5 @@ def users_ocr_whitelist():
     users_whitelist = st.text_input("Please remove characters not present in the Fish ID Tags:",
                   value="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz",
                   help="This helps the program to only allow certain characters that appear on the ID tags to be processed. \n Reducing mistaken characters.")
-
-    print('users_whitelist: ', users_whitelist)
 
     return users_whitelist

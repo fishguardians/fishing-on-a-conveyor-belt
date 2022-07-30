@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''google_ocr.py: Module that uses internet connection and google text reader to read images
+'''google_ocr.py: [Working but not used] Module that uses internet connection and google text reader to read images
     @Author: "Yip Hou Liang"
     @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
-    
+# import if necessary (built-in, third-party, path, own modules)
 import io
 import os
 
@@ -34,12 +34,3 @@ def google_ocr(image_path):
     # print("Extracted text {} from image ({} chars).".format(text, len(text)))
 
     return text
-
-
-# # Performs label detection on the image file
-# response = client.label_detection(image=image)
-# labels = response.label_annotations
-
-# print('Labels:')
-# for label in labels:
-#     print(label.description)

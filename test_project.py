@@ -23,24 +23,24 @@ import scripts.text_recognition as tr
 class TestDigitRecognition(unittest.TestCase):
     def runTest(self):
         # Check if the region of interest of scale is retrieved into a numpy format
-        test1 = dr.get_roi(cv2.imread('testing/106.jpg'))
+        test1 = dr.get_roi(cv2.imread('testing/3346.jpg'))
         self.assertEqual(isinstance(test1,np.ndarray), True, "get roi not numpy array format")
         # Check if value of image is 0.048
-        test2 = dr.digit_recognition(cv2.imread('testing/106.jpg'))
-        self.assertEqual(test2, '0.048', "get digits error")
+        test2 = dr.digit_recognition(cv2.imread('testing/3346.jpg'))
+        self.assertEqual(test2, '0.078', "get digits error")
 
 class TestFishMeasurement(unittest.TestCase):
     def runTest(self):
         # Check if the region of interest of conveyor belt is retrieved into a numpy format
-        test1 = fm1.crop_belt(cv2.imread('testing/106.jpg'))
+        test1 = fm1.crop_belt(cv2.imread('testing/361.jpg'))
         self.assertEqual(isinstance(test1,np.ndarray), True, "crop belt not numpy array format")
         # Check if the remove baackground function returned a numpy format
         test2 = fm2.remove_background(test1)
         self.assertEqual(isinstance(test2,np.ndarray), True, "remove background not numpy array format")
         # Check if the length and depth is returned
-        test3_length, test3_depth = fm3.get_dimensions(test2,cv2.imread('testing/106.jpg'))
-        self.assertEqual(test3_length, 14.486, "get length error")
-        self.assertEqual(test3_depth, 4.104, "get depth error")
+        test3_length, test3_depth = fm3.get_dimensions(test2,cv2.imread('testing/361.jpg'))
+        self.assertEqual(test3_length, 19.343, "get length error")
+        self.assertEqual(test3_depth, 5.962, "get depth error")
 
 class TestGenerateCSV(unittest.TestCase):
     def runTest(self):
@@ -55,7 +55,7 @@ class TestGenerateCSV(unittest.TestCase):
 class TestTextRecognition(unittest.TestCase):
     def runTest(self):
         # Read the text from the given image
-        test1 = tr.text_recognition(cv2.imread('testing/2431.jpg'))
-        self.assertEqual(test1,'LRW2HINU', "read wrong text error")
+        test1 = tr.text_recognition(cv2.imread('testing/406.jpg'),'0123456789TF')
+        self.assertEqual(test1,'T04F01', "read wrong text error")
 
 unittest.main()
