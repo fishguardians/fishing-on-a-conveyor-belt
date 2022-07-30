@@ -100,7 +100,7 @@ def reset_folders():
 
     # check if the directory exists
     if not exists('./output/'):
-        makedirs('./output/')
+        makedirs('./output')
 
     if not exists('./output/sample/'):
         makedirs('./output/sample/')
@@ -112,15 +112,15 @@ def reset_folders():
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
     if not exists('./results/'):
-        makedirs('./results/')
+        makedirs('./results')
 
     if not exists('./images/'):
-        makedirs('./images/')
+        makedirs('./images')
 
     if not exists('./completed_videos/'):
-        makedirs('./completed_videos/')
+        makedirs('./completed_videos')
 
     if not exists('./videos/'):
-        makedirs('./videos/')
+        makedirs('./videos')
         
     errorfile.close()
