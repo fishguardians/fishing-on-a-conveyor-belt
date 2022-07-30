@@ -135,7 +135,7 @@ def write_data_output(video_name):
         fish = 0
         frame = 0
         hypot = 0
-        idtag = 0
+        idtag = ""
         weight = 0.0
         length = ""
         depth = ""
@@ -150,11 +150,11 @@ def write_data_output(video_name):
                 if k == 'frame':
                     frame = objects[indexofhypot]
                 if k == 'id':
-                    if '' in objects:
-                        objects.remove('')
-                    # sorting on basis of frequency of elements, mode
-                    result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
-                    idtag = result[0]
+                    objects = list(filter(None, objects))
+                    if objects:
+                        # sorting on basis of frequency of elements, mode
+                        result = [item for items, c in Counter(objects).most_common() for item in [items] * c]
+                        idtag = result[0]
                 if k == 'weight':
                     # get median of occurrences
                     objects = list(map(lambda x: x.replace('N.A', '0.0'), objects))
