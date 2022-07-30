@@ -371,7 +371,7 @@ def CaptureImagesOnVideo(videos_to_be_processed, od, user_ocr_whitelist):
                 col1.metric(label="✔ Completion Percentage: ✔", value=metric_percent,
                             help='Percentage of completion of processing the current video.')
                 col2.metric(label="⌛ Estimated Time Left: ⌛", value=metric_time_left,
-                            help='Processing typically takes the same length of time as the video.')
+                            help='Processing typically takes the twice the length of time as the video.')
                 col3.metric(label="🎣 Fish Caught: 🎣", value=metric_fishes,
                             help='Total number of fish processed from the current video.')
                 time.sleep(0.01)
