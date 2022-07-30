@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''main.py: Main module that runs the fish phenotyping process
+    @Author: "Muhammad Abdurraheem and Nicholas Bingei"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+# import if necessary (built-in, third-party, path, own modules)
 import os
 import streamlit as st
 import pandas as pd
