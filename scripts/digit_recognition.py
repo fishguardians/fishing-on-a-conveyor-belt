@@ -28,8 +28,6 @@ def digit_recognition(image,angle=5.0):
     roi_color = cv2.rotate(roi_color,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     roi = cv2.resize(roi_grey, None,None,fx=1.0,fy=1.0) #resize image
     roi= imutils.rotate(roi, angle)
-    # cv2.imshow("first roi", roi)
-    # cv2.waitKey(0)
     
     roi = cv2.bilateralFilter(roi, 5, 30, 60) #reduce noise
     #roi.shape[0] = height, roi.shape[1] = width
@@ -68,18 +66,14 @@ def digit_recognition(image,angle=5.0):
         (x, y, w, h) = cv2.boundingRect(cnt)
         if h > 50: #determine if the item should be read (by height)
             digits_cnts.append(cnt) #determine how many digits are there
-            # print(digits_cnts)
             #draw bounding box
             cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
             cv2.drawContours(canvas, cnt, 0, (255, 255, 255), 1)
-            # cv2.imshow("Digit Contours", canvas)
-            # cv2.waitKey(0)
 
     # print(f"No. of Digit Contours: {len(digits_cnts)}")
 
     #sort by the value of the x coordinates of the countour
     sorted_digits = sorted(digits_cnts, key=lambda cnt: cv2.boundingRect(cnt)[0])
-    # print(sorted_digits)
 
     canvas = trimmed.copy()
     #draw contours in sorted sequence
@@ -94,8 +88,6 @@ def digit_recognition(image,angle=5.0):
             pass
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.putText(canvas, str(i), (x, y - 3), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
-        # cv2.imshow("All Contours sorted", canvas)
-        # cv2.waitKey(0)
 
     digits = []
     canvas = trimmed.copy()
@@ -140,15 +132,11 @@ def digit_recognition(image,angle=5.0):
                 if np.sum(region == 255) > region.size * 0.5:
                     on[i] = 1
                 
-                # print(f"State of ON: {on}")
 
             digit = DIGITSDICT[tuple(on)]
-            # print(f"Digit is: {digit}")
             digits += [digit]
             cv2.rectangle(canvas, (x, y), (x + w, y + h), (255, 255, 0), 1)
             cv2.putText(canvas, str(digit), (x - 5, y + 6), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
-            # cv2.imshow("Digit", canvas)
-            # cv2.waitKey(0)
         except:
             pass
     if(len(digits)==4):
@@ -162,7 +150,6 @@ def digit_recognition(image,angle=5.0):
         return "N.A"
 
 def get_roi(image):
-    # image = cv2.imread(image)
     img_color = cv2.rotate(image,cv2.ROTATE_90_COUNTERCLOCKWISE) #change orientation
     img = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY) #grey scale image
     blurred = cv2.GaussianBlur(img, (7, 7), 0) #reduce noise
@@ -178,8 +165,6 @@ def get_roi(image):
 
     x_coor, y_coor, width, height = cv2.boundingRect(contours[0])  #return 4 points 
     roi = img[y_coor : y_coor + height, x_coor : x_coor + width] #crop image (roi)
-    # cv2.imshow("ROI", roi) 
-    # cv2.waitKey(0)
     roi = cv2.cvtColor(roi, cv2.COLOR_GRAY2RGB) #greyscale image 
     return roi
 

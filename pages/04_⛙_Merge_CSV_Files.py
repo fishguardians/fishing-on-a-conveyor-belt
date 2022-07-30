@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''main.py: Main module that runs the fish phenotyping process
+    @Author: "Muhammad Abdurraheem and Yip Hou Liang"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+# import if necessary (built-in, third-party, path, own modules)
+
 import streamlit as st
 import pandas as pd
 import scripts.generate_csv as generate_csv
@@ -29,7 +36,7 @@ st.markdown("###")
 new_df = pd.DataFrame()
 show_df_list = pd.DataFrame()
 master_df = pd.DataFrame()  # the final output CSV after merge
-merged_file_name = ""
+merged_file_name = "combined"
 merged_csv = []
 
 # Setup file upload
@@ -39,7 +46,7 @@ uploaded_files = st.file_uploader(label="Upload CSV files to merge.",
                                   type=['csv'])  # Upload file for CSV
 
 def convert_df(df):
-    return df.to_csv().encode('utf-8')
+    return df.to_csv(index = False).encode('utf-8')
 
 # check if files are uploaded
 if uploaded_files is not None:
@@ -52,7 +59,7 @@ if uploaded_files is not None:
         st.text(file.name)
         AgGrid(show_df_list, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
                getDataAsCsv=True)
-        merged_file_name = merged_file_name + "-" + file.name  # Name of the output file when download
+        merged_file_name = merged_file_name + "-" + file.name[:-4]  # Name of the output file when download
     
     # check if there is merged data before showing
     if merged_csv:
@@ -63,7 +70,7 @@ if uploaded_files is not None:
         for item_in_list in new_list:
             extra_list.append([str(i) for i in item_in_list])
 
-        new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(combined iqr)", "length diff(combined iqr)", "depth diff(combined iqr)"])
+        new_df = pd.DataFrame(generate_csv.check_iqr_data(extra_list), columns = ["fish", "idtag", "location", "weight(kg)", "length(cm)", "depth(cm)", "weight diff(combined iqr)", "length diff(combined iqr)", "depth diff(combined iqr)"])
 
         st.text("Combined CSV")
         AgGrid(new_df, editable=False, enable_enterprise_modules=True, exportDataAsCsv=True,
@@ -72,7 +79,7 @@ if uploaded_files is not None:
         st.download_button(
             "Download Merged CSV file",
             merged_csv,
-            f"{merged_file_name}",
+            f"{merged_file_name}.csv",
             "text/csv",
             key='download-csv'
         )

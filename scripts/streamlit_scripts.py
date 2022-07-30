@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''object_detection.py: Module that uses YOLOv4 dnn model to detect objects from given frames
+    @Author: "Nicholas Bingei"
+    @Credit: ["Muhammad Abdurraheem", "Chen Dong", "Nicholas Bingei", "Yao Yujing", "Yip Hou Liang"]'''
+# import if necessary (built-in, third-party, path, own modules)
 import scripts.video_processing as video_processing  # Video processing script
 import constant  # Constant Variables
 import streamlit as st
