@@ -42,7 +42,7 @@ def fish_measurement(image):
         fish_length, fish_depth = getDimensions.get_dimensions(removeBg_output_img, og_img)
 
     except Exception as e:
-        print('Exception at fish measurement module 3! ', e)  # TypeError: cannot unpack non-iterable NoneType object
+        # print('Exception at fish measurement module 3! ', e)  # TypeError: cannot unpack non-iterable NoneType object
         flag = "ERROR! Please verify measurements for this fish"
 
     return fish_length, fish_depth, cropBelt_output_img, flag
