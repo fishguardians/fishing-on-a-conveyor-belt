@@ -188,3 +188,6 @@ cython_debug/
 *.xml
 .idea/misc.xml
 .idea/Measuring-Size-of-Objects-with-OpenCV-master.iml
+
+*.zip
+/Tesseract-OCR

@@ -13,6 +13,7 @@ import zipfile
 import shutil
 from distutils.dir_util import copy_tree
 
+
 def reset_folders():
     # check if necessary folders exists, if not get from backup
     with open('./errorlogs.txt', 'w', encoding='UTF8') as f:
@@ -35,6 +36,17 @@ def reset_folders():
             writer.writerow(['Resolved', 'Backup Folder Restored' , 'Fixed Backup Folder', 'Program functioning as expected'])
         except:
             writer.writerow(['Fatal', 'Backup Download Failed' , 'No Backup Available to download', 'Please check your internet connection and retry'])
+
+    if not exists('./Tesseract-OCR/'):
+        makedirs('./Tesseract-OCR')
+        writer.writerow(['Serious', 'Missing Folder Error' , 'Missing Tesseract Folder', 'Downloading Tesseract from Google Drive'])
+        try: 
+            gdown.download('https://drive.google.com/uc?id=1ZF3FlYdyqGX2FCddUO_02BPh5KUU0Z7W', './Tesseract-OCR.zip', quiet=False)
+            with zipfile.ZipFile("./Tesseract-OCR.zip","r") as zip_ref:
+                zip_ref.extractall("./")
+            writer.writerow(['Resolved', 'Tesseract Folder Restored' , 'Fixed Tesseract Folder', 'Program functioning as expected'])
+        except:
+            writer.writerow(['Fatal', 'Tesseract Download Failed' , 'No Tesseract Available to download', 'Please check your internet connection and retry'])
 
     # check if the important component exists
     if not exists('./pages/'):
@@ -88,7 +100,7 @@ def reset_folders():
 
     # check if the directory exists
     if not exists('./output/'):
-        makedirs('./output/')
+        makedirs('./output')
 
     if not exists('./output/sample/'):
         makedirs('./output/sample/')
@@ -100,15 +112,15 @@ def reset_folders():
             writer.writerow(['Fatal', 'Project Corrupted' , 'No Backup Available', 'Recreate the project by downloading the folder and unzipping it'])
 
     if not exists('./results/'):
-        makedirs('./results/')
+        makedirs('./results')
 
     if not exists('./images/'):
-        makedirs('./images/')
+        makedirs('./images')
 
     if not exists('./completed_videos/'):
-        makedirs('./completed_videos/')
+        makedirs('./completed_videos')
 
     if not exists('./videos/'):
-        makedirs('./videos/')
+        makedirs('./videos')
         
     errorfile.close()

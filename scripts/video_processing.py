@@ -19,7 +19,7 @@ from datetime import datetime
 from scripts.text_recognition import text_recognition
 
 if (os.name == 'nt'):
-    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
+    pytesseract.pytesseract.tesseract_cmd = "./Tesseract-OCR/tesseract.exe"  # Path of where pytesseract.exe is located
 
 from scripts.digit_recognition import digit_recognition
 from scripts.fish_measurement import fish_measurement
