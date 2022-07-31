@@ -71,17 +71,14 @@ LabelMe Library (Create Clean Datasets) [link](https://roboflow.com/convert/labe
 
 YOLOv3 Tutorial (Train Images) [link](https://pysource.com/2020/04/02/train-yolo-to-detect-a-custom-object-online-with-free-gpu/)
 
-OpenCV (Digit Recognition) [url_name]()
+OpenCV (Digit Recognition) [github_repo](https://github.com/onlyphantom/cvessentials)
 
-OpenCV (Fish Dimension) [url_name]()
+OpenCV (Fish Dimension) [youtube_link](https://pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/ )
 
 ## Links
 Read files by directory - [link](https://realpython.com/working-with-files-in-python/)
 
 Unittest - [link](https://machinelearningmastery.com/a-gentle-introduction-to-unit-testing-in-python/)
-
-## Troubleshooting
-Troubleshooting document [doc_link]()
 
 <hr/>
 
