@@ -6,8 +6,11 @@ Git clone this repository or download the whole zip package from [Github](https:
 ```git clone https://github.com/fishguardians/fishing-on-a-conveyor-belt.git```
 
 Installation Guide - [Google Doc](https://docs.google.com/document/d/1_yUt0hXwI_UgTHmy3qmm1XcQa9co_GvDtFCRAo-FJU0/edit?usp=sharing)
+
 Setting Up Tutorial (Windows) - [https://youtu.be/WGdvI_PCXuM](https://youtu.be/WGdvI_PCXuM)
+
 Setting UP Tutorial (Mac) - [https://youtu.be/09KSx-147fg](https://youtu.be/09KSx-147fg)
+
 How To Use Tutorial - [https://youtu.be/MYsK0XLZWLQ](https://youtu.be/MYsK0XLZWLQ)
 
 ### Prerequisites
