@@ -5,6 +5,11 @@ Video recording and image analysis of fishes to automate and increase the effici
 Git clone this repository or download the whole zip package from [Github](https://github.com/fishguardians/fishing-on-a-conveyor-belt.git)
 ```git clone https://github.com/fishguardians/fishing-on-a-conveyor-belt.git```
 
+Installation Guide - [Google Doc](https://docs.google.com/document/d/1_yUt0hXwI_UgTHmy3qmm1XcQa9co_GvDtFCRAo-FJU0/edit?usp=sharing)
+Setting Up Tutorial (Windows) - [https://youtu.be/WGdvI_PCXuM](https://youtu.be/WGdvI_PCXuM)
+Setting UP Tutorial (Mac) - [https://youtu.be/09KSx-147fg](https://youtu.be/09KSx-147fg)
+How To Use Tutorial - [https://youtu.be/MYsK0XLZWLQ](https://youtu.be/MYsK0XLZWLQ)
+
 ### Prerequisites
 Install Python v@3.10 using this [Windows_x64](https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe), [Windows_x32](https://www.python.org/ftp/python/3.10.0/python-3.10.0.exe), [macOS](https://www.python.org/ftp/python/3.10.0/python-3.10.0post2-macos11.pkg) or navigate to [Downloads](https://www.python.org/downloads/release/python-3100/) 
 
