@@ -125,8 +125,8 @@ def write_data_output(video_name):
                     else:
                         continue
         except:
-            print('Error: Weights not recorded')
-            errwriter.writerow(['Serious', 'Error with Recording Weights', 'Missing Output Data',
+            print('Error: Dimensions not recorded')
+            errwriter.writerow(['Serious', 'Error with Recording Dimensions', 'Missing Output Data',
                                 'Please check /output/' + video_name + ' folder for dimensions.txt file'])
             return False
     
