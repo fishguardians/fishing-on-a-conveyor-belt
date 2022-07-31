@@ -9,10 +9,13 @@ Git clone this repository or download the whole zip package from [Github](https:
 Install Python v@3.10 using this [Windows_x64](https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe), [Windows_x32](https://www.python.org/ftp/python/3.10.0/python-3.10.0.exe), [macOS](https://www.python.org/ftp/python/3.10.0/python-3.10.0post2-macos11.pkg) or navigate to [Downloads](https://www.python.org/downloads/release/python-3100/) 
 
 
-Install Pip v@21.2.3 with command  ```python -m pip install pip==21.2.3```
+Install/Downgrade Pip v@21.2.3 with command  ```python -m pip install pip==21.2.3```
 
 ### Installation
 Install required python libraries  ```pip install -r requirements.txt```
+
+### Start the Program
+Open the website  ```python main.py```
 
 ### Usage
 For educational and research purposes. 
