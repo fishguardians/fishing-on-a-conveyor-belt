@@ -5,7 +5,7 @@ Video recording and image analysis of fishes to automate and increase the effici
 Git clone this repository ```git clone https://github.com/fishguardians/fishing-on-a-conveyor-belt.git```
 
 <b>or</b> Download the whole zip package from [Github](https://github.com/fishguardians/fishing-on-a-conveyor-belt.git)
-
+<hr/>
 
 Installation Guide - [Google Doc](https://docs.google.com/document/d/1_yUt0hXwI_UgTHmy3qmm1XcQa9co_GvDtFCRAo-FJU0/edit?usp=sharing)
 
