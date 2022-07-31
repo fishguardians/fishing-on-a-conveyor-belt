@@ -71,7 +71,7 @@ LabelMe Library (Create Clean Datasets) [link](https://roboflow.com/convert/labe
 
 YOLOv3 Tutorial (Train Images) [link](https://pysource.com/2020/04/02/train-yolo-to-detect-a-custom-object-online-with-free-gpu/)
 
-OpenCV (Digit Recognition) [github_repo](https://github.com/onlyphantom/cvessentials)
+OpenCV (Digit Recognition) [github_repo](https://github.com/onlyphantom/cvessentials), [link](https://pyimagesearch.com/2017/02/13/recognizing-digits-with-opencv-and-python/)
 
 OpenCV (Fish Dimension) [youtube_link](https://pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/ )
 
