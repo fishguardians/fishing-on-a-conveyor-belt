@@ -11,7 +11,7 @@ Installation Guide - [Google Doc](https://docs.google.com/document/d/1_yUt0hXwI_
 
 Setting Up Tutorial (Windows) - [https://youtu.be/WGdvI_PCXuM](https://youtu.be/WGdvI_PCXuM)
 
-Setting Up Tutorial (Mac) - [https://youtu.be/09KSx-147fg](https://youtu.be/09KSx-147fg)
+Setting Up Tutorial (Mac) - [https://youtu.be/09KSx-147fg](https://youtu.be/ckRSTjBzwvw)
 
 How To Use Tutorial - [https://youtu.be/MYsK0XLZWLQ](https://youtu.be/MYsK0XLZWLQ)
 
